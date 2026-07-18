@@ -70,7 +70,7 @@
 <div class="app">
   <header>
     <h1><span lang="ja">文木</span> Ayaki</h1>
-    <Toolbar bind:showFurigana bind:view bind:rate />
+    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI />
   </header>
   <main>
     <section class="content">
@@ -103,7 +103,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} />
   </main>
   <footer>
     <p>

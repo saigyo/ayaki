@@ -9,7 +9,7 @@ const sentence = sentenceFixture()
 
 describe('Inspector — sentence mode', () => {
   it('shows only the active sentence with speech, Translate and a confidence summary', () => {
-    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1 } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null } })
     expect(screen.getByRole('heading', { name: 'Sentence' })).toBeInTheDocument()
     expect(screen.getByText(sentence.text)).toBeInTheDocument()
     const gt = screen.getByRole('link', { name: /google translate/i })
@@ -23,18 +23,18 @@ describe('Inspector — sentence mode', () => {
     expect(speakBtn).toHaveAttribute('title', expect.stringMatching(/no japanese voice/i))
   })
   it('numbers the heading when there are multiple sentences', () => {
-    render(Inspector, { props: { sentence, index: 1, total: 3, selected: null, rate: 1 } })
+    render(Inspector, { props: { sentence, index: 1, total: 3, selected: null, rate: 1, voiceURI: null } })
     expect(screen.getByRole('heading', { name: 'Sentence 2 / 3' })).toBeInTheDocument()
   })
   it('shows a hint before anything was parsed', () => {
-    render(Inspector, { props: { sentence: null, index: 0, total: 0, selected: null, rate: 1 } })
+    render(Inspector, { props: { sentence: null, index: 0, total: 0, selected: null, rate: 1, voiceURI: null } })
     expect(screen.getByText(/click a part/i)).toBeInTheDocument()
   })
 })
 
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
-    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1 } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(screen.getByRole('heading', { name: /食べた。/ })).toBeInTheDocument()
     expect(screen.getByText('食べ')).toBeInTheDocument()
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
@@ -47,16 +47,16 @@ describe('Inspector — bunsetsu mode', () => {
     expect(links[0]).toHaveAttribute('href', 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B')
   })
   it('shows the attachment confidence line for probability and for forced-only attachments', () => {
-    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1 } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null } })
     expect(screen.getByText(/P = 55%/)).toBeInTheDocument()
     const forced = forcedSentenceFixture()
-    render(Inspector, { props: { sentence: forced, index: 0, total: 1, selected: forced.bunsetsu[0], rate: 1 } })
+    render(Inspector, { props: { sentence: forced, index: 0, total: 1, selected: forced.bunsetsu[0], rate: 1, voiceURI: null } })
     expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })
     const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
-    render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1 } })
+    render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
     expect(screen.getAllByText('！')).toHaveLength(2)
   })
 })
