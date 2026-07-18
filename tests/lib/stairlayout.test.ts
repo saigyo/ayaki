@@ -6,26 +6,37 @@ import { textWidth } from '../../src/lib/arclayout'
 const surfaces = ['猫が', '魚を', '食べた。']
 const heads: (number | null)[] = [2, 2, null]
 const opts = { rowHeight: 46, boxCenterOffset: 17 }
+const maxW = textWidth('食べた。') + 20
 
 describe('layoutStairs', () => {
-  it('places one row per bunsetsu with a uniform stair indent', () => {
+  it('right-aligns boxes to a uniform right-edge stair', () => {
     const l = layoutStairs(surfaces, heads, opts)
-    expect(l.boxes.map((b) => b.x)).toEqual([0, 24, 48])
+    l.boxes.forEach((b, i) => {
+      expect(b.x + b.width).toBe(maxW + i * 24)
+      expect(b.x).toBe(maxW + i * 24 - b.width)
+    })
     expect(l.boxes.map((b) => b.y)).toEqual([0, 46, 92])
-    expect(l.boxes[0].width).toBe(textWidth('猫が') + 20)
     expect(l.height).toBe(3 * 46)
   })
-  it('assigns rails by nesting level: the enclosing arc gets the farther rail', () => {
+  it('pushes shorter surfaces further right than the old left-aligned baseline', () => {
     const l = layoutStairs(surfaces, heads, opts)
-    // (魚を→食べた。) nests inside (猫が→食べた。): dep0's rail must be right of dep1's
-    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
-    expect(byDep[0].railX).toBeGreaterThan(byDep[1].railX)
-    // both rails clear the widest box's right edge
-    const maxRight = Math.max(...l.boxes.map((b) => b.x + b.width))
-    expect(byDep[1].railX).toBeGreaterThanOrEqual(maxRight + 16)
-    expect(l.width).toBe(byDep[0].railX)
+    // Rows 0 and 1 (猫が, 魚を) are narrower than the widest box (食べた。), so
+    // right-alignment places their left edge to the right of the old
+    // left-aligned x = i * STEP baseline. Row 2 is the widest box, so its
+    // left edge coincides with the baseline (width === maxW).
+    expect(l.boxes[0].x).toBeGreaterThan(0 * 24)
+    expect(l.boxes[1].x).toBeGreaterThan(1 * 24)
+    expect(l.boxes[2].x).toBe(2 * 24)
   })
-  it('draws each connector from the dependent box edge via the rail into the head box edge', () => {
+  it('gives both dependents of the same head the same shared rail', () => {
+    const l = layoutStairs(surfaces, heads, opts)
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    const expectedRailX = maxW + 2 * 24 + 10
+    expect(byDep[0].railX).toBe(expectedRailX)
+    expect(byDep[1].railX).toBe(expectedRailX)
+    expect(l.width).toBe(expectedRailX)
+  })
+  it('draws each connector from the dependent box edge via the shared rail into the head box edge', () => {
     const l = layoutStairs(surfaces, heads, opts)
     const c = l.connectors.find((x) => x.dep === 1)!
     const dep = l.boxes[1]
@@ -44,5 +55,20 @@ describe('layoutStairs', () => {
     expect(l.connectors).toEqual([])
     expect(l.boxes).toHaveLength(1)
     expect(l.width).toBe(l.boxes[0].width)
+  })
+  it('gives a dependency chain strictly increasing rails per head', () => {
+    // 新しい(→1) 映画を(→2) 見に(→3) 行きました。(root) — a chain, each dep's head is
+    // the next bunsetsu, so each head's own xRight (and therefore rail) grows.
+    const chainSurfaces = ['新しい', '映画を', '見に', '行きました。']
+    const chainHeads: (number | null)[] = [1, 2, 3, null]
+    const l = layoutStairs(chainSurfaces, chainHeads, opts)
+    const chainMaxW = Math.max(...chainSurfaces.map((s) => textWidth(s) + 20))
+    const xRight = (i: number) => chainMaxW + i * 24
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    expect(byDep[0].railX).toBe(xRight(1) + 10)
+    expect(byDep[1].railX).toBe(xRight(2) + 10)
+    expect(byDep[2].railX).toBe(xRight(3) + 10)
+    expect(byDep[0].railX).toBeLessThan(byDep[1].railX)
+    expect(byDep[1].railX).toBeLessThan(byDep[2].railX)
   })
 })

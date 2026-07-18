@@ -1,9 +1,8 @@
-import { nestingLevels, textWidth } from './arclayout'
+import { textWidth } from './arclayout'
 
 const BOX_PAD = 10
 const STEP = 24
-const RAIL_BASE = 16
-const RAIL_STEP = 12
+const RAIL_GAP = 10
 
 export interface StairBox {
   x: number
@@ -33,32 +32,44 @@ export interface StairOptions {
 }
 
 /**
- * CaboCha-style stair layout: one row per bunsetsu in sentence order, each row
- * indented STEP px further right. Connectors run from the dependent box's right
- * edge to a vertical rail, down to the head's row, and back into the head box's
- * right edge. Rail columns are assigned by arc nesting level — the arc view's
- * height rule rotated 90° — so sasara's non-crossing input never renders
- * crossing connectors. Disjoint arcs may share a rail column; their vertical
- * segments occupy disjoint row ranges.
+ * CaboCha-style stair layout: one row per bunsetsu in sentence order. Boxes are
+ * right-aligned to a uniform right-edge stair — `xRight(i) = maxBoxWidth + i *
+ * STEP` — so left edges vary with surface length while right edges step evenly.
+ * This mirrors CaboCha's own `write_tree` indent rule in `tree.cpp`,
+ * `max_len - len(surface) + i * 2`, which is like the mirror image (indent
+ * grows as the surface shortens) of the same right-edge stair.
+ *
+ * Each head owns exactly one rail, in its own column: `railX(head) =
+ * xRight(head) + RAIL_GAP`. Every dependent of that head runs horizontally
+ * from its right edge to the shared rail, down (or up) to the head's row, then
+ * a short leftward stub into the head box's right edge — the `-D` column of
+ * the terminal output. Because sasara's parses never cross, a head further
+ * right always owns a further-right rail, so nested arcs naturally get nested
+ * rails without needing a separate nesting-level computation (unlike the arcs
+ * view, which still uses `nestingLevels` for arc height).
  */
 export function layoutStairs(
   surfaces: string[],
   heads: (number | null)[],
   opts: StairOptions,
 ): StairLayout {
-  const boxes: StairBox[] = surfaces.map((s, i) => ({
-    x: i * STEP,
-    y: i * opts.rowHeight,
-    width: textWidth(s) + 2 * BOX_PAD,
-  }))
+  const widths = surfaces.map((s) => textWidth(s) + 2 * BOX_PAD)
+  const maxBoxWidth = Math.max(0, ...widths)
+  const xRight = (i: number): number => maxBoxWidth + i * STEP
+  const boxes: StairBox[] = surfaces.map((s, i) => {
+    const width = widths[i]
+    return {
+      x: xRight(i) - width,
+      y: i * opts.rowHeight,
+      width,
+    }
+  })
   const pairs: { dep: number; head: number }[] = []
   heads.forEach((head, dep) => {
     if (head !== null) pairs.push({ dep, head })
   })
-  const levels = nestingLevels(pairs)
-  const maxRight = Math.max(0, ...boxes.map((b) => b.x + b.width))
-  const connectors: StairConnector[] = pairs.map(({ dep, head }, i) => {
-    const railX = maxRight + RAIL_BASE + RAIL_STEP * (levels[i] - 1)
+  const connectors: StairConnector[] = pairs.map(({ dep, head }) => {
+    const railX = xRight(head) + RAIL_GAP
     const y1 = boxes[dep].y + opts.boxCenterOffset
     const y2 = boxes[head].y + opts.boxCenterOffset
     return {
@@ -68,6 +79,6 @@ export function layoutStairs(
       d: `M ${boxes[dep].x + boxes[dep].width} ${y1} H ${railX} V ${y2} H ${boxes[head].x + boxes[head].width}`,
     }
   })
-  const width = connectors.length ? Math.max(...connectors.map((c) => c.railX)) : maxRight
+  const width = connectors.length ? Math.max(...connectors.map((c) => c.railX)) : maxBoxWidth
   return { boxes, connectors, width, height: surfaces.length * opts.rowHeight }
 }
