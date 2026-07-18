@@ -2,5 +2,75 @@
   font-family: system-ui, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   color: #24292f;
   background: #f6f8fa;
+  --accent: #3b6ea5;
+  --accent-soft: #dce8f9;
+  --box-fill: #eef2f8;
+  --box-stroke: #b9c4d8;
+  --arc: #7c8db5;
+  --uncertain: #b58a3c;
+  --danger: #b03a2e;
 }
 body { margin: 0; }
+.app { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+header { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; padding: 0.75rem 0; }
+header h1 { font-size: 1.4rem; margin: 0; }
+.toolbar { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; font-size: 0.9rem; }
+.toolbar .views button { border: 1px solid var(--box-stroke); background: #fff; padding: 0.25rem 0.6rem; cursor: pointer; }
+.toolbar .views button.active { background: var(--accent-soft); border-color: var(--accent); }
+.toolbar .views button:first-child { border-radius: 6px 0 0 6px; }
+.toolbar .views button:last-child { border-radius: 0 6px 6px 0; margin-left: -1px; }
+
+main { display: grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items: start; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+
+.sentence-input { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 1rem; }
+.sentence-input textarea { flex: 1; font-size: 1.1rem; padding: 0.5rem; border: 1px solid var(--box-stroke); border-radius: 8px; resize: vertical; }
+.sentence-input button { padding: 0.5rem 1rem; font-size: 1rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.sentence-input button:disabled { opacity: 0.5; cursor: default; }
+
+.hint, .loading { color: #57606a; }
+.linklike { background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: inherit; padding: 0; }
+.error-banner { border: 1px solid var(--danger); background: #fdedec; border-radius: 8px; padding: 0.75rem 1rem; }
+.sentence-error { color: var(--danger); margin: 0; }
+
+.card { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem; margin-bottom: 1rem; }
+.tree-scroll { overflow-x: auto; }
+
+/* shared SVG styling for both views */
+svg .bunsetsu { cursor: pointer; outline: none; }
+svg .bunsetsu rect { fill: var(--box-fill); stroke: var(--box-stroke); }
+svg .bunsetsu.root rect { fill: var(--accent-soft); stroke: var(--accent); }
+svg .bunsetsu.hl rect, svg .bunsetsu:focus-visible rect { stroke: var(--accent); stroke-width: 2; }
+svg .bunsetsu.selected rect { fill: var(--accent); }
+svg .bunsetsu.selected text.surface { fill: #fff; }
+svg text { font-size: 15px; fill: #24292f; }
+svg text.furigana { font-size: 10px; fill: #57606a; }
+svg path.arc { fill: none; stroke: var(--arc); stroke-width: 1.5; }
+svg path.arc.low { stroke: var(--uncertain); stroke-dasharray: 5 3; }
+svg path.arc.forced { stroke: var(--uncertain); stroke-dasharray: 2 3; }
+svg path.arc.hl { stroke: var(--accent); stroke-width: 2.5; }
+svg line.edge { stroke: var(--box-stroke); stroke-width: 1.5; }
+svg line.edge.low { stroke: var(--uncertain); stroke-dasharray: 5 3; }
+svg line.edge.forced { stroke: var(--uncertain); stroke-dasharray: 2 3; }
+svg line.edge.hl { stroke: var(--accent); stroke-width: 2.5; }
+svg marker path { fill: var(--arc); }
+
+.inspector { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem 1rem; position: sticky; top: 1rem; }
+.inspector h2 { margin-top: 0; font-size: 1.2rem; }
+.inspector .icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
+.inspector .icon:disabled { opacity: 0.4; cursor: default; }
+.inspector .confidence.uncertain { color: var(--uncertain); }
+.morpheme { border-top: 1px solid #eaeef2; padding: 0.5rem 0; font-size: 0.92rem; }
+.morpheme .m-surface { font-size: 1.05rem; font-weight: 600; }
+.morpheme .m-reading { color: #57606a; }
+.morpheme .en { color: #57606a; margin-left: 0.4rem; }
+.morpheme a { color: var(--accent); text-decoration: none; }
+.actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.actions button { border: 1px solid var(--box-stroke); background: #fff; border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; }
+.actions button:disabled { opacity: 0.5; cursor: default; }
+.confidence-note { color: var(--uncertain); font-size: 0.85rem; }
+.full-text { font-size: 1.05rem; }
+
+footer { margin-top: 1.5rem; padding: 0.75rem 0; border-top: 1px solid var(--box-stroke); font-size: 0.78rem; color: #57606a; }
+footer a { color: var(--accent); }
