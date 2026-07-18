@@ -99,3 +99,15 @@ describe('Toolbar locale selector', () => {
     expect(screen.getByRole('slider', { name: 'Sprechtempo' })).toBeInTheDocument()
   })
 })
+
+describe('Toolbar view buttons', () => {
+  it('offers three view buttons and reports the cabocha state', async () => {
+    const user = userEvent.setup()
+    render(Toolbar, { props: { ...base, view: 'cabocha' as const } })
+    const cabocha = screen.getByRole('button', { name: /CaboCha/ })
+    expect(cabocha).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /arcs/ })).toHaveAttribute('aria-pressed', 'false')
+    await user.click(screen.getByRole('button', { name: /arcs/ }))
+    expect(screen.getByRole('button', { name: /arcs/ })).toHaveAttribute('aria-pressed', 'true')
+  })
+})

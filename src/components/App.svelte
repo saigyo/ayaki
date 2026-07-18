@@ -4,7 +4,7 @@
   import SentenceCard from './SentenceCard.svelte'
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
-  import { loadSettings, saveSettings } from '../lib/settings'
+  import { loadSettings, saveSettings, type ViewKind } from '../lib/settings'
   import { setStoredLocale, t } from '../lib/i18n.svelte'
   import type { ParsedSentence } from '../lib/types'
 
@@ -22,7 +22,7 @@
   // runs post-mount, which would flash the auto locale on first paint
   setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
-  let view = $state<'arcs' | 'tree'>(initialSettings.view)
+  let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
   let locale = $state(initialSettings.locale)

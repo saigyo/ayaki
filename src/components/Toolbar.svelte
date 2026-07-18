@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { listJaVoices } from '../lib/speech'
   import { t, type Locale, SUPPORTED_LOCALES } from '../lib/i18n.svelte'
+  import type { ViewKind } from '../lib/settings'
 
   let {
     showFurigana = $bindable(),
@@ -11,7 +12,7 @@
     locale = $bindable(null),
   }: {
     showFurigana: boolean
-    view: 'arcs' | 'tree'
+    view: ViewKind
     rate: number
     voiceURI?: string | null
     locale?: Locale | null
@@ -35,6 +36,7 @@
   <div class="views" role="group" aria-label={t('viewGroupLabel')}>
     <button class:active={view === 'arcs'} aria-pressed={view === 'arcs'} onclick={() => (view = 'arcs')}>⌒ {t('viewArcs')}</button>
     <button class:active={view === 'tree'} aria-pressed={view === 'tree'} onclick={() => (view = 'tree')}>🌳 {t('viewTree')}</button>
+    <button class:active={view === 'cabocha'} aria-pressed={view === 'cabocha'} onclick={() => (view = 'cabocha')}>🎃 {t('viewCabocha')}</button>
   </div>
   <label class="rate">
     🔊 {rate.toFixed(1)}×

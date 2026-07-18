@@ -1,7 +1,9 @@
 <script lang="ts">
   import ArcDiagram from './ArcDiagram.svelte'
   import NodeTree from './NodeTree.svelte'
+  import StairView from './StairView.svelte'
   import { t } from '../lib/i18n.svelte'
+  import { type ViewKind } from '../lib/settings'
   import type { ParsedSentence } from '../lib/types'
 
   let {
@@ -14,7 +16,7 @@
     onactivate = () => {},
   }: {
     sentence: ParsedSentence
-    view: 'arcs' | 'tree'
+    view: ViewKind
     showFurigana: boolean
     selected: number | null
     onselect: (index: number) => void
@@ -33,7 +35,9 @@
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
     <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
-  {:else}
+  {:else if view === 'tree'}
     <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
+  {:else}
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
   {/if}
 </div>
