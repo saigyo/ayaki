@@ -6,13 +6,15 @@
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
 
   let {
-    fullText,
-    sentences,
+    sentence,
+    index,
+    total,
     selected,
     rate,
   }: {
-    fullText: string
-    sentences: ParsedSentence[]
+    sentence: ParsedSentence | null
+    index: number
+    total: number
     selected: BunsetsuVM | null
     rate: number
   } = $props()
@@ -26,6 +28,7 @@
   })
 
   const speakTitle = $derived(canSpeak ? 'Speak with Web Speech' : 'No Japanese voice available in this browser')
+  const uncertainCount = $derived(sentence ? sentence.bunsetsu.filter(isUncertain).length : 0)
 </script>
 
 <aside class="inspector">
@@ -60,20 +63,17 @@
       </div>
     {/each}
   {:else}
-    <h2>Sentence</h2>
-    {#if fullText}
-      <p class="full-text" lang="ja">{fullText}</p>
+    <h2>{total > 1 ? `Sentence ${index + 1} / ${total}` : 'Sentence'}</h2>
+    {#if sentence}
+      <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(fullText, rate)}>🔊 Speak</button>
+        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(sentence.text, rate)}>🔊 Speak</button>
         <button onclick={stopSpeech}>⏹ Stop</button>
-        <a href={googleTranslateUrl(fullText)} target="_blank" rel="noopener">Google Translate ↗</a>
+        <a href={googleTranslateUrl(sentence.text)} target="_blank" rel="noopener">Google Translate ↗</a>
       </div>
-      {#each sentences as s, i (i)}
-        {@const uncertain = s.bunsetsu.filter(isUncertain).length}
-        {#if uncertain > 0}
-          <p class="confidence-note">Sentence {i + 1}: {uncertain} of {s.bunsetsu.length - 1} attachments uncertain</p>
-        {/if}
-      {/each}
+      {#if uncertainCount > 0}
+        <p class="confidence-note">{uncertainCount} of {sentence.bunsetsu.length - 1} attachments uncertain</p>
+      {/if}
     {:else}
       <p class="hint">Parse a sentence, then click a part of it to inspect readings and parts of speech.</p>
     {/if}

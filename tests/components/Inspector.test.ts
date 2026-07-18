@@ -8,28 +8,33 @@ import type { BunsetsuVM } from '../../src/lib/types'
 const sentence = sentenceFixture()
 
 describe('Inspector — sentence mode', () => {
-  it('offers speech, Google Translate and a confidence summary', () => {
-    render(Inspector, { props: { fullText: sentence.text, sentences: [sentence], selected: null, rate: 1 } })
+  it('shows only the active sentence with speech, Translate and a confidence summary', () => {
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1 } })
+    expect(screen.getByRole('heading', { name: 'Sentence' })).toBeInTheDocument()
     expect(screen.getByText(sentence.text)).toBeInTheDocument()
     const gt = screen.getByRole('link', { name: /google translate/i })
     expect(gt).toHaveAttribute('href', expect.stringContaining('translate.google.com'))
     expect(gt).toHaveAttribute('href', expect.stringContaining(encodeURIComponent(sentence.text)))
-    // fixture has 1 uncertain of 2 non-root attachments
-    expect(screen.getByText(/1 of 2 attachments uncertain/)).toBeInTheDocument()
+    // fixture has 1 uncertain of 2 non-root attachments; no "Sentence N:" prefix
+    expect(screen.getByText('1 of 2 attachments uncertain')).toBeInTheDocument()
     // jsdom has no speechSynthesis → speech buttons disabled with explanation
     const speakBtn = screen.getByRole('button', { name: /speak/i })
     expect(speakBtn).toBeDisabled()
     expect(speakBtn).toHaveAttribute('title', expect.stringMatching(/no japanese voice/i))
   })
+  it('numbers the heading when there are multiple sentences', () => {
+    render(Inspector, { props: { sentence, index: 1, total: 3, selected: null, rate: 1 } })
+    expect(screen.getByRole('heading', { name: 'Sentence 2 / 3' })).toBeInTheDocument()
+  })
   it('shows a hint before anything was parsed', () => {
-    render(Inspector, { props: { fullText: '', sentences: [], selected: null, rate: 1 } })
+    render(Inspector, { props: { sentence: null, index: 0, total: 0, selected: null, rate: 1 } })
     expect(screen.getByText(/click a part/i)).toBeInTheDocument()
   })
 })
 
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
-    render(Inspector, { props: { fullText: sentence.text, sentences: [sentence], selected: sentence.bunsetsu[2], rate: 1 } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1 } })
     expect(screen.getByRole('heading', { name: /食べた。/ })).toBeInTheDocument()
     expect(screen.getByText('食べ')).toBeInTheDocument()
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
@@ -42,16 +47,16 @@ describe('Inspector — bunsetsu mode', () => {
     expect(links[0]).toHaveAttribute('href', 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B')
   })
   it('shows the attachment confidence line for probability and for forced-only attachments', () => {
-    render(Inspector, { props: { fullText: sentence.text, sentences: [sentence], selected: sentence.bunsetsu[1], rate: 1 } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1 } })
     expect(screen.getByText(/P = 55%/)).toBeInTheDocument()
     const forced = forcedSentenceFixture()
-    render(Inspector, { props: { fullText: forced.text, sentences: [forced], selected: forced.bunsetsu[0], rate: 1 } })
+    render(Inspector, { props: { sentence: forced, index: 0, total: 1, selected: forced.bunsetsu[0], rate: 1 } })
     expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })
     const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
-    render(Inspector, { props: { fullText: '！！', sentences: [], selected: bunsetsu, rate: 1 } })
+    render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1 } })
     expect(screen.getAllByText('！')).toHaveLength(2)
   })
 })
