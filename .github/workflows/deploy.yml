@@ -25,7 +25,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run check
       - run: npm run build -- --base=/ayaki/
+      - run: npx playwright install --with-deps chromium
+      - run: npm run smoke
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
