@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["svelte", "vite/client", "vitest/globals"]
+    "types": ["svelte", "vite/client", "vitest/globals", "node"]
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts"]
 }
