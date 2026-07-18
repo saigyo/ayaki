@@ -26,7 +26,7 @@
 </script>
 
 <div class="tree-scroll">
-  <svg width={layout.width + 2 * PAD_X} height={layout.height + BOX_H + 6} class="nodetree" role="img" aria-label="dependency tree">
+  <svg width={layout.width + 2 * PAD_X} height={layout.height + BOX_H + 6} class="nodetree" role="group" aria-label="dependency tree">
     {#each layout.edges as e (e.to)}
       {@const from = pos.get(e.from)!}
       {@const to = pos.get(e.to)!}

@@ -44,7 +44,7 @@
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
           {#if m.reading && m.reading !== m.surface}<span class="m-reading" lang="ja">（{m.reading}）</span>{/if}
-          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label="speak morpheme" onclick={() => speak(m.surface, rate)}>🔊</button>
+          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={'speak ' + m.surface} onclick={() => speak(m.surface, rate)}>🔊</button>
         </div>
         <div class="m-pos"><span lang="ja">{m.posJa}</span>{#if m.posEn}<span class="en">{m.posEn}</span>{/if}</div>
         {#if m.baseForm}
