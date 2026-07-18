@@ -1,11 +1,14 @@
+import { SUPPORTED_LOCALES, type Locale } from './i18n.svelte'
+
 export interface Settings {
   showFurigana: boolean
   view: 'arcs' | 'tree'
   rate: number
   voiceURI: string | null
+  locale: Locale | null
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1, voiceURI: null }
+export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1, voiceURI: null, locale: null }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -22,6 +25,7 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
       : undefined,
   // '' is rejected so the two spellings of "auto" normalize to the canonical null
   voiceURI: (v) => (v === null || (typeof v === 'string' && v !== '') ? v : undefined),
+  locale: (v) => (v === null || SUPPORTED_LOCALES.includes(v as Locale) ? (v as Locale | null) : undefined),
 }
 
 function applyField<K extends keyof Settings>(target: Settings, key: K, raw: unknown): void {

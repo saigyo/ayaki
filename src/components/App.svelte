@@ -5,6 +5,7 @@
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
   import { loadSettings, saveSettings } from '../lib/settings'
+  import { setStoredLocale } from '../lib/i18n.svelte'
   import type { ParsedSentence } from '../lib/types'
 
   const EXAMPLE = '昨日、私は友達と新しい映画を見に行きました。'
@@ -21,9 +22,14 @@
   let view = $state<'arcs' | 'tree'>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
+  let locale = $state(initialSettings.locale)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate, voiceURI })
+    saveSettings({ showFurigana, view, rate, voiceURI, locale })
+  })
+
+  $effect(() => {
+    setStoredLocale(locale)
   })
 
   async function handleParse() {

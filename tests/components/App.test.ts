@@ -144,6 +144,7 @@ describe('App', () => {
       view: 'tree',
       rate: 1.2,
       voiceURI: null,
+      locale: null,
     })
   })
   it('binds the voice selector to the persisted setting', async () => {

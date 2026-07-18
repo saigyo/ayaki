@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko' }
+    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -73,6 +73,18 @@ describe('loadSettings', () => {
   it('defaults voiceURI to null for payloads from before the field existed', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree' }))
     expect(loadSettings()).toEqual({ ...DEFAULTS, view: 'tree' })
+  })
+  it('accepts the four locale codes and null, rejects others', () => {
+    for (const code of ['en', 'de', 'ja', 'zh']) {
+      localStorage.setItem(KEY, JSON.stringify({ locale: code }))
+      expect(loadSettings().locale).toBe(code)
+    }
+    localStorage.setItem(KEY, JSON.stringify({ locale: null }))
+    expect(loadSettings().locale).toBeNull()
+    localStorage.setItem(KEY, JSON.stringify({ locale: 'fr' }))
+    expect(loadSettings().locale).toBeNull()
+    localStorage.setItem(KEY, JSON.stringify({ locale: 7 }))
+    expect(loadSettings().locale).toBeNull()
   })
 })
 
