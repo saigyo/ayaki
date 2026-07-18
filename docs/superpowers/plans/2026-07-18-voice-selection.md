@@ -589,3 +589,9 @@ Expected: all PASS (including all pre-existing Inspector/App tests), 0 check err
 git add src/components/App.svelte src/components/Inspector.svelte tests/components/App.test.ts tests/components/InspectorSpeak.test.ts
 git commit -m "feat: wire selected voice through app and inspector speech"
 ```
+
+---
+
+## Deviations
+
+- **Task 3 test technique:** the plan's "shows the stored voice when present, auto when absent" test performs two `render()` calls in one `it` block; testing-library's query helpers bind to `document.body` and auto-cleanup only runs between `it` blocks, so a `cleanup()` call was needed between the two renders. Implementation unchanged.
