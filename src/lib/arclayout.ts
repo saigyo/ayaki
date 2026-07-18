@@ -11,6 +11,34 @@ export function textWidth(s: string): number {
   return w
 }
 
+export interface DepPair {
+  dep: number
+  head: number
+}
+
+/** Nesting level per arc: 1 + the deepest level of any arc it encloses (B nests
+ *  in A iff A.dep <= B.dep && B.head <= A.head). Shortest spans are processed
+ *  first so nested levels are known before their enclosing arcs. */
+export function nestingLevels(pairs: DepPair[]): number[] {
+  const order = pairs
+    .map((_, i) => i)
+    .sort((a, b) => (pairs[a].head - pairs[a].dep) - (pairs[b].head - pairs[b].dep))
+  const levels = new Array(pairs.length).fill(0)
+  for (const i of order) {
+    const a = pairs[i]
+    let maxNestedLevel = 0
+    for (let j = 0; j < pairs.length; j++) {
+      if (j === i) continue
+      const b = pairs[j]
+      if (a.dep <= b.dep && b.head <= a.head) {
+        maxNestedLevel = Math.max(maxNestedLevel, levels[j])
+      }
+    }
+    levels[i] = 1 + maxNestedLevel
+  }
+  return levels
+}
+
 export interface ArcBox {
   x: number
   width: number
@@ -49,29 +77,13 @@ export function layoutArcs(surfaces: string[], heads: (number | null)[]): ArcLay
     boxes.push({ x, width, cx: x + width / 2 })
     x += width + BOX_GAP
   }
-  const pairs: { dep: number; head: number }[] = []
+  const pairs: DepPair[] = []
   heads.forEach((head, dep) => {
     if (head === null) return
     pairs.push({ dep, head })
   })
 
-  // Compute nesting level for each arc: B nests in A iff A.dep <= B.dep &&
-  // B.head <= A.head (B != A). Process shortest span first so a nested arc's
-  // level is already known when its enclosing arc is processed.
-  const order = pairs.map((_, i) => i).sort((a, b) => (pairs[a].head - pairs[a].dep) - (pairs[b].head - pairs[b].dep))
-  const levels = new Array(pairs.length).fill(0)
-  for (const i of order) {
-    const a = pairs[i]
-    let maxNestedLevel = 0
-    for (let j = 0; j < pairs.length; j++) {
-      if (j === i) continue
-      const b = pairs[j]
-      if (a.dep <= b.dep && b.head <= a.head) {
-        maxNestedLevel = Math.max(maxNestedLevel, levels[j])
-      }
-    }
-    levels[i] = 1 + maxNestedLevel
-  }
+  const levels = nestingLevels(pairs)
 
   const arcs: ArcSpec[] = []
   let maxTop = 0
