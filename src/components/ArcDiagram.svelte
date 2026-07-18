@@ -65,6 +65,7 @@
         class:root={b.head === null}
         role="button"
         tabindex="0"
+        aria-label={b.surface}
         onmouseenter={() => (hovered = i)}
         onmouseleave={() => (hovered = null)}
         onclick={() => onselect(i)}

@@ -18,7 +18,7 @@ describe('App', () => {
     vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
     const user = userEvent.setup()
     render(App)
-    await user.type(screen.getByRole('textbox'), '猫が魚を食べた。')
+    await user.type(screen.getByRole('textbox', { name: /japanese text/i }), '猫が魚を食べた。')
     await user.click(screen.getByRole('button', { name: /解析/ }))
     const box = await screen.findByText('魚を')
     box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
