@@ -27,6 +27,16 @@ describe('NodeTree', () => {
     expect(container.querySelectorAll('line.edge.forced')).toHaveLength(1)
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(0)
   })
+  it('shows furigana above nodes only when enabled, skipping kana-only bunsetsu', () => {
+    const off = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    expect(off.container.querySelectorAll('text.furigana')).toHaveLength(0)
+    const on = render(NodeTree, { props: { bunsetsu, showFurigana: true, onselect: () => {} } })
+    expect(on.container.querySelectorAll('text.furigana')).toHaveLength(3)
+    const forced = render(NodeTree, { props: { bunsetsu: forcedSentenceFixture().bunsetsu, showFurigana: true, onselect: () => {} } })
+    const furigana = forced.container.querySelectorAll('text.furigana')
+    expect(furigana).toHaveLength(1)
+    expect(furigana[0].textContent).toBe('なに。')
+  })
   it('invokes onselect on click', async () => {
     const onselect = vi.fn()
     const { getByText } = render(NodeTree, { props: { bunsetsu, onselect } })

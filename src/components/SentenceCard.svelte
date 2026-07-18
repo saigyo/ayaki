@@ -24,6 +24,6 @@
   {:else if view === 'arcs'}
     <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
   {:else}
-    <NodeTree bunsetsu={sentence.bunsetsu} {selected} {onselect} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
   {/if}
 </div>

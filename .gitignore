@@ -4,3 +4,4 @@ dist/
 public/dict/
 public/model.json
 .idea/
+.DS_Store
