@@ -141,6 +141,7 @@ describe('App', () => {
       showFurigana: false,
       view: 'tree',
       rate: 1.2,
+      voiceURI: null,
     })
   })
 })

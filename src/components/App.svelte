@@ -20,9 +20,10 @@
   let showFurigana = $state(initialSettings.showFurigana)
   let view = $state<'arcs' | 'tree'>(initialSettings.view)
   let rate = $state(initialSettings.rate)
+  let voiceURI = $state(initialSettings.voiceURI)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate })
+    saveSettings({ showFurigana, view, rate, voiceURI })
   })
 
   async function handleParse() {

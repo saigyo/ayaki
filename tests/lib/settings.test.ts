@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3 }
+    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko' }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -57,6 +57,18 @@ describe('loadSettings', () => {
     })
     expect(loadSettings()).toEqual(DEFAULTS)
     spy.mockRestore()
+  })
+  it('accepts a string or null voiceURI and rejects other types', () => {
+    localStorage.setItem(KEY, JSON.stringify({ voiceURI: 'kyoko' }))
+    expect(loadSettings().voiceURI).toBe('kyoko')
+    localStorage.setItem(KEY, JSON.stringify({ voiceURI: null }))
+    expect(loadSettings().voiceURI).toBeNull()
+    localStorage.setItem(KEY, JSON.stringify({ voiceURI: 7 }))
+    expect(loadSettings().voiceURI).toBeNull()
+  })
+  it('defaults voiceURI to null for payloads from before the field existed', () => {
+    localStorage.setItem(KEY, JSON.stringify({ view: 'tree' }))
+    expect(loadSettings()).toEqual({ ...DEFAULTS, view: 'tree' })
   })
 })
 

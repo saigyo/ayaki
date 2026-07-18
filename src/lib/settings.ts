@@ -2,9 +2,10 @@ export interface Settings {
   showFurigana: boolean
   view: 'arcs' | 'tree'
   rate: number
+  voiceURI: string | null
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1 }
+export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1, voiceURI: null }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -19,6 +20,7 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
     typeof v === 'number' && Number.isFinite(v)
       ? Math.min(RATE_MAX, Math.max(RATE_MIN, v))
       : undefined,
+  voiceURI: (v) => (v === null || typeof v === 'string' ? v : undefined),
 }
 
 function applyField<K extends keyof Settings>(target: Settings, key: K, raw: unknown): void {
