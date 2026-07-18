@@ -54,7 +54,7 @@ describe('Inspector — bunsetsu mode', () => {
     expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
-    const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })
+    const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', jishoUrl: null })
     const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
     render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
     expect(screen.getAllByText('！')).toHaveLength(2)

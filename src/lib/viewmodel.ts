@@ -1,6 +1,7 @@
 import type { Bunsetsu, KuromojiToken } from 'sasara'
-import { conjugationLabel, hasKanji, posLabel, toHiragana } from './pos'
+import { combinePos, hasKanji, toHiragana } from './pos'
 import { jishoUrl } from './links'
+import { t } from './i18n.svelte'
 import type { BunsetsuVM, MorphemeVM, ParsedSentence } from './types'
 
 export const LOW_CONFIDENCE = 0.7
@@ -16,8 +17,11 @@ export function isUncertain(b: BunsetsuVM): boolean {
  * probability — being forced is itself the signal.
  */
 export function confidenceLabel(b: BunsetsuVM): string | null {
-  if (b.probability !== null) return `P = ${Math.round(b.probability * 100)}%${b.forced ? ' (forced)' : ''}`
-  return b.forced ? 'forced attachment (end-of-sentence fallback)' : null
+  if (b.probability !== null) {
+    const p = Math.round(b.probability * 100)
+    return b.forced ? t('confProbForced', { p }) : t('confProb', { p })
+  }
+  return b.forced ? t('confForcedOnly') : null
 }
 
 interface ConfidenceLike {
@@ -25,20 +29,18 @@ interface ConfidenceLike {
   forced?: boolean
 }
 
-function toMorpheme(t: KuromojiToken): MorphemeVM {
-  const reading = t.reading && t.reading !== '*' ? toHiragana(t.reading) : null
-  const base = t.basic_form && t.basic_form !== '*' && t.basic_form !== t.surface_form ? t.basic_form : null
-  const pos = posLabel(t.pos, t.pos_detail_1)
-  const conj = conjugationLabel(t.conjugated_form)
+function toMorpheme(t2: KuromojiToken): MorphemeVM {
+  const reading = t2.reading && t2.reading !== '*' ? toHiragana(t2.reading) : null
+  const base = t2.basic_form && t2.basic_form !== '*' && t2.basic_form !== t2.surface_form ? t2.basic_form : null
+  const posJa = combinePos(t2.pos, t2.pos_detail_1)
+  const conjugationJa = t2.conjugated_form && t2.conjugated_form !== '*' ? t2.conjugated_form : null
   return {
-    surface: t.surface_form,
+    surface: t2.surface_form,
     reading,
-    posJa: pos.ja,
-    posEn: pos.en,
+    posJa,
     baseForm: base,
-    conjugationJa: conj?.ja ?? null,
-    conjugationEn: conj?.en ?? null,
-    jishoUrl: t.pos === '記号' ? null : jishoUrl(base ?? t.surface_form),
+    conjugationJa,
+    jishoUrl: t2.pos === '記号' ? null : jishoUrl(base ?? t2.surface_form),
   }
 }
 

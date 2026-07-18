@@ -3,6 +3,8 @@
   import { googleTranslateUrl } from '../lib/links'
   import { speak, speechAvailable, stopSpeech } from '../lib/speech'
   import { confidenceLabel, isUncertain } from '../lib/viewmodel'
+  import { currentLocale } from '../lib/i18n.svelte'
+  import { conjugationGloss, posGloss } from '../lib/pos'
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
 
   let {
@@ -46,18 +48,20 @@
       </p>
     {/if}
     {#each selected.morphemes as m}
+      {@const pg = posGloss(m.posJa, currentLocale())}
       <div class="morpheme">
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
           {#if m.reading && m.reading !== m.surface}<span class="m-reading" lang="ja">（{m.reading}）</span>{/if}
           <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={'speak ' + m.surface} onclick={() => speak(m.surface, rate, voiceURI)}>🔊</button>
         </div>
-        <div class="m-pos"><span lang="ja">{m.posJa}</span>{#if m.posEn}<span class="en">{m.posEn}</span>{/if}</div>
+        <div class="m-pos"><span lang="ja">{m.posJa}</span>{#if pg}<span class="en">{pg}</span>{/if}</div>
         {#if m.baseForm}
           <div class="m-base">base form: <span lang="ja">{m.baseForm}</span></div>
         {/if}
         {#if m.conjugationJa}
-          <div class="m-conj"><span lang="ja">{m.conjugationJa}</span>{#if m.conjugationEn}<span class="en">{m.conjugationEn}</span>{/if}</div>
+          {@const cg = conjugationGloss(m.conjugationJa, currentLocale())}
+          <div class="m-conj"><span lang="ja">{m.conjugationJa}</span>{#if cg}<span class="en">{cg}</span>{/if}</div>
         {/if}
         {#if m.jishoUrl}
           <a href={m.jishoUrl} target="_blank" rel="noopener">📖 Jisho</a>

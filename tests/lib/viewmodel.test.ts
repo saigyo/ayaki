@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import type { Bunsetsu, KuromojiToken } from 'sasara'
 import { confidenceLabel, errorSentence, isUncertain, toParsedSentence } from '../../src/lib/viewmodel'
+import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
 function tok(partial: Partial<KuromojiToken>): KuromojiToken {
   return {
@@ -51,10 +52,8 @@ describe('toParsedSentence', () => {
       surface: '見',
       reading: 'み',
       posJa: '動詞・自立',
-      posEn: 'verb (independent)',
       baseForm: '見る',
       conjugationJa: '連用形',
-      conjugationEn: 'continuative',
       jishoUrl: 'https://jisho.org/search/%E8%A6%8B%E3%82%8B',
     })
   })
@@ -92,6 +91,11 @@ describe('isUncertain', () => {
 })
 
 describe('confidenceLabel', () => {
+  // resolveLocale(null) falls back to the system locale via globalThis.navigator in
+  // recent Node versions, so pin the locale explicitly rather than relying on the
+  // environment's default.
+  beforeEach(() => setStoredLocale('en'))
+
   const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
   it('formats a probability, appending (forced) when applicable', () => {
     expect(confidenceLabel({ ...base, probability: 0.55, forced: false })).toBe('P = 55%')
