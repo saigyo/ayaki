@@ -6,6 +6,14 @@ const KEY = 'ayaki-settings'
 
 beforeEach(() => localStorage.clear())
 
+describe('localStorage test environment', () => {
+  it('reports length live and preserves empty strings', () => {
+    localStorage.setItem('probe', '')
+    expect(localStorage.length).toBe(1)
+    expect(localStorage.getItem('probe')).toBe('')
+  })
+})
+
 describe('loadSettings', () => {
   it('returns defaults when nothing is stored', () => {
     expect(loadSettings()).toEqual(DEFAULTS)

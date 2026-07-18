@@ -2,7 +2,7 @@
 if (typeof window !== 'undefined' && typeof window.localStorage === 'undefined') {
   const store: Record<string, string> = {}
   window.localStorage = {
-    getItem: (key: string) => store[key] || null,
+    getItem: (key: string) => (key in store ? store[key] : null),
     setItem: (key: string, value: string) => {
       store[key] = value
     },
@@ -13,6 +13,8 @@ if (typeof window !== 'undefined' && typeof window.localStorage === 'undefined')
       Object.keys(store).forEach((key) => delete store[key])
     },
     key: (index: number) => Object.keys(store)[index] || null,
-    length: Object.keys(store).length,
+    get length() {
+      return Object.keys(store).length
+    },
   } as Storage
 }
