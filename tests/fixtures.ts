@@ -5,10 +5,8 @@ export function morphemeFixture(over: Partial<MorphemeVM> = {}): MorphemeVM {
     surface: '魚',
     reading: 'さかな',
     posJa: '名詞・一般',
-    posEn: 'noun (general)',
     baseForm: null,
     conjugationJa: null,
-    conjugationEn: null,
     jishoUrl: 'https://jisho.org/search/%E9%AD%9A',
     ...over,
   }
@@ -33,19 +31,19 @@ export function sentenceFixture(): ParsedSentence {
     bunsetsu: [
       b(0, '猫が', 2, 0.95, 'ねこが', [
         morphemeFixture({ surface: '猫', reading: 'ねこ', jishoUrl: 'https://jisho.org/search/%E7%8C%AB' }),
-        morphemeFixture({ surface: 'が', reading: 'が', posJa: '助詞・格助詞', posEn: 'particle (case-marking)', jishoUrl: 'https://jisho.org/search/%E3%81%8C' }),
+        morphemeFixture({ surface: 'が', reading: 'が', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%81%8C' }),
       ]),
       b(1, '魚を', 2, 0.55, 'さかなを', [
         morphemeFixture(),
-        morphemeFixture({ surface: 'を', reading: 'を', posJa: '助詞・格助詞', posEn: 'particle (case-marking)', jishoUrl: 'https://jisho.org/search/%E3%82%92' }),
+        morphemeFixture({ surface: 'を', reading: 'を', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%82%92' }),
       ]),
       b(2, '食べた。', null, null, 'たべた。', [
         morphemeFixture({
-          surface: '食べ', reading: 'たべ', posJa: '動詞・自立', posEn: 'verb (independent)',
-          baseForm: '食べる', conjugationJa: '連用形', conjugationEn: 'continuative',
+          surface: '食べ', reading: 'たべ', posJa: '動詞・自立',
+          baseForm: '食べる', conjugationJa: '連用形',
           jishoUrl: 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B',
         }),
-        morphemeFixture({ surface: '。', reading: null, posJa: '記号・句点', posEn: 'symbol (period)', jishoUrl: null }),
+        morphemeFixture({ surface: '。', reading: null, posJa: '記号・句点', jishoUrl: null }),
       ]),
     ],
   }
@@ -57,7 +55,7 @@ export function forcedSentenceFixture(): ParsedSentence {
     text: 'これは何。',
     error: null,
     bunsetsu: [
-      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', posEn: 'noun (pronoun)', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })] },
+      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })] },
       { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })] },
     ],
   }

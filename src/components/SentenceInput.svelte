@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from '../lib/i18n.svelte'
+
   let {
     text = $bindable(),
     busy = false,
@@ -21,8 +23,8 @@
     bind:value={text}
     lang="ja"
     rows="3"
-    placeholder="日本語の文を入力してください…"
-    aria-label="日本語の文を入力 — Japanese text to parse"
+    placeholder={t('inputPlaceholder')}
+    aria-label={t('inputLabel')}
   ></textarea>
-  <button type="submit" disabled={busy || !text.trim()}>解析 Parse</button>
+  <button type="submit" disabled={busy || !text.trim()}>{t('parseButton')}</button>
 </form>

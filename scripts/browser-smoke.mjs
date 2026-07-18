@@ -69,8 +69,8 @@ async function main() {
   log(`opening ${URL}`)
   await page.goto(URL, { waitUntil: 'load' })
 
-  log('clicking 例文で試してみる')
-  await page.getByText('例文で試してみる').click()
+  log('clicking example link')
+  await page.getByTestId('example-link').click()
 
   log(`waiting up to ${PARSE_TIMEOUT_MS}ms for g.bunsetsu elements (first parse downloads the dictionary)`)
   await page.waitForSelector('g.bunsetsu', { timeout: PARSE_TIMEOUT_MS })

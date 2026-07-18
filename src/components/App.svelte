@@ -5,6 +5,7 @@
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
   import { loadSettings, saveSettings } from '../lib/settings'
+  import { setStoredLocale, t } from '../lib/i18n.svelte'
   import type { ParsedSentence } from '../lib/types'
 
   const EXAMPLE = '昨日、私は友達と新しい映画を見に行きました。'
@@ -17,13 +18,21 @@
   let activeSentence = $state(0)
 
   const initialSettings = loadSettings()
+  // apply the stored locale before the first render — the $effect below only
+  // runs post-mount, which would flash the auto locale on first paint
+  setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
   let view = $state<'arcs' | 'tree'>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
+  let locale = $state(initialSettings.locale)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate, voiceURI })
+    saveSettings({ showFurigana, view, rate, voiceURI, locale })
+  })
+
+  $effect(() => {
+    setStoredLocale(locale)
   })
 
   async function handleParse() {
@@ -70,24 +79,24 @@
 <div class="app">
   <header>
     <h1><span lang="ja">文木</span> Ayaki</h1>
-    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI />
+    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI bind:locale />
   </header>
   <main>
     <section class="content">
       <SentenceInput bind:text={inputText} busy={status === 'loading'} onparse={handleParse} />
       {#if status === 'idle'}
         <p class="hint">
-          Enter a Japanese sentence and press 解析 —
-          <button class="linklike" onclick={parseExample}>例文で試してみる (try the example)</button>
+          {t('idleHint')}
+          <button class="linklike" data-testid="example-link" onclick={parseExample}>{t('exampleLink')}</button>
         </p>
       {:else if status === 'loading'}
         <p class="loading">
-          {parserReady() ? '解析中… parsing…' : '辞書を読み込んでいます… loading dictionary (~4 MB, first time only)…'}
+          {parserReady() ? t('loadingParse') : t('loadingDict')}
         </p>
       {:else if status === 'error'}
         <div class="error-banner">
-          <p>Could not initialize the parser: {errorMsg}</p>
-          <button onclick={handleParse}>Retry</button>
+          <p>{t('initError', { message: errorMsg })}</p>
+          <button onclick={handleParse}>{t('retry')}</button>
         </div>
       {:else}
         {#each sentences as sentence, i (i)}
@@ -107,11 +116,11 @@
   </main>
   <footer>
     <p>
-      Parsing by <a href="https://github.com/iatosh/sasara">sasara</a> (MIT) — model
-      <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, derived from
-      <a href="https://github.com/UniversalDependencies/UD_Japanese-GSD">UD Japanese-GSD</a> —
-      morphology by <a href="https://github.com/takuyaa/kuromoji.js">kuromoji.js</a> (Apache-2.0)
-      with the IPAdic dictionary (IPADIC license). Ayaki itself is MIT.
+      {t('footerParsing')} <a href="https://github.com/iatosh/sasara">sasara</a> (MIT) —
+      {t('footerModel')} <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>,
+      {t('footerDerived')} <a href="https://github.com/UniversalDependencies/UD_Japanese-GSD">UD Japanese-GSD</a> —
+      {t('footerMorphology')} <a href="https://github.com/takuyaa/kuromoji.js">kuromoji.js</a> (Apache-2.0)
+      {t('footerDict')}. {t('footerSelf')}
     </p>
   </footer>
 </div>

@@ -2,6 +2,7 @@
   import { layoutArcs } from '../lib/arclayout'
   import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
+  import { t } from '../lib/i18n.svelte'
 
   let {
     bunsetsu,
@@ -38,7 +39,7 @@
 </script>
 
 <div class="tree-scroll">
-  <svg width={layout.width + 2 * PAD_X} height={svgHeight} class="arcdiagram" role="group" aria-label="dependency arcs">
+  <svg width={layout.width + 2 * PAD_X} height={svgHeight} class="arcdiagram" role="group" aria-label={t('arcsGroupLabel')}>
     <defs>
       <marker id="arrowhead-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
         <path d="M 0 0 L 10 5 L 0 10 z" />

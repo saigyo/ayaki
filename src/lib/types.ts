@@ -3,11 +3,9 @@ export interface MorphemeVM {
   /** hiragana reading, null when the dictionary has none (unknown words) */
   reading: string | null
   posJa: string
-  posEn: string | null
   /** dictionary form, only when it differs from surface */
   baseForm: string | null
   conjugationJa: string | null
-  conjugationEn: string | null
   /** null for punctuation/symbols */
   jishoUrl: string | null
 }

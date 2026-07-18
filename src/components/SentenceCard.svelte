@@ -1,6 +1,7 @@
 <script lang="ts">
   import ArcDiagram from './ArcDiagram.svelte'
   import NodeTree from './NodeTree.svelte'
+  import { t } from '../lib/i18n.svelte'
   import type { ParsedSentence } from '../lib/types'
 
   let {
@@ -29,7 +30,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div class="card" class:active onclick={onactivate}>
   {#if sentence.error}
-    <p class="sentence-error"><span lang="ja">{sentence.text}</span> — could not parse: {sentence.error}</p>
+    <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
     <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
   {:else}

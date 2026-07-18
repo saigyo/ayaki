@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
 import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
+import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
 const sentence = sentenceFixture()
 
@@ -54,9 +55,20 @@ describe('Inspector — bunsetsu mode', () => {
     expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
-    const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })
+    const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', jishoUrl: null })
     const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
     render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
     expect(screen.getAllByText('！')).toHaveLength(2)
+  })
+  afterEach(() => setStoredLocale('en'))
+
+  it('renders localized chrome in ZH and hides glosses in JA', () => {
+    setStoredLocale('zh')
+    const zhView = render(Inspector, { props: { sentence, index: 0, total: 2, selected: null, rate: 1, voiceURI: null } })
+    expect(zhView.getByRole('heading', { name: '句子 1 / 2' })).toBeInTheDocument()
+    setStoredLocale('ja')
+    const jaView = render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
+    expect(jaView.queryByText('verb (independent)')).toBeNull()
+    expect(jaView.getByText('動詞・自立')).toBeInTheDocument()
   })
 })

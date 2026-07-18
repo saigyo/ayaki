@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { tick } from 'svelte'
 import Toolbar from '../../src/components/Toolbar.svelte'
+import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
 const base = { showFurigana: false, view: 'arcs' as const, rate: 1 }
 
@@ -30,7 +31,7 @@ describe('Toolbar voice selector', () => {
     render(Toolbar, { props: { ...base, voiceURI: null } })
     const select = screen.getByRole('combobox', { name: 'voice' }) as HTMLSelectElement
     const labels = [...select.options].map((o) => o.textContent)
-    expect(labels).toEqual(['自動 auto', 'Kyoko', 'Cloud'])
+    expect(labels).toEqual(['auto', 'Kyoko', 'Cloud'])
     expect(select.value).toBe('')
   })
   it('is hidden when there are no Japanese voices', () => {
@@ -66,5 +67,35 @@ describe('Toolbar voice selector', () => {
     const select = screen.getByRole('combobox', { name: 'voice' }) as HTMLSelectElement
     await user.selectOptions(select, '')
     expect(select.value).toBe('')
+  })
+})
+
+describe('Toolbar locale selector', () => {
+  afterEach(() => setStoredLocale('en'))
+
+  it('lists auto plus the four languages named in themselves', () => {
+    setStoredLocale('en')
+    render(Toolbar, { props: { ...base, locale: null } })
+    const select = screen.getByRole('combobox', { name: 'language' }) as HTMLSelectElement
+    expect([...select.options].map((o) => o.textContent)).toEqual([
+      'Auto (browser)', 'English', 'Deutsch', '日本語', '中文',
+    ])
+    expect(select.value).toBe('')
+  })
+  it('maps auto to null and codes to codes on change', async () => {
+    setStoredLocale('en')
+    const user = userEvent.setup()
+    render(Toolbar, { props: { ...base, locale: 'de' } })
+    const select = screen.getByRole('combobox', { name: 'language' }) as HTMLSelectElement
+    expect(select.value).toBe('de')
+    await user.selectOptions(select, '')
+    expect(select.value).toBe('')
+  })
+  it('localizes the toolbar chrome', () => {
+    setStoredLocale('de')
+    render(Toolbar, { props: { ...base } })
+    expect(screen.getByText(/Furigana/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Baum$/ })).toBeInTheDocument()
+    expect(screen.getByRole('slider', { name: 'Sprechtempo' })).toBeInTheDocument()
   })
 })

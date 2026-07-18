@@ -3,6 +3,7 @@
   import { layoutTree } from '../lib/treelayout'
   import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
+  import { t } from '../lib/i18n.svelte'
 
   let {
     bunsetsu,
@@ -30,7 +31,7 @@
 </script>
 
 <div class="tree-scroll">
-  <svg width={layout.width + 2 * PAD_X} height={layout.height + BOX_H + 6 + topPad} class="nodetree" role="group" aria-label="dependency tree">
+  <svg width={layout.width + 2 * PAD_X} height={layout.height + BOX_H + 6 + topPad} class="nodetree" role="group" aria-label={t('treeGroupLabel')}>
     {#each layout.edges as e (e.to)}
       {@const from = pos.get(e.from)!}
       {@const to = pos.get(e.to)!}
