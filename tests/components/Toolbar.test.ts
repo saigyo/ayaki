@@ -71,6 +71,8 @@ describe('Toolbar voice selector', () => {
 })
 
 describe('Toolbar locale selector', () => {
+  afterEach(() => setStoredLocale('en'))
+
   it('lists auto plus the four languages named in themselves', () => {
     setStoredLocale('en')
     render(Toolbar, { props: { ...base, locale: null } })
@@ -95,6 +97,5 @@ describe('Toolbar locale selector', () => {
     expect(screen.getByText(/Furigana/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Baum$/ })).toBeInTheDocument()
     expect(screen.getByRole('slider', { name: 'Sprechtempo' })).toBeInTheDocument()
-    setStoredLocale('en')
   })
 })

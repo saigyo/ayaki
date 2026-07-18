@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { listJaVoices } from '../lib/speech'
-  import { t, type Locale } from '../lib/i18n.svelte'
+  import { t, type Locale, SUPPORTED_LOCALES } from '../lib/i18n.svelte'
 
   let {
     showFurigana = $bindable(),
@@ -28,7 +28,6 @@
   const storedVoicePresent = $derived(voices.some((v) => v.voiceURI === voiceURI))
 
   const LOCALE_NAMES: Record<Locale, string> = { en: 'English', de: 'Deutsch', ja: '日本語', zh: '中文' }
-  const LOCALES: Locale[] = ['en', 'de', 'ja', 'zh']
 </script>
 
 <div class="toolbar">
@@ -53,7 +52,7 @@
   {/if}
   <select class="locale" aria-label={t('localeLabel')} onchange={(e) => (locale = (e.currentTarget.value || null) as Locale | null)}>
     <option value="" selected={locale === null}>{t('localeAuto')}</option>
-    {#each LOCALES as l}
+    {#each SUPPORTED_LOCALES as l}
       <option value={l} selected={l === locale}>{LOCALE_NAMES[l]}</option>
     {/each}
   </select>
