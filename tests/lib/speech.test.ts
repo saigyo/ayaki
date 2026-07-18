@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { pickVoice, speak, speechAvailable, stopSpeech } from '../../src/lib/speech'
+import { listJaVoices, pickVoice, speak, speechAvailable, stopSpeech } from '../../src/lib/speech'
 
 class FakeUtterance {
   text: string
@@ -67,5 +67,51 @@ describe('speech', () => {
       speak('x')
       stopSpeech()
     }).not.toThrow()
+  })
+  it('lists Japanese voices localService-first then alphabetical', () => {
+    vi.stubGlobal(
+      'speechSynthesis',
+      fakeSynth([
+        { lang: 'ja-JP', localService: false, name: 'Zulu', voiceURI: 'zulu' },
+        { lang: 'en-US', localService: true, name: 'Samantha', voiceURI: 'sam' },
+        { lang: 'ja-JP', localService: true, name: 'Otoya', voiceURI: 'otoya' },
+        { lang: 'ja-JP', localService: false, name: 'Cloud', voiceURI: 'cloud' },
+        { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'kyoko' },
+      ]),
+    )
+    expect(listJaVoices().map((v) => v.name)).toEqual(['Kyoko', 'Otoya', 'Cloud', 'Zulu'])
+  })
+  it('pickVoice honors a preferred voiceURI and falls back when missing', () => {
+    vi.stubGlobal(
+      'speechSynthesis',
+      fakeSynth([
+        { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'kyoko' },
+        { lang: 'ja-JP', localService: false, name: 'Cloud', voiceURI: 'cloud' },
+      ]),
+    )
+    expect(pickVoice('cloud')?.name).toBe('Cloud')
+    expect(pickVoice('gone')?.name).toBe('Kyoko')
+    expect(pickVoice(null)?.name).toBe('Kyoko')
+  })
+  it('pickVoice ignores a preferred URI belonging to a non-Japanese voice', () => {
+    vi.stubGlobal(
+      'speechSynthesis',
+      fakeSynth([
+        { lang: 'en-US', localService: true, name: 'Samantha', voiceURI: 'sam' },
+        { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'kyoko' },
+      ]),
+    )
+    expect(pickVoice('sam')?.name).toBe('Kyoko')
+  })
+  it('speak applies the preferred voice to the utterance', () => {
+    const synth = fakeSynth([
+      { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'kyoko' },
+      { lang: 'ja-JP', localService: false, name: 'Cloud', voiceURI: 'cloud' },
+    ])
+    vi.stubGlobal('speechSynthesis', synth)
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance)
+    speak('こんにちは', 1, 'cloud')
+    const u = synth.speak.mock.calls[0][0] as FakeUtterance
+    expect((u.voice as SpeechSynthesisVoice).name).toBe('Cloud')
   })
 })
