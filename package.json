@@ -2,9 +2,10 @@
   "name": "ayaki",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   },
   "scripts": {
     "predev": "node scripts/sync-assets.mjs",
@@ -26,7 +27,6 @@
     "@testing-library/svelte": "^5.4.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^26.1.1",
-    "@types/pako": "^2.0.4",
     "jsdom": "^29.1.1",
     "playwright": "^1.61.1",
     "svelte": "^5.56.6",

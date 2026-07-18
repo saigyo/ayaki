@@ -3,3 +3,4 @@ dist/
 .superpowers/
 public/dict/
 public/model.json
+.idea/
