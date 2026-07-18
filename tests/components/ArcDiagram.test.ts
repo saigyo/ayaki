@@ -30,6 +30,11 @@ describe('ArcDiagram', () => {
     getByText('魚を').dispatchEvent(new MouseEvent('click', { bubbles: true }))
     expect(onselect).toHaveBeenCalledWith(1)
   })
+  it('exposes each bunsetsu as a named button for assistive tech', () => {
+    const { getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    expect(getByRole('button', { name: '魚を' })).toBeInTheDocument()
+    expect(getByRole('button', { name: '食べた。' })).toBeInTheDocument()
+  })
   it('marks the selected bunsetsu', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, selected: 1, onselect: () => {} } })
     expect(container.querySelectorAll('g.bunsetsu.selected')).toHaveLength(1)

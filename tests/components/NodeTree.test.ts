@@ -43,6 +43,10 @@ describe('NodeTree', () => {
     expect(furigana).toHaveLength(1)
     expect(furigana[0].textContent).toBe('なに。')
   })
+  it('exposes each bunsetsu as a named button for assistive tech', () => {
+    const { getByRole } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    expect(getByRole('button', { name: '猫が' })).toBeInTheDocument()
+  })
   it('invokes onselect on click', async () => {
     const onselect = vi.fn()
     const { getByText } = render(NodeTree, { props: { bunsetsu, onselect } })
