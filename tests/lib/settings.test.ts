@@ -66,6 +66,10 @@ describe('loadSettings', () => {
     localStorage.setItem(KEY, JSON.stringify({ voiceURI: 7 }))
     expect(loadSettings().voiceURI).toBeNull()
   })
+  it('normalizes an empty-string voiceURI to null (canonical auto)', () => {
+    localStorage.setItem(KEY, JSON.stringify({ voiceURI: '' }))
+    expect(loadSettings().voiceURI).toBeNull()
+  })
   it('defaults voiceURI to null for payloads from before the field existed', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree' }))
     expect(loadSettings()).toEqual({ ...DEFAULTS, view: 'tree' })

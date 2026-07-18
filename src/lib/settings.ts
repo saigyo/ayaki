@@ -20,7 +20,8 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
     typeof v === 'number' && Number.isFinite(v)
       ? Math.min(RATE_MAX, Math.max(RATE_MIN, v))
       : undefined,
-  voiceURI: (v) => (v === null || typeof v === 'string' ? v : undefined),
+  // '' is rejected so the two spellings of "auto" normalize to the canonical null
+  voiceURI: (v) => (v === null || (typeof v === 'string' && v !== '') ? v : undefined),
 }
 
 function applyField<K extends keyof Settings>(target: Settings, key: K, raw: unknown): void {

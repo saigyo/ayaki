@@ -12,8 +12,9 @@ export function listJaVoices(): SpeechSynthesisVoice[] {
     )
 }
 
-/** Preferred voice by exact voiceURI when available, else the auto heuristic
- *  (first local-service Japanese voice, else first Japanese voice). */
+/** Preferred voice by exact voiceURI when available, else the auto heuristic:
+ *  first local-service Japanese voice, else first Japanese voice — "first" in
+ *  listJaVoices() order (localService first, then alphabetical), not browser order. */
 export function pickVoice(preferredURI: string | null = null): SpeechSynthesisVoice | null {
   const ja = listJaVoices()
   if (preferredURI) {
