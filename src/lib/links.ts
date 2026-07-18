@@ -1,7 +1,10 @@
+import type { Locale } from './i18n.svelte'
+
 export function jishoUrl(term: string): string {
   return `https://jisho.org/search/${encodeURIComponent(term)}`
 }
 
-export function googleTranslateUrl(text: string): string {
-  return `https://translate.google.com/?sl=ja&tl=en&op=translate&text=${encodeURIComponent(text)}`
+export function googleTranslateUrl(text: string, locale: Locale): string {
+  const tl = locale === 'ja' ? 'en' : locale
+  return `https://translate.google.com/?sl=ja&tl=${tl}&op=translate&text=${encodeURIComponent(text)}`
 }
