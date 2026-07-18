@@ -52,7 +52,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual({ ...DEFAULTS, view: 'tree' })
   })
   it('returns defaults when storage access throws', () => {
-    const spy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    const spy = vi.spyOn(localStorage, 'getItem').mockImplementation(() => {
       throw new Error('denied')
     })
     expect(loadSettings()).toEqual(DEFAULTS)
@@ -62,7 +62,7 @@ describe('loadSettings', () => {
 
 describe('saveSettings', () => {
   it('silently ignores write failures', () => {
-    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const spy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw new Error('quota exceeded')
     })
     expect(() => saveSettings(DEFAULTS)).not.toThrow()
