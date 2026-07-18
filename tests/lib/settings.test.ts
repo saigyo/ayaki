@@ -74,6 +74,12 @@ describe('loadSettings', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree' }))
     expect(loadSettings()).toEqual({ ...DEFAULTS, view: 'tree' })
   })
+  it('accepts the cabocha view and rejects unknown views', () => {
+    localStorage.setItem(KEY, JSON.stringify({ view: 'cabocha' }))
+    expect(loadSettings().view).toBe('cabocha')
+    localStorage.setItem(KEY, JSON.stringify({ view: 'spiral' }))
+    expect(loadSettings().view).toBe('arcs')
+  })
   it('accepts the four locale codes and null, rejects others', () => {
     for (const code of ['en', 'de', 'ja', 'zh']) {
       localStorage.setItem(KEY, JSON.stringify({ locale: code }))

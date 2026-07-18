@@ -1,8 +1,10 @@
 import { SUPPORTED_LOCALES, type Locale } from './i18n.svelte'
 
+export type ViewKind = 'arcs' | 'tree' | 'cabocha'
+
 export interface Settings {
   showFurigana: boolean
-  view: 'arcs' | 'tree'
+  view: ViewKind
   rate: number
   voiceURI: string | null
   locale: Locale | null
@@ -18,7 +20,7 @@ const RATE_MAX = 1.5
  *  back to that field's default. Future fields are added here. */
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
-  view: (v) => (v === 'arcs' || v === 'tree' ? v : undefined),
+  view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>
     typeof v === 'number' && Number.isFinite(v)
       ? Math.min(RATE_MAX, Math.max(RATE_MIN, v))

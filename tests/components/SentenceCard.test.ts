@@ -34,4 +34,8 @@ describe('SentenceCard', () => {
     const inactive = render(SentenceCard, { props: { ...base } })
     expect(inactive.container.querySelector('.card')!.classList.contains('active')).toBe(false)
   })
+  it('renders the stair view for view=cabocha', () => {
+    const { container } = render(SentenceCard, { props: { ...base, view: 'cabocha' as const } })
+    expect(container.querySelector('svg.stairview')).not.toBeNull()
+  })
 })
