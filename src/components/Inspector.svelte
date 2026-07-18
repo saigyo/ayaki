@@ -11,12 +11,14 @@
     total,
     selected,
     rate,
+    voiceURI,
   }: {
     sentence: ParsedSentence | null
     index: number
     total: number
     selected: BunsetsuVM | null
     rate: number
+    voiceURI: string | null
   } = $props()
 
   let canSpeak = $state(false)
@@ -35,7 +37,7 @@
   {#if selected}
     <h2 lang="ja">
       {selected.surface}
-      <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label="speak bunsetsu" onclick={() => speak(selected.surface, rate)}>🔊</button>
+      <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label="speak bunsetsu" onclick={() => speak(selected.surface, rate, voiceURI)}>🔊</button>
     </h2>
     {@const label = confidenceLabel(selected)}
     {#if label}
@@ -48,7 +50,7 @@
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
           {#if m.reading && m.reading !== m.surface}<span class="m-reading" lang="ja">（{m.reading}）</span>{/if}
-          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={'speak ' + m.surface} onclick={() => speak(m.surface, rate)}>🔊</button>
+          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={'speak ' + m.surface} onclick={() => speak(m.surface, rate, voiceURI)}>🔊</button>
         </div>
         <div class="m-pos"><span lang="ja">{m.posJa}</span>{#if m.posEn}<span class="en">{m.posEn}</span>{/if}</div>
         {#if m.baseForm}
@@ -67,7 +69,7 @@
     {#if sentence}
       <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(sentence.text, rate)}>🔊 Speak</button>
+        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(sentence.text, rate, voiceURI)}>🔊 Speak</button>
         <button onclick={stopSpeech}>⏹ Stop</button>
         <a href={googleTranslateUrl(sentence.text)} target="_blank" rel="noopener">Google Translate ↗</a>
       </div>

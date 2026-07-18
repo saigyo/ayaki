@@ -20,9 +20,10 @@
   let showFurigana = $state(initialSettings.showFurigana)
   let view = $state<'arcs' | 'tree'>(initialSettings.view)
   let rate = $state(initialSettings.rate)
+  let voiceURI = $state(initialSettings.voiceURI)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate })
+    saveSettings({ showFurigana, view, rate, voiceURI })
   })
 
   async function handleParse() {
@@ -69,7 +70,7 @@
 <div class="app">
   <header>
     <h1><span lang="ja">文木</span> Ayaki</h1>
-    <Toolbar bind:showFurigana bind:view bind:rate />
+    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI />
   </header>
   <main>
     <section class="content">
@@ -102,7 +103,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} />
   </main>
   <footer>
     <p>

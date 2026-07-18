@@ -2,16 +2,17 @@ export interface Settings {
   showFurigana: boolean
   view: 'arcs' | 'tree'
   rate: number
+  voiceURI: string | null
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1 }
+export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1, voiceURI: null }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
 const RATE_MAX = 1.5
 
 /** One validator per field: returns the (normalized) value, or undefined to fall
- *  back to that field's default. Future fields (voiceURI, locale) are added here. */
+ *  back to that field's default. Future fields (locale, …) are added here. */
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' ? v : undefined),
@@ -19,6 +20,8 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
     typeof v === 'number' && Number.isFinite(v)
       ? Math.min(RATE_MAX, Math.max(RATE_MIN, v))
       : undefined,
+  // '' is rejected so the two spellings of "auto" normalize to the canonical null
+  voiceURI: (v) => (v === null || (typeof v === 'string' && v !== '') ? v : undefined),
 }
 
 function applyField<K extends keyof Settings>(target: Settings, key: K, raw: unknown): void {

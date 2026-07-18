@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { tick } from 'svelte'
 import App from '../../src/components/App.svelte'
 import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
@@ -16,6 +16,8 @@ beforeEach(() => {
   vi.mocked(parseText).mockReset()
   localStorage.clear()
 })
+
+afterEach(() => vi.unstubAllGlobals())
 
 describe('App', () => {
   it('parses input and shows the tree, then inspects a clicked bunsetsu', async () => {
@@ -141,6 +143,27 @@ describe('App', () => {
       showFurigana: false,
       view: 'tree',
       rate: 1.2,
+      voiceURI: null,
     })
+  })
+  it('binds the voice selector to the persisted setting', async () => {
+    vi.stubGlobal('speechSynthesis', {
+      getVoices: () => [
+        { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'kyoko' },
+        { lang: 'ja-JP', localService: false, name: 'Cloud', voiceURI: 'cloud' },
+      ] as SpeechSynthesisVoice[],
+      cancel: vi.fn(),
+      speak: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })
+    localStorage.setItem('ayaki-settings', JSON.stringify({ voiceURI: 'cloud' }))
+    const user = userEvent.setup()
+    render(App)
+    const select = screen.getByRole('combobox', { name: 'voice' }) as HTMLSelectElement
+    expect(select.value).toBe('cloud')
+    await user.selectOptions(select, 'kyoko')
+    await tick()
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).voiceURI).toBe('kyoko')
   })
 })
