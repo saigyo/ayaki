@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.superpowers/
+public/dict/
+public/model.json
