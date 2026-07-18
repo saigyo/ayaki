@@ -55,7 +55,7 @@ describe('conjugationGloss', () => {
 })
 
 describe('gloss table completeness', () => {
-  // exported for this test: add `export const GLOSS_TABLES = { POS_GLOSS, DETAIL_GLOSS, CONJ_GLOSS }` in pos.ts
+  // pos.ts exports GLOSS_TABLES solely for this completeness check
   it('every term has non-empty en, de and zh glosses', () => {
     for (const table of Object.values(GLOSS_TABLES)) {
       for (const [term, gloss] of Object.entries(table)) {
