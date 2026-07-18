@@ -18,6 +18,9 @@
   let activeSentence = $state(0)
 
   const initialSettings = loadSettings()
+  // apply the stored locale before the first render — the $effect below only
+  // runs post-mount, which would flash the auto locale on first paint
+  setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
   let view = $state<'arcs' | 'tree'>(initialSettings.view)
   let rate = $state(initialSettings.rate)

@@ -10,6 +10,10 @@ describe('resolveLocale', () => {
   it('prefers the stored locale over the browser list', () => {
     expect(resolveLocale('zh', ['de-DE'])).toBe('zh')
   })
+  it('ignores an unsupported stored value and falls back to browser resolution', () => {
+    expect(resolveLocale('xx' as never, ['de-DE'])).toBe('de')
+    expect(resolveLocale('' as never, ['ja'])).toBe('ja')
+  })
   it('matches base prefixes of browser languages in order', () => {
     expect(resolveLocale(null, ['fr-FR', 'de-AT', 'en-US'])).toBe('de')
     expect(resolveLocale(null, ['zh-TW'])).toBe('zh')

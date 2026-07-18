@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { tick } from 'svelte'
 import App from '../../src/components/App.svelte'
+import { setStoredLocale } from '../../src/lib/i18n.svelte'
 import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
 vi.mock('../../src/lib/parser', () => ({
@@ -166,6 +167,15 @@ describe('App', () => {
     await user.selectOptions(select, 'kyoko')
     await tick()
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).voiceURI).toBe('kyoko')
+  })
+  it('renders a stored locale on first paint, before effects run', () => {
+    localStorage.setItem('ayaki-settings', JSON.stringify({ locale: 'de' }))
+    render(App)
+    // synchronous assertion: effects have not flushed yet, so this only passes
+    // if the stored locale is applied during component init, not in the $effect
+    expect(screen.getByRole('button', { name: 'Analysieren' })).toBeInTheDocument()
+    expect(document.documentElement.lang).toBe('de')
+    setStoredLocale(null)
   })
   it('switches chrome and glosses when the locale changes, without re-parsing', async () => {
     vi.mocked(parseText).mockResolvedValue([sentenceFixture()])

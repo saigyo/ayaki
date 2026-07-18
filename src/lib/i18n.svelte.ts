@@ -14,7 +14,9 @@ export function resolveLocale(
   stored: Locale | null,
   languages: readonly string[] = globalThis.navigator?.languages ?? [],
 ): Locale {
-  if (stored) return stored
+  // defensive: an unsupported stored value (unsafe cast, tampering) must not
+  // reach t()'s catalog lookup — treat it as auto instead
+  if (stored && SUPPORTED_LOCALES.includes(stored)) return stored
   for (const lang of languages) {
     const match = SUPPORTED_LOCALES.find((l) => lang.toLowerCase().startsWith(l))
     if (match) return match
