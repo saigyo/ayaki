@@ -1,0 +1,98 @@
+import { describe, expect, it } from 'vitest'
+import type { Bunsetsu, KuromojiToken } from 'sasara'
+import { errorSentence, isUncertain, toParsedSentence } from '../../src/lib/viewmodel'
+
+function tok(partial: Partial<KuromojiToken>): KuromojiToken {
+  return {
+    word_id: 0,
+    word_type: 'KNOWN',
+    word_position: 0,
+    surface_form: '',
+    pos: '名詞',
+    pos_detail_1: '*',
+    pos_detail_2: '*',
+    pos_detail_3: '*',
+    conjugated_type: '*',
+    conjugated_form: '*',
+    basic_form: '*',
+    reading: '*',
+    pronunciation: '*',
+    ...partial,
+  } as KuromojiToken
+}
+
+function bun(partial: Partial<Bunsetsu> & { confidence?: unknown }): Bunsetsu {
+  return { index: 0, tokens: [], surface: '', head: null, ...partial } as Bunsetsu
+}
+
+const miniTokens = [
+  tok({ surface_form: '見', pos: '動詞', pos_detail_1: '自立', conjugated_form: '連用形', basic_form: '見る', reading: 'ミ' }),
+  tok({ surface_form: 'に', pos: '助詞', pos_detail_1: '格助詞', basic_form: 'に', reading: 'ニ' }),
+]
+
+describe('toParsedSentence', () => {
+  const sentence = toParsedSentence('見に行く。', [
+    bun({ index: 0, surface: '見に', head: 1, tokens: miniTokens, confidence: { score: 1.2, probability: 0.55, forced: false } }),
+    bun({
+      index: 1,
+      surface: '行く。',
+      head: null,
+      tokens: [
+        tok({ surface_form: '行く', pos: '動詞', pos_detail_1: '自立', conjugated_form: '基本形', basic_form: '行く', reading: 'イク' }),
+        tok({ surface_form: '。', pos: '記号', pos_detail_1: '句点', basic_form: '。', reading: '。' }),
+      ],
+    }),
+  ])
+
+  const [first, root] = sentence.bunsetsu
+
+  it('maps morphemes with reading, POS pair, base form and Jisho link', () => {
+    expect(first.morphemes[0]).toEqual({
+      surface: '見',
+      reading: 'み',
+      posJa: '動詞・自立',
+      posEn: 'verb (independent)',
+      baseForm: '見る',
+      conjugationJa: '連用形',
+      conjugationEn: 'continuative',
+      jishoUrl: 'https://jisho.org/search/%E8%A6%8B%E3%82%8B',
+    })
+  })
+  it('links the surface form when base form equals surface', () => {
+    expect(first.morphemes[1].baseForm).toBeNull()
+    expect(first.morphemes[1].jishoUrl).toBe('https://jisho.org/search/%E3%81%AB')
+  })
+  it('gives punctuation no Jisho link', () => {
+    expect(root.morphemes[1].jishoUrl).toBeNull()
+  })
+  it('carries confidence onto non-root bunsetsu', () => {
+    expect(first.probability).toBe(0.55)
+    expect(first.forced).toBe(false)
+    expect(root.probability).toBeNull()
+  })
+  it('builds furigana only for kanji-containing bunsetsu', () => {
+    expect(first.reading).toBe('みに')
+    expect(toParsedSentence('ここに。', [bun({ index: 0, surface: 'ここに。', head: null, tokens: [tok({ surface_form: 'ここ', reading: 'ココ' })] })]).bunsetsu[0].reading).toBe('')
+  })
+  it('normalizes NaN probability to null', () => {
+    const s = toParsedSentence('x', [bun({ index: 0, surface: 'x', head: 1, tokens: [], confidence: { score: 0, probability: NaN, forced: true } }), bun({ index: 1, surface: 'y', head: null, tokens: [] })])
+    expect(s.bunsetsu[0].probability).toBeNull()
+    expect(s.bunsetsu[0].forced).toBe(true)
+  })
+})
+
+describe('isUncertain', () => {
+  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
+  it('is true below 0.7, for forced edges, and false otherwise', () => {
+    expect(isUncertain({ ...base, probability: 0.69, forced: false })).toBe(true)
+    expect(isUncertain({ ...base, probability: null, forced: true })).toBe(true)
+    expect(isUncertain({ ...base, probability: 0.9, forced: false })).toBe(false)
+    expect(isUncertain({ ...base, probability: null, forced: false })).toBe(false)
+  })
+})
+
+describe('errorSentence', () => {
+  it('wraps a failure', () => {
+    expect(errorSentence('壊れた文', 'boom')).toEqual({ text: '壊れた文', bunsetsu: [], error: 'boom' })
+  })
+})
