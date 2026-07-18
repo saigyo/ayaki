@@ -2,10 +2,13 @@ import { loadParser, type Parser } from 'sasara'
 import { errorSentence, toParsedSentence } from './viewmodel'
 import type { ParsedSentence } from './types'
 
-/** Split text into single sentences for sasara (which only accepts one sentence). */
+/**
+ * Split text into single sentences for sasara (which only accepts one sentence).
+ * Runs of sentence-ending punctuation (！！, ?! …) stay with their sentence.
+ */
 export function splitSentences(text: string): string[] {
   return text
-    .split(/(?<=[。！？!?])|\n+/u)
+    .split(/(?<=[。！？!?])(?![。！？!?])|(?:\r?\n)+/u)
     .map((s) => s.trim())
     .filter((s) => s.length > 0)
 }

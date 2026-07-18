@@ -7,8 +7,12 @@ describe('path shim', () => {
   it('joins segments with a single slash', () => {
     expect(join('/ayaki/dict/', 'base.dat.gz')).toBe('/ayaki/dict/base.dat.gz')
   })
-  it('collapses repeated slashes without mangling a leading protocol-relative path', () => {
+  it('collapses repeated slashes', () => {
     expect(join('a/', '/b', 'c.txt')).toBe('a/b/c.txt')
+  })
+  it('preserves a leading protocol-relative // and full URLs', () => {
+    expect(join('//cdn.example.com/dict/', 'base.dat.gz')).toBe('//cdn.example.com/dict/base.dat.gz')
+    expect(join('https://cdn.example.com/dict/', 'base.dat.gz')).toBe('https://cdn.example.com/dict/base.dat.gz')
   })
   it('dirname strips everything after the last slash', () => {
     expect(dirname('/ayaki/dict/base.dat.gz')).toBe('/ayaki/dict')
