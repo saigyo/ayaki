@@ -39,7 +39,7 @@
         attachment confidence: {Math.round(selected.probability * 100)}%{selected.forced ? ' (forced)' : ''}
       </p>
     {/if}
-    {#each selected.morphemes as m (m.surface + m.posJa)}
+    {#each selected.morphemes as m}
       <div class="morpheme">
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
