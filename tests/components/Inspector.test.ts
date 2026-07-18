@@ -2,7 +2,8 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
-import { sentenceFixture } from '../fixtures'
+import { morphemeFixture, sentenceFixture } from '../fixtures'
+import type { BunsetsuVM } from '../../src/lib/types'
 
 const sentence = sentenceFixture()
 
@@ -39,5 +40,11 @@ describe('Inspector — bunsetsu mode', () => {
     const links = screen.getAllByRole('link', { name: /jisho/i })
     expect(links).toHaveLength(1) // 。 gets none
     expect(links[0]).toHaveAttribute('href', 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B')
+  })
+  it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
+    const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })
+    const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
+    render(Inspector, { props: { fullText: '！！', sentences: [], selected: bunsetsu, rate: 1 } })
+    expect(screen.getAllByText('！')).toHaveLength(2)
   })
 })
