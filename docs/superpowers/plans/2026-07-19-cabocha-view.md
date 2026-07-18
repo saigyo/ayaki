@@ -4,7 +4,7 @@
 
 **Goal:** A third visualization — the classic CaboCha stair: one bunsetsu per row, indented stepwise, dependents connected to their heads by right-hand rails.
 
-**Architecture:** `src/lib/stairlayout.ts` computes rows, stair indents and rail columns; rail assignment reuses the arcs view's nesting-level computation, **extracted from `arclayout.ts` as a shared `nestingLevels()` helper**, preserving the no-crossing invariant. `StairView.svelte` mirrors `ArcDiagram.svelte`'s interaction shell (same `g.bunsetsu` buttons, same `.arc` connector classes, per-instance marker ids). `Settings.view` widens to `'arcs' | 'tree' | 'cabocha'` (exported as `ViewKind`); the toolbar gains a 🎃 CaboCha button.
+**Architecture:** *(rail assignment superseded after review — see Deviations: the shipped geometry right-aligns boxes and uses per-head rail columns; `nestingLevels()` remains in `arclayout.ts` for the arcs view only.)* `src/lib/stairlayout.ts` computes rows, stair indents and rail columns; rail assignment reuses the arcs view's nesting-level computation, **extracted from `arclayout.ts` as a shared `nestingLevels()` helper**, preserving the no-crossing invariant. `StairView.svelte` mirrors `ArcDiagram.svelte`'s interaction shell (same `g.bunsetsu` buttons, same `.arc` connector classes, per-instance marker ids). `Settings.view` widens to `'arcs' | 'tree' | 'cabocha'` (exported as `ViewKind`); the toolbar gains a 🎃 CaboCha button.
 
 **Tech Stack:** Svelte 5 runes, TypeScript strict, vitest + @testing-library/svelte.
 
