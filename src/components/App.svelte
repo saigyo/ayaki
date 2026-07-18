@@ -84,7 +84,7 @@
       {#if status === 'idle'}
         <p class="hint">
           {t('idleHint')}
-          <button class="linklike" onclick={parseExample}>{t('exampleLink')}</button>
+          <button class="linklike" data-testid="example-link" onclick={parseExample}>{t('exampleLink')}</button>
         </p>
       {:else if status === 'loading'}
         <p class="loading">
