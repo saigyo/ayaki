@@ -16,6 +16,20 @@ Everything runs client-side; there is no backend. Parsing is powered by
 
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).*
 
+## Development
+
+- `npm run dev` — dev server with hot reload.
+- `npm test` — unit/component tests (vitest).
+- `npm run check` — svelte-check (TypeScript across `.ts`/`.svelte`).
+- `npm run build -- --base=/ayaki/` — production build into `dist/` (the `--base` must match
+  the path the app is served from; GitHub Pages serves it under `/ayaki/`).
+- `npm run smoke` — after a build, boots `vite preview` and drives headless Chromium
+  (via Playwright) through a real parse to catch bundling breakage the unit suite can't see
+  (kuromoji/zlibjs shims, asset paths, etc.). `vite preview` needs the *same* `--base` the
+  build used, which is why the script always passes `--base=/ayaki/` itself. Any bump of
+  `sasara`, `kuromojin`/`kuromoji.js`, or `vite` should never be merged without a green
+  `npm run smoke` run — the CI build job runs it on every push.
+
 ## License
 
 Ayaki itself is released under the [MIT License](LICENSE).
