@@ -3,7 +3,8 @@
 A single-page browser app for exploring the structure of Japanese sentences.
 
 Paste a Japanese sentence (or a whole paragraph) and Ayaki renders its bunsetsu-level
-dependency tree as an interactive arc diagram (with a node-tree view as an alternative).
+dependency tree as an interactive arc diagram (with a node-tree view and the classic
+CaboCha-style stair view as alternatives).
 Click any part of the sentence to inspect its morphemes — part of speech (Japanese term
 with a gloss in the UI language), reading, base form — have words or whole sentences spoken
 via the Web Speech API, and jump straight to [Jisho.org](https://jisho.org) for a word or
@@ -18,6 +19,8 @@ Everything runs client-side; there is no backend. Parsing is powered by
 ![Ayaki parsing a two-sentence input — dependency arcs with confidence styling, the active sentence highlighted, the sentence inspector with speech and translation links, and the voice selector in the toolbar](docs/images/screenshot.png)
 
 ![The tree view with furigana, the selected bunsetsu 映画を highlighted, and the morpheme inspector showing readings, parts of speech and Jisho links](docs/images/screenshot-tree.png)
+
+![The classic CaboCha-style stair view — one bunsetsu per row with right-hand rails connecting dependents to their heads, the selected bunsetsu highlighted](docs/images/screenshot-cabocha.png)
 
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).*
 
