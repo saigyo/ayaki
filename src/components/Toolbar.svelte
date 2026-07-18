@@ -50,10 +50,10 @@
       {/each}
     </select>
   {/if}
-  <select class="locale" aria-label={t('localeLabel')} onchange={(e) => (locale = (e.currentTarget.value || null) as Locale | null)}>
+  <label class="locale-wrap">🌐 <select class="locale" aria-label={t('localeLabel')} onchange={(e) => (locale = (e.currentTarget.value || null) as Locale | null)}>
     <option value="" selected={locale === null}>{t('localeAuto')}</option>
     {#each SUPPORTED_LOCALES as l}
       <option value={l} selected={l === locale}>{LOCALE_NAMES[l]}</option>
     {/each}
-  </select>
+  </select></label>
 </div>

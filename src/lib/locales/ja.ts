@@ -5,6 +5,8 @@ export const ja: Record<keyof typeof en, string> = {
   viewGroupLabel: '表示形式',
   viewArcs: 'アーク',
   viewTree: 'ツリー',
+  arcsGroupLabel: '係り受けアーク',
+  treeGroupLabel: '係り受けツリー',
   rateLabel: '読み上げ速度',
   voiceLabel: '音声',
   voiceAuto: '自動',

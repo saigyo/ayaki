@@ -1,3 +1,5 @@
+import type { Locale } from './i18n.svelte'
+
 /** Katakana → hiragana (ァ..ヶ shifted by 0x60); everything else unchanged. */
 export function toHiragana(s: string): string {
   return [...s]
@@ -11,8 +13,6 @@ export function toHiragana(s: string): string {
 export function hasKanji(s: string): boolean {
   return /[々㐀-鿿]/.test(s)
 }
-
-import type { Locale } from './i18n.svelte'
 
 type Gloss = { en: string; de: string; zh: string }
 type GlossLocale = keyof Gloss

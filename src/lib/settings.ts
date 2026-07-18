@@ -15,7 +15,7 @@ const RATE_MIN = 0.5
 const RATE_MAX = 1.5
 
 /** One validator per field: returns the (normalized) value, or undefined to fall
- *  back to that field's default. Future fields (locale, …) are added here. */
+ *  back to that field's default. Future fields are added here. */
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' ? v : undefined),

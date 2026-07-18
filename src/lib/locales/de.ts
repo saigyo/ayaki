@@ -5,6 +5,8 @@ export const de: Record<keyof typeof en, string> = {
   viewGroupLabel: 'Baumdarstellung',
   viewArcs: 'Bögen',
   viewTree: 'Baum',
+  arcsGroupLabel: 'Abhängigkeitsbögen',
+  treeGroupLabel: 'Abhängigkeitsbaum',
   rateLabel: 'Sprechtempo',
   voiceLabel: 'Stimme',
   voiceAuto: 'automatisch',

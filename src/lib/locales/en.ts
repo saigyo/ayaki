@@ -4,6 +4,8 @@ export const en = {
   viewGroupLabel: 'tree view style',
   viewArcs: 'arcs',
   viewTree: 'tree',
+  arcsGroupLabel: 'dependency arcs',
+  treeGroupLabel: 'dependency tree',
   rateLabel: 'speech rate',
   voiceLabel: 'voice',
   voiceAuto: 'auto',

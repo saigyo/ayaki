@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
 import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
@@ -60,6 +60,8 @@ describe('Inspector — bunsetsu mode', () => {
     render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
     expect(screen.getAllByText('！')).toHaveLength(2)
   })
+  afterEach(() => setStoredLocale('en'))
+
   it('renders localized chrome in ZH and hides glosses in JA', () => {
     setStoredLocale('zh')
     const zhView = render(Inspector, { props: { sentence, index: 0, total: 2, selected: null, rate: 1, voiceURI: null } })
@@ -68,6 +70,5 @@ describe('Inspector — bunsetsu mode', () => {
     const jaView = render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(jaView.queryByText('verb (independent)')).toBeNull()
     expect(jaView.getByText('動詞・自立')).toBeInTheDocument()
-    setStoredLocale('en')
   })
 })
