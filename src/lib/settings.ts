@@ -21,20 +21,25 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
       : undefined,
 }
 
+function applyField<K extends keyof Settings>(target: Settings, key: K, raw: unknown): void {
+  const value = validators[key](raw)
+  if (value !== undefined) target[key] = value
+}
+
 export function loadSettings(): Settings {
+  const settings = { ...DEFAULTS }
   try {
     const raw = localStorage.getItem(KEY)
-    if (!raw) return { ...DEFAULTS }
+    if (!raw) return settings
     const parsed: unknown = JSON.parse(raw)
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      return { ...DEFAULTS }
+      return settings
     }
     const obj = parsed as Record<string, unknown>
-    return {
-      showFurigana: validators.showFurigana(obj.showFurigana) ?? DEFAULTS.showFurigana,
-      view: validators.view(obj.view) ?? DEFAULTS.view,
-      rate: validators.rate(obj.rate) ?? DEFAULTS.rate,
+    for (const key of Object.keys(validators) as (keyof Settings)[]) {
+      applyField(settings, key, obj[key])
     }
+    return settings
   } catch {
     return { ...DEFAULTS }
   }
