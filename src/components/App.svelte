@@ -4,6 +4,7 @@
   import SentenceCard from './SentenceCard.svelte'
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
+  import { loadSettings, saveSettings } from '../lib/settings'
   import type { ParsedSentence } from '../lib/types'
 
   const EXAMPLE = '昨日、私は友達と新しい映画を見に行きました。'
@@ -14,9 +15,15 @@
   let errorMsg = $state('')
   let selection = $state<{ sentence: number; bunsetsu: number } | null>(null)
   let activeSentence = $state(0)
-  let showFurigana = $state(false)
-  let view = $state<'arcs' | 'tree'>('arcs')
-  let rate = $state(1)
+
+  const initialSettings = loadSettings()
+  let showFurigana = $state(initialSettings.showFurigana)
+  let view = $state<'arcs' | 'tree'>(initialSettings.view)
+  let rate = $state(initialSettings.rate)
+
+  $effect(() => {
+    saveSettings({ showFurigana, view, rate })
+  })
 
   async function handleParse() {
     selection = null

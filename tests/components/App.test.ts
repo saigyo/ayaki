@@ -2,6 +2,7 @@
 import { render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { tick } from 'svelte'
 import App from '../../src/components/App.svelte'
 import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
@@ -11,7 +12,10 @@ vi.mock('../../src/lib/parser', () => ({
 }))
 import { parseText } from '../../src/lib/parser'
 
-beforeEach(() => vi.mocked(parseText).mockReset())
+beforeEach(() => {
+  vi.mocked(parseText).mockReset()
+  localStorage.clear()
+})
 
 describe('App', () => {
   it('parses input and shows the tree, then inspects a clicked bunsetsu', async () => {
@@ -122,5 +126,21 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Sentence 2 / 2' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /解析/ }))
     expect(await screen.findByRole('heading', { name: 'Sentence 1 / 2' })).toBeInTheDocument()
+  })
+  it('restores settings from localStorage and persists changes', async () => {
+    localStorage.setItem('ayaki-settings', JSON.stringify({ showFurigana: true, view: 'tree', rate: 1.2 }))
+    const user = userEvent.setup()
+    render(App)
+    const furigana = screen.getByRole('checkbox', { name: /furigana/i })
+    expect(furigana).toBeChecked()
+    expect(screen.getByRole('button', { name: /tree/ })).toHaveAttribute('aria-pressed', 'true')
+    expect((screen.getByRole('slider', { name: /speech rate/i }) as HTMLInputElement).value).toBe('1.2')
+    await user.click(furigana)
+    await tick()
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!)).toEqual({
+      showFurigana: false,
+      view: 'tree',
+      rate: 1.2,
+    })
   })
 })
