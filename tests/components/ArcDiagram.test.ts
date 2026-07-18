@@ -59,4 +59,17 @@ describe('ArcDiagram', () => {
     getByText('魚を').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
     expect(onselect).toHaveBeenCalledWith(1)
   })
+  it('does not let bunsetsu clicks bubble out of the component', () => {
+    const onselect = vi.fn()
+    const outer = vi.fn()
+    const { getByText } = render(ArcDiagram, { props: { bunsetsu, onselect } })
+    document.body.addEventListener('click', outer)
+    try {
+      getByText('魚を').dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      expect(onselect).toHaveBeenCalledWith(1)
+      expect(outer).not.toHaveBeenCalled()
+    } finally {
+      document.body.removeEventListener('click', outer)
+    }
+  })
 })

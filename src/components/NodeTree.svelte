@@ -62,7 +62,10 @@
         aria-label={b.surface}
         onmouseenter={() => (hovered = n.index)}
         onmouseleave={() => (hovered = null)}
-        onclick={() => onselect(n.index)}
+        onclick={(e) => {
+          e.stopPropagation()
+          onselect(n.index)
+        }}
         onkeydown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
