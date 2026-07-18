@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../src/components/App.svelte'
-import { sentenceFixture } from '../fixtures'
+import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
 vi.mock('../../src/lib/parser', () => ({
   parseText: vi.fn(),
@@ -57,5 +57,70 @@ describe('App', () => {
     render(App)
     expect(screen.getByText(/CC BY-SA 4\.0/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /sasara/i })).toBeInTheDocument()
+  })
+  it('scopes the inspector to the active sentence and switches on card click', async () => {
+    // two sentences: 猫が魚を食べた。 and これは何。
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture(), forcedSentenceFixture()])
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), '猫が魚を食べた。これは何。')
+    await user.click(screen.getByRole('button', { name: /解析/ }))
+    // default: first sentence active, its full text in the inspector
+    expect(await screen.findByText('猫が魚を食べた。')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Sentence 1 / 2' })).toBeInTheDocument()
+    expect(screen.queryByText('これは何。')).not.toBeInTheDocument()
+    const cards = container.querySelectorAll('.card')
+    expect(cards[0].classList.contains('active')).toBe(true)
+    // clicking the second card's empty space switches the active sentence
+    cards[1].dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(await screen.findByText('これは何。')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Sentence 2 / 2' })).toBeInTheDocument()
+    expect(screen.queryByText('猫が魚を食べた。')).not.toBeInTheDocument()
+    expect(cards[1].classList.contains('active')).toBe(true)
+    expect(cards[0].classList.contains('active')).toBe(false)
+  })
+  it('activates a sentence when one of its bunsetsu is selected', async () => {
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture(), forcedSentenceFixture()])
+    const user = userEvent.setup()
+    render(App)
+    await user.type(screen.getByRole('textbox'), 'x')
+    await user.click(screen.getByRole('button', { name: /解析/ }))
+    const box = await screen.findByText('これは')
+    box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    // bunsetsu mode for the clicked bunsetsu of sentence 2
+    expect(await screen.findByRole('heading', { name: /これは/ })).toBeInTheDocument()
+    // Escape returns to the sentence view of the now-active second sentence
+    await user.keyboard('{Escape}')
+    expect(await screen.findByText('これは何。')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Sentence 2 / 2' })).toBeInTheDocument()
+  })
+  it('deselects the bunsetsu on empty-space click, also with a single sentence', async () => {
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), '猫が魚を食べた。')
+    await user.click(screen.getByRole('button', { name: /解析/ }))
+    const box = await screen.findByText('魚を')
+    box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(await screen.findByRole('heading', { name: /魚を/ })).toBeInTheDocument()
+    const card = container.querySelector('.card')!
+    // single sentence → no active border
+    expect(card.classList.contains('active')).toBe(false)
+    card.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(await screen.findByRole('heading', { name: 'Sentence' })).toBeInTheDocument()
+    expect(screen.getByText('猫が魚を食べた。')).toBeInTheDocument()
+  })
+  it('resets the active sentence on re-parse', async () => {
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture(), forcedSentenceFixture()])
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), 'x')
+    await user.click(screen.getByRole('button', { name: /解析/ }))
+    await screen.findByText('これは')
+    const cards = container.querySelectorAll('.card')
+    cards[1].dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(await screen.findByRole('heading', { name: 'Sentence 2 / 2' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /解析/ }))
+    expect(await screen.findByRole('heading', { name: 'Sentence 1 / 2' })).toBeInTheDocument()
   })
 })

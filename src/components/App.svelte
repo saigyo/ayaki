@@ -13,12 +13,14 @@
   let status = $state<'idle' | 'loading' | 'ready' | 'error'>('idle')
   let errorMsg = $state('')
   let selection = $state<{ sentence: number; bunsetsu: number } | null>(null)
+  let activeSentence = $state(0)
   let showFurigana = $state(false)
   let view = $state<'arcs' | 'tree'>('arcs')
   let rate = $state(1)
 
   async function handleParse() {
     selection = null
+    activeSentence = 0
     status = 'loading'
     try {
       sentences = await parseText(inputText)
@@ -35,11 +37,17 @@
   }
 
   function select(sentence: number, bunsetsu: number) {
+    activeSentence = sentence
     selection =
       selection?.sentence === sentence && selection.bunsetsu === bunsetsu ? null : { sentence, bunsetsu }
   }
 
-  const fullText = $derived(sentences.map((s) => s.text).join(''))
+  function activate(i: number) {
+    activeSentence = i
+    selection = null
+  }
+
+  const activeVM = $derived(sentences[activeSentence] ?? null)
   const selectedBunsetsu = $derived(
     selection ? (sentences[selection.sentence]?.bunsetsu[selection.bunsetsu] ?? null) : null,
   )
@@ -79,13 +87,15 @@
             {sentence}
             {view}
             {showFurigana}
+            active={sentences.length > 1 && activeSentence === i}
             selected={selection?.sentence === i ? selection.bunsetsu : null}
             onselect={(b) => select(i, b)}
+            onactivate={() => activate(i)}
           />
         {/each}
       {/if}
     </section>
-    <Inspector {fullText} {sentences} selected={selectedBunsetsu} {rate} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} />
   </main>
   <footer>
     <p>
