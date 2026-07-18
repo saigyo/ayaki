@@ -2,7 +2,7 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import NodeTree from '../../src/components/NodeTree.svelte'
-import { sentenceFixture } from '../fixtures'
+import { sentenceFixture, forcedSentenceFixture } from '../fixtures'
 
 const bunsetsu = sentenceFixture().bunsetsu
 
@@ -21,6 +21,11 @@ describe('NodeTree', () => {
   it('marks low-confidence edges', () => {
     const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(1)
+  })
+  it('marks forced edges with the forced class, not low', () => {
+    const { container } = render(NodeTree, { props: { bunsetsu: forcedSentenceFixture().bunsetsu, onselect: () => {} } })
+    expect(container.querySelectorAll('line.edge.forced')).toHaveLength(1)
+    expect(container.querySelectorAll('line.edge.low')).toHaveLength(0)
   })
   it('invokes onselect on click', async () => {
     const onselect = vi.fn()
