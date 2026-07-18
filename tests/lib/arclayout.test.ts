@@ -26,14 +26,32 @@ describe('layoutArcs', () => {
     expect(arc0.x1).toBe(l.boxes[0].cx)
     expect(arc0.x2).toBe(l.boxes[2].cx)
   })
-  it('arcs with longer spans rise higher, and arcAreaHeight covers the tallest', () => {
+  it('enclosing arcs rise higher than nested arcs, and arcAreaHeight covers the tallest', () => {
     const span2 = l.arcs.find((a) => a.dep === 0)!
     const span1 = l.arcs.find((a) => a.dep === 1)!
     expect(span2.top).toBeGreaterThan(span1.top)
     expect(l.arcAreaHeight).toBeGreaterThan(span2.top)
   })
-  it('caps arc height for very long spans', () => {
-    const long = layoutArcs(Array.from({ length: 15 }, (_, i) => `語${i}`), [...Array.from({ length: 14 }, () => 14), null])
-    expect(Math.max(...long.arcs.map((a) => a.top))).toBeLessThanOrEqual(130)
+  it('gives equal heights to a chain of non-nesting arcs', () => {
+    const chain = layoutArcs(['一', '二', '三', '四'], [1, 2, 3, null])
+    expect(chain.arcs).toHaveLength(3)
+    for (const arc of chain.arcs) {
+      expect(arc.top).toBe(22)
+    }
+  })
+  it('gives strictly increasing heights to a fan of nested arcs sharing a head', () => {
+    const surfaces = Array.from({ length: 15 }, (_, i) => `語${i}`)
+    const headsArr = [...Array.from({ length: 14 }, () => 14), null]
+    const fan = layoutArcs(surfaces, headsArr)
+    expect(fan.arcs).toHaveLength(14)
+    const tops = fan.arcs
+      .slice()
+      .sort((a, b) => a.dep - b.dep)
+      .map((a) => a.top)
+    for (let i = 1; i < tops.length; i++) {
+      expect(tops[i]).toBeLessThan(tops[i - 1])
+    }
+    expect(new Set(tops).size).toBe(tops.length)
+    expect(Math.max(...tops)).toBe(22 + 14 * 13)
   })
 })
