@@ -14,6 +14,8 @@ Everything runs client-side; there is no backend. Parsing is powered by
 [kuromojin](https://github.com/azu/kuromojin) /
 [kuromoji.js](https://github.com/takuyaa/kuromoji.js) with the IPAdic dictionary.
 
+![Ayaki parsing 昨日、私は友達と新しい映画を見に行きました。 — dependency arcs with furigana and confidence styling, and the morpheme inspector for the selected bunsetsu](docs/images/screenshot.png)
+
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).*
 
 ## Development
