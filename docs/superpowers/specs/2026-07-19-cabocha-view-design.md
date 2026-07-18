@@ -17,20 +17,31 @@ ASCII glyphs.
 
 ## Layout — `src/lib/stairlayout.ts`
 
+**Revised 2026-07-19** after user review against CaboCha's actual `write_tree`
+(`tree.cpp`): the original spec's left-aligned uniform stair and nesting-level rail
+region did not match the classic rendering. The faithful geometry (verified against
+the CaboCha source, whose indent is `max_len - len(surface) + i * 2`):
+
 - One row per bunsetsu, in sentence order; row height matches the other views'
   box height, plus furigana headroom when enabled.
-- Each row is indented one uniform step further right than the previous
-  (`x = index * STEP`), producing the stair.
-- Connectors: from the dependent box's right edge, horizontally right to a **rail
-  column**, vertically down to the head's row, then into the head box's right edge
-  with the existing arrowhead marker.
-- Rail columns are assigned by **arc nesting level** (an arc enclosing another gets a
-  rail further right), guaranteeing no connector crossings — the same invariant and
-  computation as the arcs view's heights, rotated 90°. The nesting-level helper is
-  **extracted from `arclayout.ts` and shared**, not duplicated.
-- Layout output: per-bunsetsu box positions, per-dependency connector polyline
-  points, and total width/height. Width is bounded by stair depth + rail count;
-  height grows linearly with bunsetsu count (the long-sentence advantage).
+- **Right edges** form the uniform stair: `xRight(i) = maxBoxWidth + i * STEP`;
+  each box is **right-aligned** to its edge (`x = xRight(i) - width`). Left edges
+  therefore vary with surface length — this is what gives the classic
+  structure-suggesting shape.
+- **One rail per head**, in the head's own column: `railX(head) = xRight(head) +
+  RAIL_GAP`. Every dependent of that head runs horizontally from its right edge to
+  the shared rail, down to the head's row, then a short leftward stub into the head
+  box's right edge (arrowhead) — the `-D` column of the terminal output.
+- Crossing-freedom follows from sasara's non-crossing parses directly: a head
+  further right owns a further-right rail, so nested arcs get nested rails; the
+  nesting-level helper is NOT needed for this view (it remains where it was
+  extracted, used by the arcs view).
+- Layout output: per-bunsetsu box positions, per-dependency connector path +
+  `railX`, and total width/height. Width ≈ last head's rail (compact — rails
+  interleave with the stair); height grows linearly with bunsetsu count (the
+  long-sentence advantage).
+- Chain artifact (dep's outgoing line coinciding with the incoming stub on its own
+  row, e.g. 映画を→見に→行きました) is the classic CaboCha look and accepted.
 
 ## Component — `src/components/StairView.svelte`
 
