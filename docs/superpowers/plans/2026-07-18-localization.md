@@ -1080,3 +1080,10 @@ Expected: all PASS, 0 check errors. If any test fails on a leaked locale, ensure
 git add src/components/App.svelte src/components/Inspector.svelte src/components/SentenceCard.svelte src/lib/links.ts tests/lib/links.test.ts tests/components/App.test.ts tests/components/Inspector.test.ts
 git commit -m "feat: localized app chrome, footer and locale-aware Translate target"
 ```
+
+---
+
+## Deviations
+
+- **Task 3, Inspector:** Svelte 5 rejects `{@const}` as the direct child of a plain element; the gloss `{@const}` tags sit as immediate children of the `{#each}`/`{#if}` blocks instead of inside the `<div>`s the plan sketched. Rendering unchanged.
+- **Task 3, locale determinism in node tests:** the plan assumed `resolveLocale(null)` yields `en` under node (no `navigator`); Node ≥21 exposes `navigator.languages` from the OS locale (`de-DE` on the dev machine), so locale-dependent node tests must pin the locale explicitly (`setStoredLocale('en')` in `beforeEach`). Applied to the `confidenceLabel` describe in `tests/lib/viewmodel.test.ts`.
