@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Bunsetsu, KuromojiToken } from 'sasara'
-import { errorSentence, isUncertain, toParsedSentence } from '../../src/lib/viewmodel'
+import { confidenceLabel, errorSentence, isUncertain, toParsedSentence } from '../../src/lib/viewmodel'
 
 function tok(partial: Partial<KuromojiToken>): KuromojiToken {
   return {
@@ -88,6 +88,20 @@ describe('isUncertain', () => {
     expect(isUncertain({ ...base, probability: null, forced: true })).toBe(true)
     expect(isUncertain({ ...base, probability: 0.9, forced: false })).toBe(false)
     expect(isUncertain({ ...base, probability: null, forced: false })).toBe(false)
+  })
+})
+
+describe('confidenceLabel', () => {
+  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
+  it('formats a probability, appending (forced) when applicable', () => {
+    expect(confidenceLabel({ ...base, probability: 0.55, forced: false })).toBe('P = 55%')
+    expect(confidenceLabel({ ...base, probability: 0.93, forced: true })).toBe('P = 93% (forced)')
+  })
+  it('labels forced attachments even without a probability', () => {
+    expect(confidenceLabel({ ...base, probability: null, forced: true })).toBe('forced attachment (end-of-sentence fallback)')
+  })
+  it('returns null when there is nothing to say', () => {
+    expect(confidenceLabel({ ...base, probability: null, forced: false })).toBeNull()
   })
 })
 

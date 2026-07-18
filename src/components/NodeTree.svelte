@@ -1,7 +1,7 @@
 <script lang="ts">
   import { textWidth } from '../lib/arclayout'
   import { layoutTree } from '../lib/treelayout'
-  import { isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
 
   let {
@@ -34,6 +34,7 @@
     {#each layout.edges as e (e.to)}
       {@const from = pos.get(e.from)!}
       {@const to = pos.get(e.to)!}
+      {@const label = confidenceLabel(bunsetsu[e.to])}
       <line
         class="edge"
         class:low={!bunsetsu[e.to].forced && isUncertain(bunsetsu[e.to])}
@@ -44,6 +45,9 @@
         x2={to.x + PAD_X}
         y2={to.y + topPad}
       >
+        {#if label}
+          <title>{label}</title>
+        {/if}
       </line>
     {/each}
     {#each layout.nodes as n (n.index)}

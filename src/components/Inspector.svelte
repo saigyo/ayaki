@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { googleTranslateUrl } from '../lib/links'
   import { speak, speechAvailable, stopSpeech } from '../lib/speech'
-  import { isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
 
   let {
@@ -34,9 +34,10 @@
       {selected.surface}
       <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label="speak bunsetsu" onclick={() => speak(selected.surface, rate)}>🔊</button>
     </h2>
-    {#if selected.probability !== null}
+    {@const label = confidenceLabel(selected)}
+    {#if label}
       <p class="confidence" class:uncertain={isUncertain(selected)}>
-        attachment confidence: {Math.round(selected.probability * 100)}%{selected.forced ? ' (forced)' : ''}
+        attachment: {label}
       </p>
     {/if}
     {#each selected.morphemes as m}

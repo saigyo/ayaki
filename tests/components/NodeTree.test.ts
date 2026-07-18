@@ -27,6 +27,12 @@ describe('NodeTree', () => {
     expect(container.querySelectorAll('line.edge.forced')).toHaveLength(1)
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(0)
   })
+  it('titles edges with the attachment confidence, including forced edges', () => {
+    const withP = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    expect(withP.container.querySelector('line.edge.low title')?.textContent).toContain('55')
+    const forced = render(NodeTree, { props: { bunsetsu: forcedSentenceFixture().bunsetsu, onselect: () => {} } })
+    expect(forced.container.querySelector('line.edge.forced title')?.textContent).toContain('forced attachment')
+  })
   it('shows furigana above nodes only when enabled, skipping kana-only bunsetsu', () => {
     const off = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
     expect(off.container.querySelectorAll('text.furigana')).toHaveLength(0)

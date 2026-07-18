@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
-import { morphemeFixture, sentenceFixture } from '../fixtures'
+import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
 
 const sentence = sentenceFixture()
@@ -40,6 +40,13 @@ describe('Inspector — bunsetsu mode', () => {
     const links = screen.getAllByRole('link', { name: /jisho/i })
     expect(links).toHaveLength(1) // 。 gets none
     expect(links[0]).toHaveAttribute('href', 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B')
+  })
+  it('shows the attachment confidence line for probability and for forced-only attachments', () => {
+    render(Inspector, { props: { fullText: sentence.text, sentences: [sentence], selected: sentence.bunsetsu[1], rate: 1 } })
+    expect(screen.getByText(/P = 55%/)).toBeInTheDocument()
+    const forced = forcedSentenceFixture()
+    render(Inspector, { props: { fullText: forced.text, sentences: [forced], selected: forced.bunsetsu[0], rate: 1 } })
+    expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', posEn: 'symbol (general)', jishoUrl: null })

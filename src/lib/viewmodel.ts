@@ -9,6 +9,17 @@ export function isUncertain(b: BunsetsuVM): boolean {
   return b.forced || (b.probability !== null && b.probability < LOW_CONFIDENCE)
 }
 
+/**
+ * Human-readable confidence descriptor for a bunsetsu's attachment, shared by the
+ * arc/tree tooltips and the inspector. Null when there is nothing to say (root,
+ * or no confidence data). Forced attachments get a label even without a
+ * probability — being forced is itself the signal.
+ */
+export function confidenceLabel(b: BunsetsuVM): string | null {
+  if (b.probability !== null) return `P = ${Math.round(b.probability * 100)}%${b.forced ? ' (forced)' : ''}`
+  return b.forced ? 'forced attachment (end-of-sentence fallback)' : null
+}
+
 interface ConfidenceLike {
   probability?: number
   forced?: boolean
