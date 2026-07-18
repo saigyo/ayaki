@@ -50,3 +50,15 @@ export function sentenceFixture(): ParsedSentence {
     ],
   }
 }
+
+/** これは(→1, forced attachment, kana-only so no furigana) 何。(root) */
+export function forcedSentenceFixture(): ParsedSentence {
+  return {
+    text: 'これは何。',
+    error: null,
+    bunsetsu: [
+      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', posEn: 'noun (pronoun)', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })] },
+      { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })] },
+    ],
+  }
+}

@@ -2,7 +2,7 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import ArcDiagram from '../../src/components/ArcDiagram.svelte'
-import { sentenceFixture } from '../fixtures'
+import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
 const bunsetsu = sentenceFixture().bunsetsu
 
@@ -33,5 +33,24 @@ describe('ArcDiagram', () => {
   it('marks the selected bunsetsu', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, selected: 1, onselect: () => {} } })
     expect(container.querySelectorAll('g.bunsetsu.selected')).toHaveLength(1)
+  })
+  it('marks forced arcs with the forced class', () => {
+    const forced = forcedSentenceFixture().bunsetsu
+    const { container } = render(ArcDiagram, { props: { bunsetsu: forced, onselect: () => {} } })
+    expect(container.querySelectorAll('path.arc.forced')).toHaveLength(1)
+    expect(container.querySelectorAll('path.arc.low')).toHaveLength(0)
+  })
+  it('skips furigana for bunsetsu without readings', () => {
+    const forced = forcedSentenceFixture().bunsetsu
+    const { container } = render(ArcDiagram, { props: { bunsetsu: forced, showFurigana: true, onselect: () => {} } })
+    const furigana = container.querySelectorAll('text.furigana')
+    expect(furigana).toHaveLength(1)
+    expect(furigana[0].textContent).toBe('なに。')
+  })
+  it('supports keyboard selection with Enter', () => {
+    const onselect = vi.fn()
+    const { getByText } = render(ArcDiagram, { props: { bunsetsu, onselect } })
+    getByText('魚を').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    expect(onselect).toHaveBeenCalledWith(1)
   })
 })
