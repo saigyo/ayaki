@@ -56,7 +56,7 @@ export function layoutStairs(
   const widths = surfaces.map((s) => textWidth(s) + 2 * BOX_PAD)
   const maxBoxWidth = Math.max(0, ...widths)
   const xRight = (i: number): number => maxBoxWidth + i * STEP
-  const boxes: StairBox[] = surfaces.map((s, i) => {
+  const boxes: StairBox[] = surfaces.map((_, i) => {
     const width = widths[i]
     return {
       x: xRight(i) - width,

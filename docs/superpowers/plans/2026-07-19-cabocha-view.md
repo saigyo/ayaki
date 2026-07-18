@@ -582,3 +582,9 @@ Expected: all PASS, 0 check errors.
 git add src/lib/settings.ts src/components/App.svelte src/components/Toolbar.svelte src/components/SentenceCard.svelte tests/lib/settings.test.ts tests/components/Toolbar.test.ts tests/components/SentenceCard.test.ts tests/components/App.test.ts
 git commit -m "feat: cabocha view selectable and persisted"
 ```
+
+---
+
+## Deviations
+
+- **Geometry revision (post-review, user finding):** the plan's uniform left-aligned stair with nesting-level rails did not match the approved mockup or CaboCha's actual `write_tree` (`max_len - len(surface) + i*2`: right-aligned surfaces, uniform right-edge stair, rails in the head's own column). `layoutStairs` was rewritten accordingly (commit 424788d); `nestingLevels` stays in `arclayout.ts` for the arcs view but is no longer used by the stairs. Spec updated in beac2fe.
