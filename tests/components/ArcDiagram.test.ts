@@ -38,6 +38,7 @@ describe('ArcDiagram', () => {
     const forced = forcedSentenceFixture().bunsetsu
     const { container } = render(ArcDiagram, { props: { bunsetsu: forced, onselect: () => {} } })
     expect(container.querySelectorAll('path.arc.forced')).toHaveLength(1)
+    expect(container.querySelector('path.arc.forced title')?.textContent).toContain('forced attachment')
     expect(container.querySelectorAll('path.arc.low')).toHaveLength(0)
   })
   it('skips furigana for bunsetsu without readings', () => {

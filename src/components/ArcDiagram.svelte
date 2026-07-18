@@ -1,6 +1,6 @@
 <script lang="ts">
   import { layoutArcs } from '../lib/arclayout'
-  import { isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
 
   let {
@@ -45,13 +45,14 @@
       </marker>
     </defs>
     {#each layout.arcs as a (a.dep)}
+      {@const label = confidenceLabel(bunsetsu[a.dep])}
       <path
         class={arcClass(a.dep)}
         d="M {a.x1 + PAD_X} {boxTop} C {a.x1 + PAD_X} {boxTop - a.top}, {a.x2 + PAD_X} {boxTop - a.top}, {a.x2 + PAD_X} {boxTop}"
         marker-end="url(#arrowhead-{uid})"
       >
-        {#if bunsetsu[a.dep].probability !== null}
-          <title>P = {Math.round(bunsetsu[a.dep].probability! * 100)}%{bunsetsu[a.dep].forced ? ' (forced)' : ''}</title>
+        {#if label}
+          <title>{label}</title>
         {/if}
       </path>
     {/each}
