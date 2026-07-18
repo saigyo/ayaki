@@ -484,3 +484,9 @@ Expected: full suite PASS, svelte-check 0 errors.
 git add src/components/App.svelte src/components/Inspector.svelte tests/components/App.test.ts tests/components/Inspector.test.ts
 git commit -m "feat: active sentence scopes inspector, speak and translate"
 ```
+
+---
+
+## Deviations
+
+- **Task 1 test technique:** the plan's propagation tests attached the outer listener to the testing-library `container` — the same node Svelte 5 uses as its event-delegation root, where `stopPropagation()` from a delegated handler cannot suppress sibling listeners. The tests listen on `document.body` (one level above the delegation root) instead, with try/finally cleanup. Implementation unchanged.
