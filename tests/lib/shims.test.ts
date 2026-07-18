@@ -1,6 +1,6 @@
 import { deflate, gzip } from 'pako'
 import { describe, expect, it } from 'vitest'
-import { join } from '../../src/shims/path'
+import { dirname, join } from '../../src/shims/path'
 import { Zlib } from '../../src/shims/gunzip'
 
 describe('path shim', () => {
@@ -9,6 +9,12 @@ describe('path shim', () => {
   })
   it('collapses repeated slashes without mangling a leading protocol-relative path', () => {
     expect(join('a/', '/b', 'c.txt')).toBe('a/b/c.txt')
+  })
+  it('dirname strips everything after the last slash', () => {
+    expect(dirname('/ayaki/dict/base.dat.gz')).toBe('/ayaki/dict')
+  })
+  it('dirname returns "." when there is no slash', () => {
+    expect(dirname('base.dat.gz')).toBe('.')
   })
 })
 
