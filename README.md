@@ -16,7 +16,7 @@ Everything runs client-side; there is no backend. Parsing is powered by
 [kuromojin](https://github.com/azu/kuromojin) /
 [kuromoji.js](https://github.com/takuyaa/kuromoji.js) with the IPAdic dictionary.
 
-![Ayaki parsing a two-sentence input — dependency arcs with confidence styling, the active sentence highlighted, the sentence inspector with speech and translation links, the voice selector in the toolbar and the language globe in the header](docs/images/screenshot.png)
+![Ayaki parsing a two-sentence input — dependency arcs with confidence styling, the active sentence highlighted, the sentence inspector with speech and translation links, and the language globe and settings gear in the header](docs/images/screenshot.png)
 
 ![The tree view with furigana, the selected bunsetsu 映画を highlighted, and the morpheme inspector showing readings, parts of speech and Jisho links](docs/images/screenshot-tree.png)
 
