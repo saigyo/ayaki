@@ -8,7 +8,12 @@ import { spawn } from 'node:child_process'
 
 const PORT = 5399
 const base = `http://localhost:${PORT}/ayaki/`
-const server = spawn('npx', ['vite', 'preview', '--base=/ayaki/', '--port', String(PORT)], { stdio: 'ignore' })
+const server = spawn('npx', ['vite', 'preview', '--base=/ayaki/', '--port', String(PORT)], { stdio: ['ignore', 'pipe', 'pipe'] })
+let browser
+
+let serverOutput = ''
+server.stdout.on('data', (d) => (serverOutput += d.toString()))
+server.stderr.on('data', (d) => (serverOutput += d.toString()))
 
 async function waitForServer() {
   for (let i = 0; i < 60; i++) {
@@ -18,7 +23,7 @@ async function waitForServer() {
     } catch {}
     await new Promise((r) => setTimeout(r, 250))
   }
-  throw new Error('preview server did not come up')
+  throw new Error(`preview server did not come up\n${serverOutput}`)
 }
 
 // fresh context per scene: clean localStorage, stubbed ja voice so the
@@ -44,7 +49,7 @@ async function shoot(page, path) {
 
 try {
   await waitForServer()
-  const browser = await chromium.launch()
+  browser = await chromium.launch()
 
   // scene 1: arcs view, two sentences, no selection
   let page = await freshPage(browser)
@@ -76,5 +81,6 @@ try {
 
   await browser.close()
 } finally {
+  await browser?.close().catch(() => {})
   server.kill()
 }

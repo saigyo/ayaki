@@ -17,6 +17,7 @@ const consoleErrors = []
 page.on('console', (m) => {
   if (m.type() === 'error') consoleErrors.push(m.text())
 })
+page.on('pageerror', (e) => consoleErrors.push(String(e)))
 
 try {
   let booted = false
