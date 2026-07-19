@@ -282,3 +282,9 @@ The first README screenshot (`docs/images/screenshot.png`) shows the old toolbar
 - [ ] **Step 1:** Build and preview (`npm run build -- --base=/ayaki/`, `npx vite preview --base=/ayaki/`), retake the arcs screenshot with the browser at the same viewport as before (1200×800), parsing the two-sentence example used previously. Verify the globe is visible next to "文木 Ayaki" and the toolbar has no locale select.
 - [ ] **Step 2:** Update the alt text in `README.md:19` to mention the header globe language switcher instead of implying the selector is in the toolbar (the current alt text mentions only the voice selector — adjust the trailing phrase to "…the voice selector in the toolbar and the language globe in the header").
 - [ ] **Step 3:** Commit: `git add docs/images/screenshot.png README.md && git commit -m "docs: refresh screenshot for header locale switcher"`.
+
+## Deviations
+
+- Task 3: besides the alt-text edit the plan specified, README line 12 ("selectable
+  in the toolbar") was updated to "selectable via the globe in the header" — the
+  prose had the same staleness as the alt text.
