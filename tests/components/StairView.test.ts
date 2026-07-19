@@ -32,6 +32,14 @@ describe('StairView', () => {
     expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
     expect(container.querySelector('g.connector title')?.textContent).toBe('P = 97% (forced)')
   })
+  it('dashes connectors by the configurable threshold', () => {
+    const s = sentenceFixture()
+    s.bunsetsu[0].probability = 0.75
+    const at7 = render(StairView, { props: { bunsetsu: s.bunsetsu, showConfidence: true, confidenceThreshold: 0.7, onselect: () => {} } })
+    expect(at7.container.querySelectorAll('path.arc.low')).toHaveLength(1)
+    const at8 = render(StairView, { props: { bunsetsu: s.bunsetsu, showConfidence: true, confidenceThreshold: 0.8, onselect: () => {} } })
+    expect(at8.container.querySelectorAll('path.arc.low')).toHaveLength(2)
+  })
   it('shows furigana only when enabled', () => {
     const off = render(StairView, { props: { bunsetsu, onselect: () => {} } })
     expect(off.container.querySelectorAll('text.furigana')).toHaveLength(0)

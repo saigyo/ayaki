@@ -6,6 +6,7 @@
   import { type ViewKind } from '../lib/settings'
   import type { ParsedSentence } from '../lib/types'
   import type { ChainColor } from '../lib/chainpalette'
+  import { LOW_CONFIDENCE } from '../lib/viewmodel'
 
   let {
     sentence,
@@ -16,6 +17,7 @@
     active = false,
     onactivate = () => {},
     showConfidence = false,
+    confidenceThreshold = LOW_CONFIDENCE,
     chainColor = 'none',
   }: {
     sentence: ParsedSentence
@@ -26,6 +28,7 @@
     active?: boolean
     onactivate?: () => void
     showConfidence?: boolean
+    confidenceThreshold?: number
     chainColor?: ChainColor
   } = $props()
 </script>
@@ -39,10 +42,10 @@
   {#if sentence.error}
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
-    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
+    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
   {:else if view === 'tree'}
-    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
   {:else}
-    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
   {/if}
 </div>

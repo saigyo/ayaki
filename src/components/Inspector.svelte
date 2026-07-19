@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { googleTranslateUrl } from '../lib/links'
   import { speak, speechAvailable, stopSpeech } from '../lib/speech'
-  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import { currentLocale, t } from '../lib/i18n.svelte'
   import { conjugationGloss, posGloss } from '../lib/pos'
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
@@ -15,6 +15,7 @@
     rate,
     voiceURI,
     showConfidence = false,
+    confidenceThreshold = LOW_CONFIDENCE,
     shareUrl = '',
   }: {
     sentence: ParsedSentence | null
@@ -24,6 +25,7 @@
     rate: number
     voiceURI: string | null
     showConfidence?: boolean
+    confidenceThreshold?: number
     shareUrl?: string
   } = $props()
 
@@ -36,7 +38,7 @@
   })
 
   const speakTitle = $derived(canSpeak ? t('speakTitle') : t('noVoice'))
-  const uncertainCount = $derived(sentence ? sentence.bunsetsu.filter(isUncertain).length : 0)
+  const uncertainCount = $derived(sentence ? sentence.bunsetsu.filter((b) => isUncertain(b, confidenceThreshold)).length : 0)
 
   let speaking = $state(false)
   // bumped on every toggle transition: a completion callback from a superseded
@@ -106,7 +108,7 @@
     </h2>
     {@const label = confidenceLabel(selected)}
     {#if showConfidence && label}
-      <p class="confidence" class:uncertain={isUncertain(selected)}>
+      <p class="confidence" class:uncertain={isUncertain(selected, confidenceThreshold)}>
         {t('attachment', { label })}
       </p>
     {/if}

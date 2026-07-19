@@ -164,6 +164,7 @@
               {view}
               {showFurigana}
               {showConfidence}
+              {confidenceThreshold}
               {chainColor}
               active={sentences.length > 1 && activeSentence === i}
               selected={selection?.sentence === i ? selection.bunsetsu : null}
@@ -174,7 +175,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {shareUrl} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {shareUrl} />
   </main>
   <footer>
     <p>
