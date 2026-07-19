@@ -123,6 +123,38 @@ try {
     } catch (e) {
       fail('share', String(e))
     }
+
+    try {
+      const jump = new URL(target)
+      jump.searchParams.set('text', '猫が魚を食べた。犬は公園で遊んだ。')
+      jump.searchParams.set('view', 'arcs')
+      jump.searchParams.set('s', '1')
+      jump.searchParams.set('b', '1')
+      // a viewport too small for two cards — the scroll must actually happen
+      const small = await browser.newPage({ viewport: { width: 900, height: 300 }, locale: 'en-US' })
+      try {
+        await small.goto(jump.toString(), { waitUntil: 'networkidle' })
+        await small.waitForFunction(() => document.querySelectorAll('.card-slot').length === 2, null, { timeout: 60_000 })
+        await small.waitForTimeout(400)
+        const state = await small.evaluate(() => {
+          const card = document.querySelectorAll('.card-slot')[1].getBoundingClientRect()
+          return {
+            selected: document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label') ?? null,
+            active: document.querySelectorAll('.card')[1]?.classList.contains('active') ?? false,
+            top: Math.round(card.top),
+            bottom: Math.round(card.bottom),
+            scrollY: Math.round(window.scrollY),
+          }
+        })
+        if (state.selected !== '公園で' || !state.active || state.top < 0 || state.bottom > 300 || state.scrollY <= 0)
+          throw new Error(JSON.stringify(state))
+        ok('share jump: s=1 card scrolled into a 300px viewport')
+      } finally {
+        await small.close()
+      }
+    } catch (e) {
+      fail('share jump', String(e))
+    }
   }
 
   if (consoleErrors.length === 0) ok('console: no errors')

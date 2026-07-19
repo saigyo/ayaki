@@ -67,6 +67,9 @@
       status = 'ready'
       await applyPendingJump()
     } catch (e) {
+      // the jump is one-shot per boot: a failed share-link parse must not
+      // apply a stale selection to whatever the user parses next
+      pendingJump = null
       errorMsg = e instanceof Error ? e.message : String(e)
       status = 'error'
     }
