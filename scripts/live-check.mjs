@@ -135,7 +135,24 @@ try {
       try {
         await small.goto(jump.toString(), { waitUntil: 'networkidle' })
         await small.waitForFunction(() => document.querySelectorAll('.card-slot').length === 2, null, { timeout: 60_000 })
-        await small.waitForTimeout(400)
+        // wait on the terminal conditions themselves, not a fixed sleep — slow
+        // hosts may legitimately take longer than any guessed delay
+        await small.waitForFunction(
+          () => {
+            const slot = document.querySelectorAll('.card-slot')[1]
+            if (!slot) return false
+            const card = slot.getBoundingClientRect()
+            return (
+              document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label') === '公園で' &&
+              (document.querySelectorAll('.card')[1]?.classList.contains('active') ?? false) &&
+              card.top < 300 &&
+              card.bottom > 0 &&
+              window.scrollY > 0
+            )
+          },
+          null,
+          { timeout: 10_000 },
+        )
         const state = await small.evaluate(() => {
           const card = document.querySelectorAll('.card-slot')[1].getBoundingClientRect()
           return {
