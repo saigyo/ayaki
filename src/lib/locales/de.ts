@@ -74,7 +74,7 @@ export const de: Record<keyof typeof en, string> = {
     'Ein Bunsetsu, das sich direkt an das Prädikat anschließt, hat keine weitere Kette — der blaue Link selbst ist schon der ganze Pfad (probieren Sie 見に im Beispiel).',
   helpConfidenceTitle: 'Anbindungskonfidenz',
   helpConfidenceBody:
-    'Die Analyse stammt von einem statistischen Modell — sie kann falsch sein. Mit aktivierter Option „Zeige Anbindungskonfidenz” werden unsichere Anbindungen gepunktet dargestellt, und beim Überfahren einer Verbindungslinie erscheint die Wahrscheinlichkeit des Modells — so bleiben Sie den Ergebnissen gegenüber kritisch. Die Wahrscheinlichkeitsschwelle, unterhalb derer eine Anbindung als unsicher gilt, lässt sich in den Einstellungen anpassen (60–90 %).',
+    'Die Analyse stammt von einem statistischen Modell — sie kann falsch sein. Mit aktivierter Option „Zeige Anbindungskonfidenz“ werden unsichere Anbindungen gepunktet dargestellt, und beim Überfahren einer Verbindungslinie erscheint die Wahrscheinlichkeit des Modells — so bleiben Sie den Ergebnissen gegenüber kritisch. Die Wahrscheinlichkeitsschwelle, unterhalb derer eine Anbindung als unsicher gilt, lässt sich in den Einstellungen anpassen (60–90 %).',
   helpTermTitle: 'Prädikat und Kopf',
   helpTermBody:
     'Jede Kette endet beim Prädikat (述語) des Satzes — der Verb-, Adjektiv- oder Kopulaphrase, an die sich letztlich alles anschließt. In der Linguistik heißt dieses Element auch der Kopf (主辞) des Satzes.',
