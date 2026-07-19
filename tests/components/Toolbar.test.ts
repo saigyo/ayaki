@@ -70,27 +70,9 @@ describe('Toolbar voice selector', () => {
   })
 })
 
-describe('Toolbar locale selector', () => {
+describe('Toolbar localization', () => {
   afterEach(() => setStoredLocale('en'))
 
-  it('lists auto plus the four languages named in themselves', () => {
-    setStoredLocale('en')
-    render(Toolbar, { props: { ...base, locale: null } })
-    const select = screen.getByRole('combobox', { name: 'language' }) as HTMLSelectElement
-    expect([...select.options].map((o) => o.textContent)).toEqual([
-      'Auto (browser)', 'English', 'Deutsch', '日本語', '中文',
-    ])
-    expect(select.value).toBe('')
-  })
-  it('maps auto to null and codes to codes on change', async () => {
-    setStoredLocale('en')
-    const user = userEvent.setup()
-    render(Toolbar, { props: { ...base, locale: 'de' } })
-    const select = screen.getByRole('combobox', { name: 'language' }) as HTMLSelectElement
-    expect(select.value).toBe('de')
-    await user.selectOptions(select, '')
-    expect(select.value).toBe('')
-  })
   it('localizes the toolbar chrome', () => {
     setStoredLocale('de')
     render(Toolbar, { props: { ...base } })

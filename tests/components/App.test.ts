@@ -195,6 +195,12 @@ describe('App', () => {
     await user.selectOptions(screen.getByRole('combobox', { name: 'Sprache' }), '')
     expect(await screen.findByRole('button', { name: /parse/i })).toBeInTheDocument()
   })
+  it('places the locale switcher in the header brand, not the toolbar', () => {
+    render(App)
+    const select = screen.getByRole('combobox', { name: 'language' })
+    expect(select.closest('.brand')).not.toBeNull()
+    expect(select.closest('.toolbar')).toBeNull()
+  })
   it('switches to the cabocha view and persists the choice', async () => {
     vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
     const user = userEvent.setup()
