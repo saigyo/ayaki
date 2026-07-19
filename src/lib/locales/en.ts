@@ -13,6 +13,7 @@ export const en = {
   voiceAuto: 'auto',
   localeLabel: 'language',
   localeAuto: 'Auto (browser)',
+  settingsLabel: 'settings',
   // input
   inputPlaceholder: 'Enter a Japanese sentence…',
   inputLabel: 'Japanese text to parse',

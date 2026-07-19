@@ -137,6 +137,7 @@ describe('App', () => {
     const furigana = screen.getByRole('checkbox', { name: /furigana/i })
     expect(furigana).toBeChecked()
     expect(screen.getByRole('button', { name: /tree/ })).toHaveAttribute('aria-pressed', 'true')
+    await user.click(screen.getByRole('button', { name: 'settings' }))
     expect((screen.getByRole('slider', { name: /speech rate/i }) as HTMLInputElement).value).toBe('1.2')
     await user.click(furigana)
     await tick()
@@ -162,6 +163,7 @@ describe('App', () => {
     localStorage.setItem('ayaki-settings', JSON.stringify({ voiceURI: 'cloud' }))
     const user = userEvent.setup()
     render(App)
+    await user.click(screen.getByRole('button', { name: 'settings' }))
     const select = screen.getByRole('combobox', { name: 'voice' }) as HTMLSelectElement
     expect(select.value).toBe('cloud')
     await user.selectOptions(select, 'kyoko')
@@ -200,6 +202,11 @@ describe('App', () => {
     const select = screen.getByRole('combobox', { name: 'language' })
     expect(select.closest('.brand')).not.toBeNull()
     expect(select.closest('.toolbar')).toBeNull()
+  })
+  it('orders the header: brand, toolbar, settings gear last', () => {
+    render(App)
+    const children = [...document.querySelector('header')!.children]
+    expect(children.map((c) => c.className.split(' ')[0])).toEqual(['brand', 'toolbar', 'settings-menu'])
   })
   it('switches to the cabocha view and persists the choice', async () => {
     vi.mocked(parseText).mockResolvedValue([sentenceFixture()])

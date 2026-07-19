@@ -14,6 +14,7 @@ export const ja: Record<keyof typeof en, string> = {
   voiceAuto: '自動',
   localeLabel: '言語',
   localeAuto: '自動（ブラウザ）',
+  settingsLabel: '設定',
   inputPlaceholder: '日本語の文を入力してください…',
   inputLabel: '解析する日本語の文',
   parseButton: '解析',
