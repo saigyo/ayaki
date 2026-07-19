@@ -130,6 +130,19 @@ describe('SettingsMenu', () => {
     expect(box).toBeChecked()
   })
 
+  it('offers the chain color select and round-trips it', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base, chainColor: 'amber' } })
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    const select = screen.getByRole('combobox', { name: 'chain to main verb' }) as HTMLSelectElement
+    expect(select).toBeEnabled()
+    expect(select.value).toBe('amber')
+    expect([...select.options].map((o) => o.textContent)).toEqual(['amber', 'green', 'violet', 'none'])
+    await user.selectOptions(select, 'green')
+    expect(select.value).toBe('green')
+  })
+
   it('Escape closes the popup, stops propagation, and refocuses the gear', async () => {
     vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
     const user = userEvent.setup()

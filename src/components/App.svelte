@@ -87,7 +87,7 @@
       <LocaleSwitcher bind:locale />
     </div>
     <Toolbar bind:showFurigana bind:view />
-    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:chainColor />
   </header>
   <main>
     <section class="content">
@@ -113,6 +113,7 @@
             {view}
             {showFurigana}
             {showConfidence}
+            {chainColor}
             active={sentences.length > 1 && activeSentence === i}
             selected={selection?.sentence === i ? selection.bunsetsu : null}
             onselect={(b) => select(i, b)}

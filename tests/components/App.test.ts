@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { tick } from 'svelte'
 import App from '../../src/components/App.svelte'
 import { setStoredLocale } from '../../src/lib/i18n.svelte'
-import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
 vi.mock('../../src/lib/parser', () => ({
   parseText: vi.fn(),
@@ -236,5 +236,22 @@ describe('App', () => {
     expect(container.querySelector('svg.stairview')).not.toBeNull()
     await tick()
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('cabocha')
+  })
+  it('traces the chain by default and stops when set to none, without re-parsing', async () => {
+    vi.mocked(parseText).mockResolvedValue([chainSentenceFixture()])
+    const user = userEvent.setup()
+    render(App)
+    await user.type(screen.getByRole('textbox'), '新しい映画を見に行きました。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    const box = await screen.findByText('新しい')
+    box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await tick()
+    expect(document.querySelectorAll('path.arc.chain')).toHaveLength(2)
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'chain to main verb' }), 'none')
+    await tick()
+    expect(document.querySelectorAll('.chain')).toHaveLength(0)
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).chainColor).toBe('none')
+    expect(parseText).toHaveBeenCalledTimes(1)
   })
 })

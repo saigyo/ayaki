@@ -15,6 +15,11 @@ export const en = {
   localeAuto: 'Auto (browser)',
   settingsLabel: 'settings',
   confidenceToggle: 'show attachment confidence',
+  chainLabel: 'chain to main verb',
+  chainAmber: 'amber',
+  chainGreen: 'green',
+  chainViolet: 'violet',
+  chainNone: 'none',
   // input
   inputPlaceholder: 'Enter a Japanese sentence…',
   inputLabel: 'Japanese text to parse',

@@ -5,6 +5,7 @@
   import { t } from '../lib/i18n.svelte'
   import { type ViewKind } from '../lib/settings'
   import type { ParsedSentence } from '../lib/types'
+  import type { ChainColor } from '../lib/chainpalette'
 
   let {
     sentence,
@@ -15,6 +16,7 @@
     active = false,
     onactivate = () => {},
     showConfidence = false,
+    chainColor = 'none',
   }: {
     sentence: ParsedSentence
     view: ViewKind
@@ -24,6 +26,7 @@
     active?: boolean
     onactivate?: () => void
     showConfidence?: boolean
+    chainColor?: ChainColor
   } = $props()
 </script>
 
@@ -36,10 +39,10 @@
   {#if sentence.error}
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
-    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
+    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
   {:else if view === 'tree'}
-    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
   {:else}
-    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {chainColor} />
   {/if}
 </div>
