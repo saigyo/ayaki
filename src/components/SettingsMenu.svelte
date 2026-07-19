@@ -3,16 +3,19 @@
   import { listJaVoices } from '../lib/speech'
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_COLORS, CHAIN_PALETTE, type ChainColor } from '../lib/chainpalette'
+  import { CONFIDENCE_MAX, CONFIDENCE_MIN } from '../lib/settings'
 
   let {
     rate = $bindable(),
     voiceURI = $bindable(null),
     showConfidence = $bindable(false),
+    confidenceThreshold = $bindable(0.7),
     chainColor = $bindable('amber'),
   }: {
     rate: number
     voiceURI?: string | null
     showConfidence?: boolean
+    confidenceThreshold?: number
     chainColor?: ChainColor
   } = $props()
 
@@ -120,6 +123,22 @@
       <div class="row check-row">
         <label class="row-label" for="conf-{uid}">{t('confidenceToggle')}</label>
         <input id="conf-{uid}" type="checkbox" bind:checked={showConfidence} />
+      </div>
+      <div class="row">
+        <label class="row-label" for="threshold-{uid}">{t('confidenceThresholdLabel')}</label>
+        <span class="rate-row">
+          <input
+            id="threshold-{uid}"
+            type="range"
+            min={CONFIDENCE_MIN}
+            max={CONFIDENCE_MAX}
+            step="0.05"
+            bind:value={confidenceThreshold}
+            disabled={!showConfidence}
+            title={!showConfidence ? t('confidenceToggle') : undefined}
+          />
+          <span>{Math.round(confidenceThreshold * 100)}%</span>
+        </span>
       </div>
       <fieldset class="row chain-row">
         <legend class="row-label">{t('chainLabel')}</legend>

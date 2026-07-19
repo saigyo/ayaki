@@ -137,7 +137,7 @@
     </div>
     <Toolbar bind:showFurigana bind:view onviewclick={() => (viewFromLink = false)} />
     <HelpDialog {chainColor} />
-    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:chainColor />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:chainColor />
   </header>
   <main>
     <section class="content">

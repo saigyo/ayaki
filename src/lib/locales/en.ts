@@ -15,6 +15,7 @@ export const en = {
   localeAuto: 'Auto (browser)',
   settingsLabel: 'settings',
   confidenceToggle: 'show attachment confidence',
+  confidenceThresholdLabel: 'uncertainty cutoff',
   chainLabel: 'chain to predicate',
   chainAmber: 'amber',
   chainGreen: 'green',
@@ -77,7 +78,7 @@ export const en = {
     'A bunsetsu that attaches directly to the predicate has no onward chain — the blue link itself is the whole path (try 見に in the demo).',
   helpConfidenceTitle: 'Attachment confidence',
   helpConfidenceBody:
-    'The parse comes from a statistical model — it can be wrong. With "show attachment confidence" enabled, uncertain attachments are drawn dotted, and hovering a connector shows the model\'s probability, helping you stay critical of the analysis.',
+    'The parse comes from a statistical model — it can be wrong. With "show attachment confidence" enabled, uncertain attachments are drawn dotted, and hovering a connector shows the model\'s probability, helping you stay critical of the analysis. The probability below which an attachment counts as uncertain can be adjusted in the settings (60–90%).',
   helpTermTitle: 'Predicate and head',
   helpTermBody:
     'Every chain ends at the sentence\'s predicate (述語) — the verb, adjective, or copula phrase that everything else ultimately attaches to. In linguistics this element is called the head (主辞) of the sentence.',
