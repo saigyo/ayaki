@@ -255,7 +255,8 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /parse/i }))
     await screen.findByText('食べた。')
     await user.click(screen.getByRole('button', { name: /CaboCha/ }))
-    expect(container.querySelector('svg.stairview')).not.toBeNull()
+    // scope to main: the help dialog's demo StairView in <header> always exists
+    expect(container.querySelector('main svg.stairview')).not.toBeNull()
     await tick()
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('cabocha')
   })
