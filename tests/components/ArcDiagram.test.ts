@@ -13,10 +13,10 @@ describe('ArcDiagram', () => {
     expect(container.querySelectorAll('path.arc')).toHaveLength(2)
   })
   it('marks low-confidence arcs and titles them with the probability', () => {
-    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    const { container } = render(ArcDiagram, { props: { bunsetsu, showConfidence: true, onselect: () => {} } })
     const low = container.querySelectorAll('path.arc.low')
     expect(low).toHaveLength(1)
-    expect(low[0].querySelector('title')?.textContent).toContain('55')
+    expect(low[0].closest('g.connector')?.querySelector('title')?.textContent).toContain('55')
   })
   it('shows furigana only when enabled, skipping empty readings', () => {
     const noFuri = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
@@ -41,9 +41,11 @@ describe('ArcDiagram', () => {
   })
   it('marks forced arcs with the forced class', () => {
     const forced = forcedSentenceFixture().bunsetsu
-    const { container } = render(ArcDiagram, { props: { bunsetsu: forced, onselect: () => {} } })
+    const { container } = render(ArcDiagram, { props: { bunsetsu: forced, showConfidence: true, onselect: () => {} } })
     expect(container.querySelectorAll('path.arc.forced')).toHaveLength(1)
-    expect(container.querySelector('path.arc.forced title')?.textContent).toContain('forced attachment')
+    expect(container.querySelector('path.arc.forced')?.closest('g.connector')?.querySelector('title')?.textContent).toContain(
+      'forced attachment',
+    )
     expect(container.querySelectorAll('path.arc.low')).toHaveLength(0)
   })
   it('skips furigana for bunsetsu without readings', () => {
@@ -70,6 +72,22 @@ describe('ArcDiagram', () => {
       expect(outer).not.toHaveBeenCalled()
     } finally {
       document.body.removeEventListener('click', outer)
+    }
+  })
+  it('renders plain connectors by default but keeps the probability title', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    const titles = [...container.querySelectorAll('g.connector title')].map((el) => el.textContent)
+    expect(titles.some((text) => text?.includes('55'))).toBe(true)
+  })
+  it('gives every connector an identical-geometry hit twin', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    const groups = [...container.querySelectorAll('g.connector')]
+    expect(groups.length).toBeGreaterThan(0)
+    for (const g of groups) {
+      const visible = g.querySelector('path.arc')!
+      const hit = g.querySelector('path.hit')!
+      expect(hit.getAttribute('d')).toBe(visible.getAttribute('d'))
     }
   })
 })
