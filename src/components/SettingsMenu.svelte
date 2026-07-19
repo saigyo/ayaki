@@ -30,7 +30,11 @@
   // document-level listeners exist only while the popup is open
   $effect(() => {
     if (!open) return
-    const onDocClick = (e: MouseEvent) => {
+    // Capture-phase pointerdown, not a bubble-phase click: bunsetsu onclick
+    // handlers in all three views call stopPropagation(), so a bubble-phase
+    // document click listener would never see clicks on those surfaces and
+    // the popup would stay stuck open.
+    const onDocPointerdown = (e: PointerEvent) => {
       if (!root.contains(e.target as Node)) open = false
     }
     const onDocKeydown = (e: KeyboardEvent) => {
@@ -41,10 +45,10 @@
       open = false
       gear.focus()
     }
-    document.addEventListener('click', onDocClick)
+    document.addEventListener('pointerdown', onDocPointerdown, true)
     document.addEventListener('keydown', onDocKeydown)
     return () => {
-      document.removeEventListener('click', onDocClick)
+      document.removeEventListener('pointerdown', onDocPointerdown, true)
       document.removeEventListener('keydown', onDocKeydown)
     }
   })
@@ -56,6 +60,8 @@
     bind:this={gear}
     aria-expanded={open}
     aria-label={t('settingsLabel')}
+    aria-haspopup="true"
+    aria-controls="settings-{uid}"
     onclick={() => (open = !open)}
   >
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -64,13 +70,14 @@
     </svg>
   </button>
   {#if open}
-    <div class="settings-popup">
+    <div class="settings-popup" id="settings-{uid}">
       <div class="row">
         <label class="row-label" for="voice-{uid}">{t('voiceLabel')}</label>
         <select
           id="voice-{uid}"
           disabled={noVoices}
           title={noVoices ? t('noVoice') : undefined}
+          aria-describedby={noVoices ? `novoice-${uid}` : undefined}
           onchange={(e) => (voiceURI = e.currentTarget.value || null)}
         >
           <!-- per-option selected attributes (not bind:value): a stored-but-absent voice
@@ -93,12 +100,13 @@
             bind:value={rate}
             disabled={noVoices}
             title={noVoices ? t('noVoice') : undefined}
+            aria-describedby={noVoices ? `novoice-${uid}` : undefined}
           />
           <span>{rate.toFixed(1)}×</span>
         </span>
       </div>
       {#if noVoices}
-        <p class="no-voice-note">{t('noVoice')}</p>
+        <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>
       {/if}
     </div>
   {/if}

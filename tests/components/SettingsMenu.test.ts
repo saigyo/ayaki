@@ -54,7 +54,9 @@ describe('SettingsMenu', () => {
     expect(slider).toBeDisabled()
     expect(select).toHaveAttribute('title', expect.stringMatching(/no japanese voice/i))
     expect(slider).toHaveAttribute('title', expect.stringMatching(/no japanese voice/i))
-    expect(screen.getByText(/no japanese voice/i)).toBeInTheDocument()
+    const note = screen.getByText(/no japanese voice/i)
+    expect(note).toBeInTheDocument()
+    expect(select.getAttribute('aria-describedby')).toBe(note.id)
   })
 
   it('enables the controls live when voiceschanged delivers voices', async () => {
@@ -95,6 +97,25 @@ describe('SettingsMenu', () => {
     await user.click(gear)
     await user.click(gear)
     expect(gear).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('closes on outside click even when the target stops propagation (bunsetsu boxes)', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base } })
+    const gear = screen.getByRole('button', { name: 'settings' })
+    await user.click(gear)
+    expect(gear).toHaveAttribute('aria-expanded', 'true')
+    const sibling = document.createElement('button')
+    sibling.textContent = 'bunsetsu'
+    sibling.addEventListener('click', (e) => e.stopPropagation())
+    document.body.appendChild(sibling)
+    try {
+      await user.click(sibling)
+      expect(gear).toHaveAttribute('aria-expanded', 'false')
+    } finally {
+      sibling.remove()
+    }
   })
 
   it('Escape closes the popup, stops propagation, and refocuses the gear', async () => {
