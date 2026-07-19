@@ -334,7 +334,9 @@ describe('App — share links', () => {
     const scrollSpy = vi.fn()
     Element.prototype.scrollIntoView = scrollSpy
     const { container } = render(App)
-    await screen.findByText('行きました。')
+    // scope to main: the help demo carries the identical surface and would
+    // otherwise satisfy this wait before the diagram even rendered
+    await within(document.querySelector('main') as HTMLElement).findByText('行きました。')
     await vi.waitFor(() => expect(scrollSpy).toHaveBeenCalledWith({ block: 'center' }))
     // NOTE: the brief's original assertion here (`heading 'Sentence 2 / 2'`) is
     // unsatisfiable together with a bunsetsu selection: applyPendingJump sets
