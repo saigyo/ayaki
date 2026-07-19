@@ -49,6 +49,23 @@ export function sentenceFixture(): ParsedSentence {
   }
 }
 
+/** 新しい(→1) 映画を(→2, P=.55 = uncertain) 見に(→3) 行きました。(root); chain from 0 runs 0→1→2→3 */
+export function chainSentenceFixture(): ParsedSentence {
+  return {
+    text: '新しい映画を見に行きました。',
+    error: null,
+    bunsetsu: [
+      b(0, '新しい', 1, 0.9, 'あたらしい', [morphemeFixture({ surface: '新しい', reading: 'あたらしい', posJa: '形容詞・自立' })]),
+      b(1, '映画を', 2, 0.55, 'えいがを', [
+        morphemeFixture({ surface: '映画', reading: 'えいが' }),
+        morphemeFixture({ surface: 'を', reading: 'を', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%82%92' }),
+      ]),
+      b(2, '見に', 3, 0.9, 'みに', [morphemeFixture({ surface: '見', reading: 'み' })]),
+      b(3, '行きました。', null, null, 'いきました。', [morphemeFixture({ surface: '行きました', reading: 'いきました' })]),
+    ],
+  }
+}
+
 /** これは(→1, forced attachment, kana-only so no furigana) 何。(root) */
 export function forcedSentenceFixture(): ParsedSentence {
   return {

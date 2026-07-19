@@ -4,18 +4,21 @@
   import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
+  import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
 
   let {
     bunsetsu,
     showFurigana = false,
     showConfidence = false,
     selected = null,
+    chainColor = 'none',
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
     showConfidence?: boolean
     selected?: number | null
+    chainColor?: ChainColor
     onselect: (index: number) => void
   } = $props()
 
@@ -30,10 +33,24 @@
   const layout = $derived(layoutTree(widths, bunsetsu.map((b) => b.head)))
   const pos = $derived(new Map(layout.nodes.map((n) => [n.index, n])))
   const topPad = $derived(showFurigana ? FURI_H : 0)
+
+  const chain = $derived(
+    selected !== null && chainColor !== 'none'
+      ? chainFrom(bunsetsu.map((b) => b.head), selected)
+      : { links: new Set<number>(), boxes: new Set<number>() },
+  )
+  const palette = $derived(selected !== null && chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
 </script>
 
 <div class="tree-scroll">
-  <svg width={layout.width + 2 * PAD_X} height={layout.height + BOX_H + 6 + topPad} class="nodetree" role="group" aria-label={t('treeGroupLabel')}>
+  <svg
+    width={layout.width + 2 * PAD_X}
+    height={layout.height + BOX_H + 6 + topPad}
+    class="nodetree"
+    role="group"
+    aria-label={t('treeGroupLabel')}
+    style={palette ? `--chain: ${palette.line}; --chain-soft: ${palette.soft}` : undefined}
+  >
     {#each layout.edges as e (e.to)}
       {@const from = pos.get(e.from)!}
       {@const to = pos.get(e.to)!}
@@ -51,6 +68,7 @@
           class:low={showConfidence && !bunsetsu[e.to].forced && isUncertain(bunsetsu[e.to])}
           class:forced={showConfidence && bunsetsu[e.to].forced}
           class:hl={hovered === e.to || selected === e.to}
+          class:chain={chain.links.has(e.to)}
           {x1}
           {y1}
           {x2}
@@ -66,6 +84,7 @@
         class:selected={selected === n.index}
         class:hl={hovered === n.index || (hovered !== null && bunsetsu[hovered].head === n.index)}
         class:root={b.head === null}
+        class:chain={chain.boxes.has(n.index)}
         role="button"
         tabindex="0"
         aria-label={b.surface}

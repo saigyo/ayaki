@@ -8,6 +8,7 @@
   --box-stroke: #b9c4d8;
   --arc: #7c8db5;
   --uncertain: #b58a3c;
+  --uncertain-line: #aab6d1;
   --danger: #b03a2e;
 }
 body { margin: 0; }
@@ -59,12 +60,12 @@ svg .bunsetsu.selected text.surface { fill: #fff; }
 svg text { font-size: 15px; fill: #24292f; }
 svg text.furigana { font-size: 10px; fill: #57606a; }
 svg path.arc { fill: none; stroke: var(--arc); stroke-width: 1.5; }
-svg path.arc.low { stroke: var(--uncertain); stroke-dasharray: 5 3; }
-svg path.arc.forced { stroke: var(--uncertain); stroke-dasharray: 2 3; }
+svg path.arc.low { stroke: var(--uncertain-line); stroke-dasharray: 5 3; }
+svg path.arc.forced { stroke: var(--uncertain-line); stroke-dasharray: 2 3; }
 svg path.arc.hl { stroke: var(--accent); stroke-width: 2.5; }
 svg line.edge { stroke: var(--box-stroke); stroke-width: 1.5; }
-svg line.edge.low { stroke: var(--uncertain); stroke-dasharray: 5 3; }
-svg line.edge.forced { stroke: var(--uncertain); stroke-dasharray: 2 3; }
+svg line.edge.low { stroke: var(--uncertain-line); stroke-dasharray: 5 3; }
+svg line.edge.forced { stroke: var(--uncertain-line); stroke-dasharray: 2 3; }
 svg line.edge.hl { stroke: var(--accent); stroke-width: 2.5; }
 svg marker path { fill: var(--arc); }
 
@@ -72,6 +73,12 @@ svg marker path { fill: var(--arc); }
 svg text.furigana { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
 /* invisible fat twin of each connector: a forgiving hover target for the title */
 svg .connector .hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; }
+
+/* chain-to-main-verb trace; colors arrive per-view via --chain/--chain-soft.
+   :not(.hl) keeps the hover/selection accent on top of a traced connector */
+svg path.arc.chain:not(.hl), svg line.edge.chain:not(.hl) { stroke: var(--chain); stroke-width: 3; }
+svg .bunsetsu.chain rect { fill: var(--chain-soft); stroke: var(--chain); }
+svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: var(--accent); stroke-width: 2; }
 
 .inspector { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem 1rem; position: sticky; top: 1rem; }
 .inspector h2 { margin-top: 0; font-size: 1.2rem; }

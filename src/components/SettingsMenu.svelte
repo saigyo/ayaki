@@ -2,15 +2,18 @@
   import { onMount } from 'svelte'
   import { listJaVoices } from '../lib/speech'
   import { t } from '../lib/i18n.svelte'
+  import type { ChainColor } from '../lib/chainpalette'
 
   let {
     rate = $bindable(),
     voiceURI = $bindable(null),
     showConfidence = $bindable(false),
+    chainColor = $bindable('amber'),
   }: {
     rate: number
     voiceURI?: string | null
     showConfidence?: boolean
+    chainColor?: ChainColor
   } = $props()
 
   const uid = $props.id()
@@ -110,6 +113,15 @@
       <div class="row check-row">
         <label class="row-label" for="conf-{uid}">{t('confidenceToggle')}</label>
         <input id="conf-{uid}" type="checkbox" bind:checked={showConfidence} />
+      </div>
+      <div class="row">
+        <label class="row-label" for="chain-{uid}">{t('chainLabel')}</label>
+        <select id="chain-{uid}" bind:value={chainColor}>
+          <option value="amber">{t('chainAmber')}</option>
+          <option value="green">{t('chainGreen')}</option>
+          <option value="violet">{t('chainViolet')}</option>
+          <option value="none">{t('chainNone')}</option>
+        </select>
       </div>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>

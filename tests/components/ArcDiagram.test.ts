@@ -2,7 +2,7 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import ArcDiagram from '../../src/components/ArcDiagram.svelte'
-import { forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
 
 const bunsetsu = sentenceFixture().bunsetsu
 
@@ -89,5 +89,24 @@ describe('ArcDiagram', () => {
       const hit = g.querySelector('path.hit')!
       expect(hit.getAttribute('d')).toBe(visible.getAttribute('d'))
     }
+  })
+  it('traces the chain beyond the immediate link on selection', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, selected: 0, chainColor: 'amber', onselect: () => {} } })
+    const chains = container.querySelectorAll('path.arc.chain')
+    expect(chains).toHaveLength(2)
+    expect(container.querySelectorAll('g.bunsetsu.chain')).toHaveLength(2)
+    const hl = container.querySelector('path.arc.hl')!
+    expect(hl.classList.contains('chain')).toBe(false)
+    for (const c of chains) expect(c.getAttribute('marker-end')).toContain('arrowhead-chain-')
+    expect(container.querySelector('svg')!.getAttribute('style')).toContain('--chain')
+  })
+  it('renders no chain elements without selection or with chainColor none', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const none = render(ArcDiagram, { props: { bunsetsu: chainB, selected: 0, chainColor: 'none', onselect: () => {} } })
+    expect(none.container.querySelectorAll('.chain')).toHaveLength(0)
+    expect(none.container.querySelector('svg')!.getAttribute('style') ?? '').not.toContain('--chain')
+    const unselected = render(ArcDiagram, { props: { bunsetsu: chainB, chainColor: 'amber', onselect: () => {} } })
+    expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
 })
