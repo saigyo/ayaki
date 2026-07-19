@@ -288,3 +288,59 @@ describe('App', () => {
     expect(dialog.open).toBe(true)
   })
 })
+
+describe('App — share links', () => {
+  afterEach(() => history.replaceState(null, '', location.pathname))
+
+  it('boots from a share link: auto-parses, applies the view display-only, selects the bunsetsu', async () => {
+    history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。')}&view=cabocha&s=0&b=1`)
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    render(App)
+    await screen.findByText('食べた。')
+    expect(vi.mocked(parseText)).toHaveBeenCalledWith('猫が魚を食べた。')
+    expect(document.querySelector('main svg.stairview')).not.toBeNull()
+    expect(document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label')).toBe('魚を')
+    await tick()
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('arcs')
+  })
+
+  it('re-arms view persistence on the first deliberate view click, even re-selecting the shared view', async () => {
+    history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。')}&view=cabocha`)
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    const user = userEvent.setup()
+    render(App)
+    await screen.findByText('食べた。')
+    await tick()
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('arcs')
+    await user.click(screen.getByRole('button', { name: /CaboCha/ }))
+    await tick()
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('cabocha')
+  })
+
+  it('drops an out-of-range bunsetsu index but still parses and shows the text', async () => {
+    history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。')}&view=tree&s=0&b=9`)
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    render(App)
+    await screen.findByText('食べた。')
+    expect(document.querySelector('main svg line.edge')).not.toBeNull()
+    expect(document.querySelector('main g.bunsetsu.selected')).toBeNull()
+  })
+
+  it('activates a later sentence from s in a multi-sentence link', async () => {
+    history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。新しい映画を見に行きました。')}&view=arcs&s=1&b=1`)
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture(), chainSentenceFixture()])
+    const { container } = render(App)
+    await screen.findByText('行きました。')
+    // NOTE: the brief's original assertion here (`heading 'Sentence 2 / 2'`) is
+    // unsatisfiable together with a bunsetsu selection: applyPendingJump sets
+    // `selection`, which Inspector.svelte's unconditional `{#if selected}` gate
+    // (line 54) always resolves to the bunsetsu-detail heading, never the
+    // "Sentence N / total" heading — confirmed against the design spec
+    // (2026-07-19-share-link-design.md line ~104: `selection = b !== null ? {...} : null`),
+    // which documents exactly this selection-setting behavior as intended.
+    // Asserting "the later sentence got activated" via the active card class
+    // instead, since that's what the test title actually describes.
+    expect(container.querySelectorAll('.card')[1].classList.contains('active')).toBe(true)
+    expect(document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label')).toBe('映画を')
+  })
+})
