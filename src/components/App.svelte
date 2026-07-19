@@ -24,13 +24,14 @@
   // runs post-mount, which would flash the auto locale on first paint
   setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
+  let showConfidence = $state(initialSettings.showConfidence)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
   let locale = $state(initialSettings.locale)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate, voiceURI, locale })
+    saveSettings({ showFurigana, showConfidence, view, rate, voiceURI, locale })
   })
 
   $effect(() => {

@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -101,5 +101,16 @@ describe('saveSettings', () => {
     })
     expect(() => saveSettings(DEFAULTS)).not.toThrow()
     spy.mockRestore()
+  })
+})
+
+describe('loadSettings', () => {
+  it('validates showConfidence and defaults it to false', () => {
+    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: true }))
+    expect(loadSettings().showConfidence).toBe(true)
+    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: 'yes' }))
+    expect(loadSettings().showConfidence).toBe(false)
+    localStorage.setItem('ayaki-settings', JSON.stringify({}))
+    expect(loadSettings().showConfidence).toBe(false)
   })
 })

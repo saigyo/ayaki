@@ -4,13 +4,14 @@ export type ViewKind = 'arcs' | 'tree' | 'cabocha'
 
 export interface Settings {
   showFurigana: boolean
+  showConfidence: boolean
   view: ViewKind
   rate: number
   voiceURI: string | null
   locale: Locale | null
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, view: 'arcs', rate: 1, voiceURI: null, locale: null }
+export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, view: 'arcs', rate: 1, voiceURI: null, locale: null }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -20,6 +21,7 @@ const RATE_MAX = 1.5
  *  back to that field's default. Future fields are added here. */
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
+  showConfidence: (v) => (typeof v === 'boolean' ? v : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>
     typeof v === 'number' && Number.isFinite(v)

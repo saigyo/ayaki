@@ -31,7 +31,7 @@ describe('layoutStairs', () => {
   it('gives both dependents of the same head the same shared rail', () => {
     const l = layoutStairs(surfaces, heads, opts)
     const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
-    const expectedRailX = maxW + 2 * 24 + 10
+    const expectedRailX = maxW + 2 * 24 + 16
     expect(byDep[0].railX).toBe(expectedRailX)
     expect(byDep[1].railX).toBe(expectedRailX)
     expect(l.width).toBe(expectedRailX)
@@ -65,10 +65,16 @@ describe('layoutStairs', () => {
     const chainMaxW = Math.max(...chainSurfaces.map((s) => textWidth(s) + 20))
     const xRight = (i: number) => chainMaxW + i * 24
     const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
-    expect(byDep[0].railX).toBe(xRight(1) + 10)
-    expect(byDep[1].railX).toBe(xRight(2) + 10)
-    expect(byDep[2].railX).toBe(xRight(3) + 10)
+    expect(byDep[0].railX).toBe(xRight(1) + 16)
+    expect(byDep[1].railX).toBe(xRight(2) + 16)
+    expect(byDep[2].railX).toBe(xRight(3) + 16)
     expect(byDep[0].railX).toBeLessThan(byDep[1].railX)
     expect(byDep[1].railX).toBeLessThan(byDep[2].railX)
+  })
+  it('offsets each rail 16px right of its head column', () => {
+    const layout = layoutStairs(['新しい', '映画を', '見に'], [1, 2, null], { rowHeight: 46, boxCenterOffset: 17 })
+    const widths = ['新しい', '映画を', '見に'].map((s) => textWidth(s) + 20)
+    const maxW = Math.max(...widths)
+    for (const c of layout.connectors) expect(c.railX).toBe(maxW + c.head * 24 + 16)
   })
 })
