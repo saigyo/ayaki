@@ -44,7 +44,7 @@
       ? chainFrom(bunsetsu.map((b) => b.head), selected)
       : { links: new Set<number>(), boxes: new Set<number>() },
   )
-  const palette = $derived(chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
+  const palette = $derived(selected !== null && chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
 
   function connectorClass(dep: number): string {
     const b = bunsetsu[dep]
@@ -72,9 +72,11 @@
       <marker id="arrowhead-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
         <path d="M 0 0 L 10 5 L 0 10 z" />
       </marker>
-      <marker id="arrowhead-chain-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" style="fill: var(--chain)" />
-      </marker>
+      {#if palette}
+        <marker id="arrowhead-chain-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" style="fill: var(--chain)" />
+        </marker>
+      {/if}
     </defs>
     <g transform="translate({PAD}, 2)">
       {#each layout.connectors as c (c.dep)}

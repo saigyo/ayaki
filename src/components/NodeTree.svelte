@@ -39,7 +39,7 @@
       ? chainFrom(bunsetsu.map((b) => b.head), selected)
       : { links: new Set<number>(), boxes: new Set<number>() },
   )
-  const palette = $derived(chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
+  const palette = $derived(selected !== null && chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
 </script>
 
 <div class="tree-scroll">

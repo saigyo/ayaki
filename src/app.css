@@ -78,7 +78,7 @@ svg .connector .hit { fill: none; stroke: transparent; stroke-width: 12; pointer
    :not(.hl) keeps the hover/selection accent on top of a traced connector */
 svg path.arc.chain:not(.hl), svg line.edge.chain:not(.hl) { stroke: var(--chain); stroke-width: 3; }
 svg .bunsetsu.chain rect { fill: var(--chain-soft); stroke: var(--chain); }
-svg .bunsetsu.chain.hl rect { stroke: var(--accent); stroke-width: 2; }
+svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: var(--accent); stroke-width: 2; }
 
 .inspector { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem 1rem; position: sticky; top: 1rem; }
 .inspector h2 { margin-top: 0; font-size: 1.2rem; }
