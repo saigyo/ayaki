@@ -6,8 +6,8 @@ import type { BunsetsuVM, MorphemeVM, ParsedSentence } from './types'
 
 export const LOW_CONFIDENCE = 0.7
 
-export function isUncertain(b: BunsetsuVM): boolean {
-  return b.probability !== null ? b.probability < LOW_CONFIDENCE : b.forced
+export function isUncertain(b: BunsetsuVM, threshold: number = LOW_CONFIDENCE): boolean {
+  return b.probability !== null ? b.probability < threshold : b.forced
 }
 
 /**

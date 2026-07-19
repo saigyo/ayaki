@@ -59,6 +59,30 @@ describe('SettingsMenu', () => {
     expect(select.getAttribute('aria-describedby')).toBe(note.id)
   })
 
+  it('renders the threshold slider bounded 60-90% and updates the readout', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base, showConfidence: true, confidenceThreshold: 0.7 } })
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    const slider = screen.getByRole('slider', { name: 'uncertainty cutoff' }) as HTMLInputElement
+    expect(slider.min).toBe('0.6')
+    expect(slider.max).toBe('0.9')
+    expect(slider.step).toBe('0.05')
+    expect(slider.disabled).toBe(false)
+    expect(screen.getByText('70%')).toBeInTheDocument()
+    await fireEvent.input(slider, { target: { value: '0.85' } })
+    expect(screen.getByText('85%')).toBeInTheDocument()
+  })
+  it('disables the threshold slider while confidence display is off', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base, showConfidence: false } })
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    const slider = screen.getByRole('slider', { name: 'uncertainty cutoff' }) as HTMLInputElement
+    expect(slider.disabled).toBe(true)
+    expect(slider).toHaveAttribute('title', 'show attachment confidence')
+  })
+
   it('enables the controls live when voiceschanged delivers voices', async () => {
     let voices: Array<Partial<SpeechSynthesisVoice>> = []
     const synth = fakeSynth([])

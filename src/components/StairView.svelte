@@ -1,6 +1,6 @@
 <script lang="ts">
   import { layoutStairs } from '../lib/stairlayout'
-  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
@@ -9,6 +9,7 @@
     bunsetsu,
     showFurigana = false,
     showConfidence = false,
+    confidenceThreshold = LOW_CONFIDENCE,
     selected = null,
     chainColor = 'none',
     onselect,
@@ -16,6 +17,7 @@
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
     showConfidence?: boolean
+    confidenceThreshold?: number
     selected?: number | null
     chainColor?: ChainColor
     onselect: (index: number) => void
@@ -49,7 +51,7 @@
   function connectorClass(dep: number): string {
     const b = bunsetsu[dep]
     const cls = ['arc']
-    if (showConfidence && isUncertain(b)) cls.push(b.forced ? 'forced' : 'low')
+    if (showConfidence && isUncertain(b, confidenceThreshold)) cls.push(b.forced ? 'forced' : 'low')
     if (hovered === dep || selected === dep) cls.push('hl')
     if (chain.links.has(dep)) cls.push('chain')
     return cls.join(' ')

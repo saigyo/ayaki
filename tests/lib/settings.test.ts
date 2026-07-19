@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const, confidenceThreshold: 0.85 }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -46,6 +46,18 @@ describe('loadSettings', () => {
     // JSON.stringify turns NaN/Infinity into null — cover a literal null too
     localStorage.setItem(KEY, '{"rate": null}')
     expect(loadSettings().rate).toBe(DEFAULTS.rate)
+  })
+  it('clamps confidenceThreshold to the slider range', () => {
+    localStorage.setItem(KEY, JSON.stringify({ confidenceThreshold: 0.2 }))
+    expect(loadSettings().confidenceThreshold).toBe(0.6)
+    localStorage.setItem(KEY, JSON.stringify({ confidenceThreshold: 0.99 }))
+    expect(loadSettings().confidenceThreshold).toBe(0.9)
+  })
+  it('rejects non-numeric confidenceThreshold values', () => {
+    localStorage.setItem(KEY, JSON.stringify({ confidenceThreshold: '0.8' }))
+    expect(loadSettings().confidenceThreshold).toBe(0.7)
+    localStorage.setItem(KEY, '{"confidenceThreshold": null}')
+    expect(loadSettings().confidenceThreshold).toBe(0.7)
   })
   it('ignores unknown keys', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree', theme: 'dark' }))

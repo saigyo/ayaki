@@ -16,6 +16,7 @@ export const zh: Record<keyof typeof en, string> = {
   localeAuto: '自动（浏览器）',
   settingsLabel: '设置',
   confidenceToggle: '显示依存置信度',
+  confidenceThresholdLabel: '不确定阈值',
   chainLabel: '谓语依存链',
   chainAmber: '琥珀色',
   chainGreen: '绿色',
@@ -73,7 +74,7 @@ export const zh: Record<keyof typeof en, string> = {
     '直接依附于谓语的文节没有后续依存链——蓝色连线本身就是完整路径(可在上图中点击「見に」试试)。',
   helpConfidenceTitle: '依存置信度',
   helpConfidenceBody:
-    '句法分析来自统计模型,可能出错。启用「显示依存置信度」后,不确定的依存关系以虚线绘制,将鼠标悬停在连线上可查看模型给出的概率,帮助你对分析结果保持审慎。',
+    '句法分析来自统计模型,可能出错。启用「显示依存置信度」后,不确定的依存关系以虚线绘制,将鼠标悬停在连线上可查看模型给出的概率,帮助你对分析结果保持审慎。判定为不确定的概率阈值可在设置中调整(60–90%)。',
   helpTermTitle: '谓语与中心语',
   helpTermBody:
     '每条依存链最终都汇聚到句子的谓语(述語)——动词、形容词或系词短语,其他成分最终都依附于它。在语言学中,这一成分称为句子的中心语(主辞)。',

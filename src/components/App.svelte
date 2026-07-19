@@ -29,6 +29,7 @@
   setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
   let showConfidence = $state(initialSettings.showConfidence)
+  let confidenceThreshold = $state(initialSettings.confidenceThreshold)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
@@ -50,7 +51,7 @@
   }
 
   $effect(() => {
-    saveSettings({ showFurigana, showConfidence, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
+    saveSettings({ showFurigana, showConfidence, confidenceThreshold, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
   })
 
   $effect(() => {
@@ -136,7 +137,7 @@
     </div>
     <Toolbar bind:showFurigana bind:view onviewclick={() => (viewFromLink = false)} />
     <HelpDialog {chainColor} />
-    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:chainColor />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:chainColor />
   </header>
   <main>
     <section class="content">
@@ -163,6 +164,7 @@
               {view}
               {showFurigana}
               {showConfidence}
+              {confidenceThreshold}
               {chainColor}
               active={sentences.length > 1 && activeSentence === i}
               selected={selection?.sentence === i ? selection.bunsetsu : null}
@@ -173,7 +175,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {shareUrl} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {shareUrl} />
   </main>
   <footer>
     <p>

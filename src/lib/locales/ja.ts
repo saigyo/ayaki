@@ -16,6 +16,7 @@ export const ja: Record<keyof typeof en, string> = {
   localeAuto: '自動（ブラウザ）',
   settingsLabel: '設定',
   confidenceToggle: '係り受けの信頼度を表示',
+  confidenceThresholdLabel: '不確実とみなすしきい値',
   chainLabel: '述語への連鎖',
   chainAmber: '琥珀色',
   chainGreen: '緑',
@@ -73,7 +74,7 @@ export const ja: Record<keyof typeof en, string> = {
     '述語に直接係る文節には、その先の連鎖はありません。青いリンク自体が経路のすべてです(上の図で「見に」を選んでみてください)。',
   helpConfidenceTitle: '係り受けの信頼度',
   helpConfidenceBody:
-    '解析は統計モデルによるもので、誤ることがあります。「係り受けの信頼度を表示」を有効にすると、不確かな係り受けが点線で描かれ、線にカーソルを合わせるとモデルの確率が表示されます。結果を鵜呑みにしないための手がかりです。',
+    '解析は統計モデルによるもので、誤ることがあります。「係り受けの信頼度を表示」を有効にすると、不確かな係り受けが点線で描かれ、線にカーソルを合わせるとモデルの確率が表示されます。結果を鵜呑みにしないための手がかりです。不確実とみなす確率のしきい値は設定で調整できます(60〜90%)。',
   helpTermTitle: '述語と主辞',
   helpTermBody:
     'どの連鎖も文の述語 — 動詞・形容詞・コピュラなど、最終的にすべての文節が係っていく要素 — に行き着きます。言語学ではこの要素を主辞と呼びます。',

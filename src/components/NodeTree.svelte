@@ -1,7 +1,7 @@
 <script lang="ts">
   import { textWidth } from '../lib/arclayout'
   import { layoutTree } from '../lib/treelayout'
-  import { confidenceLabel, isUncertain } from '../lib/viewmodel'
+  import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
@@ -10,6 +10,7 @@
     bunsetsu,
     showFurigana = false,
     showConfidence = false,
+    confidenceThreshold = LOW_CONFIDENCE,
     selected = null,
     chainColor = 'none',
     onselect,
@@ -17,6 +18,7 @@
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
     showConfidence?: boolean
+    confidenceThreshold?: number
     selected?: number | null
     chainColor?: ChainColor
     onselect: (index: number) => void
@@ -65,8 +67,8 @@
         {/if}
         <line
           class="edge"
-          class:low={showConfidence && isUncertain(bunsetsu[e.to]) && !bunsetsu[e.to].forced}
-          class:forced={showConfidence && isUncertain(bunsetsu[e.to]) && bunsetsu[e.to].forced}
+          class:low={showConfidence && isUncertain(bunsetsu[e.to], confidenceThreshold) && !bunsetsu[e.to].forced}
+          class:forced={showConfidence && isUncertain(bunsetsu[e.to], confidenceThreshold) && bunsetsu[e.to].forced}
           class:hl={hovered === e.to || selected === e.to}
           class:chain={chain.links.has(e.to)}
           {x1}

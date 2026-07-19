@@ -90,6 +90,12 @@ describe('isUncertain', () => {
     expect(isUncertain({ ...base, probability: null, forced: true })).toBe(true)
     expect(isUncertain({ ...base, probability: null, forced: false })).toBe(false)
   })
+  it('applies an explicit threshold', () => {
+    expect(isUncertain({ ...base, probability: 0.75, forced: false }, 0.8)).toBe(true)
+    expect(isUncertain({ ...base, probability: 0.75, forced: false }, 0.7)).toBe(false)
+    expect(isUncertain({ ...base, probability: null, forced: true }, 0.9)).toBe(true)
+    expect(isUncertain({ ...base, probability: null, forced: false }, 0.9)).toBe(false)
+  })
 })
 
 describe('confidenceLabel', () => {

@@ -6,6 +6,7 @@ export type ViewKind = 'arcs' | 'tree' | 'cabocha'
 export interface Settings {
   showFurigana: boolean
   showConfidence: boolean
+  confidenceThreshold: number
   view: ViewKind
   rate: number
   voiceURI: string | null
@@ -13,17 +14,23 @@ export interface Settings {
   chainColor: ChainColor
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
+export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, confidenceThreshold: 0.7, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
 const RATE_MAX = 1.5
+export const CONFIDENCE_MIN = 0.6
+export const CONFIDENCE_MAX = 0.9
 
 /** One validator per field: returns the (normalized) value, or undefined to fall
  *  back to that field's default. Future fields are added here. */
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
   showConfidence: (v) => (typeof v === 'boolean' ? v : undefined),
+  confidenceThreshold: (v) =>
+    typeof v === 'number' && Number.isFinite(v)
+      ? Math.min(CONFIDENCE_MAX, Math.max(CONFIDENCE_MIN, v))
+      : undefined,
   chainColor: (v) => (CHAIN_COLORS.includes(v as ChainColor) ? (v as ChainColor) : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>

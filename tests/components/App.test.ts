@@ -158,6 +158,7 @@ describe('App', () => {
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!)).toEqual({
       showFurigana: false,
       showConfidence: false,
+      confidenceThreshold: 0.7,
       view: 'tree',
       rate: 1.2,
       voiceURI: null,
