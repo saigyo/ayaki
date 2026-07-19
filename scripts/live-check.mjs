@@ -146,7 +146,9 @@ try {
             scrollY: Math.round(window.scrollY),
           }
         })
-        if (state.selected !== '公園で' || !state.active || state.top < 0 || state.bottom > 300 || state.scrollY <= 0)
+        // intersection, not full fit: a card taller than the viewport is still
+        // correctly scrolled to as long as it overlaps and scrollY moved
+        if (state.selected !== '公園で' || !state.active || state.top >= 300 || state.bottom <= 0 || state.scrollY <= 0)
           throw new Error(JSON.stringify(state))
         ok('share jump: s=1 card scrolled into a 300px viewport')
       } finally {

@@ -64,10 +64,10 @@
   // must not flip "copied!" onto the other card's button
   let copyGen = 0
 
-  // switching between the sentence and bunsetsu cards must not carry a stale
-  // "copied!" onto a button that copied nothing
+  // "copied!" is a claim about the CURRENT share url — any change (card switch,
+  // sentence switch, view switch) invalidates it and voids in-flight copies
   $effect(() => {
-    void selected
+    void shareUrl
     copyGen++
     clearTimeout(copyTimer)
     copied = false
