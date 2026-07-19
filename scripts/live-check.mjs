@@ -12,7 +12,9 @@ const fail = (name, detail) => {
 }
 
 const browser = await chromium.launch()
-const page = await browser.newPage({ viewport: { width: 1200, height: 800 } })
+// pin the locale: the label assertions (view buttons, locale options) are the
+// English UI, independent of the machine the check runs on
+const page = await browser.newPage({ viewport: { width: 1200, height: 800 }, locale: 'en-US' })
 const consoleErrors = []
 page.on('console', (m) => {
   if (m.type() === 'error') consoleErrors.push(m.text())

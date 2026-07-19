@@ -29,7 +29,9 @@ async function waitForServer() {
 // fresh context per scene: clean localStorage, stubbed ja voice so the
 // toolbar voice selector renders, README's canonical viewport
 async function freshPage(browser) {
-  const page = await browser.newPage({ viewport: { width: 1200, height: 660 }, deviceScaleFactor: 2 })
+  // locale pinned: README screenshots are canonically the English UI,
+  // regardless of the machine's system locale
+  const page = await browser.newPage({ viewport: { width: 1200, height: 660 }, deviceScaleFactor: 2, locale: 'en-US' })
   await page.addInitScript(() => {
     const voices = [
       { lang: 'ja-JP', localService: true, name: 'Kyoko', voiceURI: 'com.apple.voice.compact.ja-JP.Kyoko', default: false },
