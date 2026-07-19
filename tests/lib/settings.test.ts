@@ -92,6 +92,14 @@ describe('loadSettings', () => {
     localStorage.setItem(KEY, JSON.stringify({ locale: 7 }))
     expect(loadSettings().locale).toBeNull()
   })
+  it('validates showConfidence and defaults it to false', () => {
+    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: true }))
+    expect(loadSettings().showConfidence).toBe(true)
+    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: 'yes' }))
+    expect(loadSettings().showConfidence).toBe(false)
+    localStorage.setItem('ayaki-settings', JSON.stringify({}))
+    expect(loadSettings().showConfidence).toBe(false)
+  })
 })
 
 describe('saveSettings', () => {
@@ -104,13 +112,3 @@ describe('saveSettings', () => {
   })
 })
 
-describe('loadSettings', () => {
-  it('validates showConfidence and defaults it to false', () => {
-    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: true }))
-    expect(loadSettings().showConfidence).toBe(true)
-    localStorage.setItem('ayaki-settings', JSON.stringify({ showConfidence: 'yes' }))
-    expect(loadSettings().showConfidence).toBe(false)
-    localStorage.setItem('ayaki-settings', JSON.stringify({}))
-    expect(loadSettings().showConfidence).toBe(false)
-  })
-})

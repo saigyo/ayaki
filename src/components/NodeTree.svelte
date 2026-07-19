@@ -38,6 +38,10 @@
       {@const from = pos.get(e.from)!}
       {@const to = pos.get(e.to)!}
       {@const label = confidenceLabel(bunsetsu[e.to])}
+      {@const x1 = from.x + PAD_X}
+      {@const y1 = from.y + BOX_H + topPad}
+      {@const x2 = to.x + PAD_X}
+      {@const y2 = to.y + topPad}
       <g class="connector">
         {#if label}
           <title>{label}</title>
@@ -47,12 +51,12 @@
           class:low={showConfidence && !bunsetsu[e.to].forced && isUncertain(bunsetsu[e.to])}
           class:forced={showConfidence && bunsetsu[e.to].forced}
           class:hl={hovered === e.to || selected === e.to}
-          x1={from.x + PAD_X}
-          y1={from.y + BOX_H + topPad}
-          x2={to.x + PAD_X}
-          y2={to.y + topPad}
+          {x1}
+          {y1}
+          {x2}
+          {y2}
         />
-        <line class="hit" x1={from.x + PAD_X} y1={from.y + BOX_H + topPad} x2={to.x + PAD_X} y2={to.y + topPad} />
+        <line class="hit" {x1} {y1} {x2} {y2} />
       </g>
     {/each}
     {#each layout.nodes as n (n.index)}
