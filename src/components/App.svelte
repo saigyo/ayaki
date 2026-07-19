@@ -86,7 +86,7 @@
       <LocaleSwitcher bind:locale />
     </div>
     <Toolbar bind:showFurigana bind:view />
-    <SettingsMenu bind:rate bind:voiceURI />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence />
   </header>
   <main>
     <section class="content">
@@ -111,6 +111,7 @@
             {sentence}
             {view}
             {showFurigana}
+            {showConfidence}
             active={sentences.length > 1 && activeSentence === i}
             selected={selection?.sentence === i ? selection.bunsetsu : null}
             onselect={(b) => select(i, b)}
@@ -119,7 +120,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} />
   </main>
   <footer>
     <p>

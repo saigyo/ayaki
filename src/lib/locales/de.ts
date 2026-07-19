@@ -15,6 +15,7 @@ export const de: Record<keyof typeof en, string> = {
   localeLabel: 'Sprache',
   localeAuto: 'Auto (Browser)',
   settingsLabel: 'Einstellungen',
+  confidenceToggle: 'Zeige Anbindungskonfidenz',
   inputPlaceholder: 'Japanischen Satz eingeben…',
   inputLabel: 'Japanischer Text zum Analysieren',
   parseButton: 'Analysieren',

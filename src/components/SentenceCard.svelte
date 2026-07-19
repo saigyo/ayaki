@@ -14,6 +14,7 @@
     onselect,
     active = false,
     onactivate = () => {},
+    showConfidence = false,
   }: {
     sentence: ParsedSentence
     view: ViewKind
@@ -22,6 +23,7 @@
     onselect: (index: number) => void
     active?: boolean
     onactivate?: () => void
+    showConfidence?: boolean
   } = $props()
 </script>
 
@@ -34,10 +36,10 @@
   {#if sentence.error}
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
-    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
+    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
   {:else if view === 'tree'}
-    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
   {:else}
-    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} />
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} />
   {/if}
 </div>

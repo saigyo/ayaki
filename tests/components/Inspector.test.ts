@@ -10,7 +10,7 @@ const sentence = sentenceFixture()
 
 describe('Inspector — sentence mode', () => {
   it('shows only the active sentence with speech, Translate and a confidence summary', () => {
-    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, showConfidence: true } })
     expect(screen.getByRole('heading', { name: 'Sentence' })).toBeInTheDocument()
     expect(screen.getByText(sentence.text)).toBeInTheDocument()
     const gt = screen.getByRole('link', { name: /google translate/i })
@@ -48,11 +48,17 @@ describe('Inspector — bunsetsu mode', () => {
     expect(links[0]).toHaveAttribute('href', 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B')
   })
   it('shows the attachment confidence line for probability and for forced-only attachments', () => {
-    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null } })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, showConfidence: true } })
     expect(screen.getByText(/P = 55%/)).toBeInTheDocument()
     const forced = forcedSentenceFixture()
-    render(Inspector, { props: { sentence: forced, index: 0, total: 1, selected: forced.bunsetsu[0], rate: 1, voiceURI: null } })
+    render(Inspector, { props: { sentence: forced, index: 0, total: 1, selected: forced.bunsetsu[0], rate: 1, voiceURI: null, showConfidence: true } })
     expect(screen.getByText(/forced attachment \(end-of-sentence fallback\)/)).toBeInTheDocument()
+  })
+  it('hides the confidence labels unless enabled', () => {
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null } })
+    expect(screen.queryByText(/attachments uncertain/)).toBeNull()
+    const bunsetsuView = render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null } })
+    expect(bunsetsuView.queryByText(/P = 55%/)).toBeNull()
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', jishoUrl: null })

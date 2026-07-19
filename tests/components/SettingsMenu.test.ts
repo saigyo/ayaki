@@ -118,6 +118,18 @@ describe('SettingsMenu', () => {
     }
   })
 
+  it('offers the confidence toggle, enabled even without voices', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base, showConfidence: false } })
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    const box = screen.getByRole('checkbox', { name: 'show attachment confidence' })
+    expect(box).toBeEnabled()
+    expect(box).not.toBeChecked()
+    await user.click(box)
+    expect(box).toBeChecked()
+  })
+
   it('Escape closes the popup, stops propagation, and refocuses the gear', async () => {
     vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
     const user = userEvent.setup()
