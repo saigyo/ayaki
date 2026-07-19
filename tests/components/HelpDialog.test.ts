@@ -43,6 +43,7 @@ describe('HelpDialog', () => {
       'Predicate and head',
       'Tips',
     ])
+    expect(within(dialog).getByText(/directly to the predicate/)).toBeInTheDocument()
   })
 
   it('shows the live demo: 4 bunsetsu, 新しい preselected, chain traced, dotted uncertainty', async () => {

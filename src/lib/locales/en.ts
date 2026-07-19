@@ -72,6 +72,8 @@ export const en = {
   legendLink: 'its attachment (the bunsetsu it modifies)',
   legendChain: 'the chain onward to the predicate',
   legendUncertain: 'uncertain attachment (dotted)',
+  legendChainDirect:
+    'A bunsetsu that attaches directly to the predicate has no onward chain — the blue link itself is the whole path (try 見に in the demo).',
   legendChainNote: 'The chain color — and whether it shows at all — is configurable in the settings.',
   helpConfidenceTitle: 'Attachment confidence',
   helpConfidenceBody:

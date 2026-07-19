@@ -68,6 +68,8 @@ export const de: Record<keyof typeof en, string> = {
   legendLink: 'seine Anbindung (das Bunsetsu, das es modifiziert)',
   legendChain: 'die weitere Kette zum Prädikat',
   legendUncertain: 'unsichere Anbindung (gepunktet)',
+  legendChainDirect:
+    'Ein Bunsetsu, das sich direkt an das Prädikat anschließt, hat keine weitere Kette — der blaue Link selbst ist schon der ganze Pfad (probieren Sie 見に im Beispiel).',
   legendChainNote: 'Die Kettenfarbe — und ob sie überhaupt angezeigt wird — lässt sich in den Einstellungen anpassen.',
   helpConfidenceTitle: 'Anbindungskonfidenz',
   helpConfidenceBody:

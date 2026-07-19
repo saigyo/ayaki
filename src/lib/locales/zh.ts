@@ -68,6 +68,8 @@ export const zh: Record<keyof typeof en, string> = {
   legendLink: '它的依附对象(该文节所修饰的文节)',
   legendChain: '一直延伸到谓语的依存链',
   legendUncertain: '不确定的依存(虚线)',
+  legendChainDirect:
+    '直接依附于谓语的文节没有后续依存链——蓝色连线本身就是完整路径(可在上图中点击「見に」试试)。',
   legendChainNote: '依存链的颜色以及是否显示可在设置中调整。',
   helpConfidenceTitle: '依存置信度',
   helpConfidenceBody:
