@@ -58,15 +58,25 @@ props, the voice-list state, the `voiceschanged` listener, and the
   rounded corners, border + drop shadow, above other content (`z-index`).
   Content, in order:
   1. **Voice row** — small gray uppercase label (existing `voiceLabel` key)
-     above the voice `<select>`, moved verbatim from Toolbar: auto option
-     first, per-option `selected` attributes, stored-but-absent voice
-     displays as auto without overwriting the stored value, `''` → `null`
-     on change. The whole row (label + select) is hidden when no Japanese
-     voices exist, exactly as the select is today; the popup then shows only
-     the rate row.
+     above the voice `<select>`, moved from Toolbar with its semantics intact:
+     auto option first, per-option `selected` attributes, stored-but-absent
+     voice displays as auto without overwriting the stored value, `''` →
+     `null` on change.
   2. **Rate row** — same label treatment (existing `rateLabel` key) above the
      existing range input (0.5–1.5, step 0.1) plus a plain numeric readout
      `{rate.toFixed(1)}×` (no speaker emoji).
+- **No-voice-support state** (revised after design review — the previously
+  chosen hide-the-select behavior would leave the popup nearly empty): both
+  rows are ALWAYS rendered. Whenever speech cannot work — `speechSynthesis`
+  missing entirely, or no Japanese voices — the select and the slider are
+  `disabled` (greyed via existing disabled styling) with
+  `title={t('noVoice')}`, and a small greyed note line with the same
+  `t('noVoice')` text appears beneath the rows (visible text, because hover
+  titles are unreliable on touch and on disabled controls). This mirrors the
+  Inspector's existing `canSpeak` + `noVoice` pattern and reuses that catalog
+  key — no new translations. When `voiceschanged` later delivers Japanese
+  voices, the rows enable live and the note disappears. The disabled select
+  shows the auto option; the stored `voiceURI` is never cleared by this state.
 - **Dismissal:** clicking outside the component closes the popup (document
   listener registered only while open); Escape inside closes it and stops
   propagation (so App's Escape-clears-selection handler doesn't also fire)
@@ -109,8 +119,8 @@ other speaker emoji anywhere in the UI.
 
 | Situation | Behavior |
 | --- | --- |
-| No Japanese voices | voice row hidden; popup shows only the rate row (same information as today's hidden select) |
-| Voices arrive later (`voiceschanged`) | listener lives in SettingsMenu now; row appears on next open (or live if open) |
+| No `speechSynthesis` API or no Japanese voices | both rows rendered but disabled + greyed, `title={t('noVoice')}` on both controls, visible `t('noVoice')` note line beneath |
+| Voices arrive later (`voiceschanged`) | listener lives in SettingsMenu now; rows enable live, note disappears |
 | Stored voice absent on this machine | displays as auto, stored value untouched (unchanged semantics, moved verbatim) |
 | Escape with popup open + bunsetsu selected | popup closes, selection stays (stopPropagation) |
 | Escape with popup closed | unchanged — App clears the selection |
@@ -125,10 +135,12 @@ shape, browser-smoke/CI.
 
 - New `SettingsMenu` component tests: gear renders with localized aria-label
   and `aria-expanded` tracking; popup hidden until click; voice + rate rows
-  present with accessible names when voices exist; voice row hidden without
-  Japanese voices (rate row still there); stored-absent-voice displays auto;
-  change events update both bindables; outside click closes; Escape closes,
-  stops propagation, and refocuses the gear; gear click toggles closed.
+  present with accessible names when voices exist; without Japanese voices
+  both controls render disabled with the `noVoice` title and the visible
+  `noVoice` note; voices arriving via `voiceschanged` enable the rows and
+  remove the note; stored-absent-voice displays auto; change events update
+  both bindables; outside click closes; Escape closes, stops propagation, and
+  refocuses the gear; gear click toggles closed.
 - Toolbar tests: view buttons before furigana checkbox in DOM order; voice
   and rate cases removed (moved to SettingsMenu tests).
 - App tests: header DOM order brand → toolbar → settings gear (gear last);
