@@ -18,9 +18,9 @@ Everything runs client-side; there is no backend. Parsing is powered by
 
 ![Ayaki parsing a two-sentence input — dependency arcs, the active sentence highlighted, the sentence inspector with speech and translation links, and the language globe and settings gear in the header](docs/images/screenshot.png)
 
-![The tree view with furigana, the selected bunsetsu 映画を highlighted with its dependency chain traced in amber up to the main verb, and the morpheme inspector showing readings, parts of speech and Jisho links](docs/images/screenshot-tree.png)
+![The tree view with furigana, the selected bunsetsu 映画を highlighted with its dependency chain traced in amber up to the predicate, and the morpheme inspector showing readings, parts of speech and Jisho links](docs/images/screenshot-tree.png)
 
-![The classic CaboCha-style stair view — one bunsetsu per row with right-hand rails connecting dependents to their heads, the selected bunsetsu highlighted and its chain to the main verb traced in amber](docs/images/screenshot-cabocha.png)
+![The classic CaboCha-style stair view — one bunsetsu per row with right-hand rails connecting dependents to their heads, the selected bunsetsu highlighted and its chain to the predicate traced in amber](docs/images/screenshot-cabocha.png)
 
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).*
 
