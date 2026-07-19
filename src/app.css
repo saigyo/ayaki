@@ -138,7 +138,7 @@ footer a { color: var(--accent); }
 .help-legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend-swatch { flex: none; width: 14px; height: 14px; border-radius: 4px; }
 .legend-selected { background: var(--accent); }
-.legend-link { background: #eef2f8; border: 2px solid var(--accent); }
+.legend-link { background: var(--box-fill); border: 2px solid var(--accent); }
 .legend-chain { background: var(--sw-soft); border: 2px solid var(--sw); }
 .legend-line { flex: none; width: 18px; border-top: 2px dotted var(--uncertain-line); }
 .help-note { color: #57606a; font-size: 0.8rem; font-style: italic; }

@@ -73,9 +73,9 @@ async function main() {
   await page.getByTestId('example-link').click()
 
   log(`waiting up to ${PARSE_TIMEOUT_MS}ms for g.bunsetsu elements (first parse downloads the dictionary)`)
-  await page.waitForSelector('g.bunsetsu', { timeout: PARSE_TIMEOUT_MS })
+  await page.waitForSelector('main g.bunsetsu', { timeout: PARSE_TIMEOUT_MS })
 
-  const bunsetsuCount = await page.locator('g.bunsetsu').count()
+  const bunsetsuCount = await page.locator('main g.bunsetsu').count()
 
   const failures = []
   if (bunsetsuCount < MIN_BUNSETSU) {
