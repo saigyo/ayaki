@@ -127,7 +127,7 @@ body. Sections 2 and 6 are `<ul>` lists; section 3 is hint + demo + legend.
 | `helpLabel` | help |
 | `helpClose` | close help |
 | `helpAboutTitle` | What is this? |
-| `helpAboutBody` | Ayaki (文木) visualizes the dependency structure of Japanese sentences: which phrase attaches to which. Each box is a bunsetsu (文節) — the small phrase unit Japanese sentences are chunked into, typically a content word plus its particles. |
+| `helpAboutBody` | Ayaki (文木) visualizes the dependency structure of Japanese sentences: which phrase attaches to which. Each box is a bunsetsu (文節) — the small phrase unit Japanese sentences are chunked into: a content word as its head, followed by function elements such as particles, auxiliaries, or inflectional endings. |
 | `helpViewsTitle` | The three views |
 | `helpViewArcs` | Arcs — dependencies drawn as arches above the running sentence; good for seeing distance and nesting. |
 | `helpViewTree` | Tree — the sentence as a branching hierarchy; good for seeing what groups under what. |
@@ -153,7 +153,7 @@ body. Sections 2 and 6 are `<ul>` lists; section 3 is hint + demo + legend.
 | `helpLabel` | Hilfe |
 | `helpClose` | Hilfe schließen |
 | `helpAboutTitle` | Worum geht es? |
-| `helpAboutBody` | Ayaki (文木) visualisiert die Dependenzstruktur japanischer Sätze: welche Phrase sich an welche anschließt. Jeder Kasten ist ein Bunsetsu (文節) — die kleine Phraseneinheit, in die japanische Sätze zerlegt werden, typischerweise ein Inhaltswort mit seinen Partikeln. |
+| `helpAboutBody` | Ayaki (文木) visualisiert die Dependenzstruktur japanischer Sätze: welche Phrase sich an welche anschließt. Jeder Kasten ist ein Bunsetsu (文節) — die kleine Phraseneinheit, in die japanische Sätze zerlegt werden: ein Inhaltswort als ihr Kopf, gefolgt von Funktionselementen wie Partikeln, Hilfsverben oder Flexionsendungen. |
 | `helpViewsTitle` | Die drei Ansichten |
 | `helpViewArcs` | Bögen — Abhängigkeiten als Bögen über dem laufenden Satz; gut, um Distanz und Verschachtelung zu sehen. |
 | `helpViewTree` | Baum — der Satz als verzweigte Hierarchie; gut, um zu sehen, was sich wem unterordnet. |
@@ -179,7 +179,7 @@ body. Sections 2 and 6 are `<ul>` lists; section 3 is hint + demo + legend.
 | `helpLabel` | ヘルプ |
 | `helpClose` | ヘルプを閉じる |
 | `helpAboutTitle` | このアプリについて |
-| `helpAboutBody` | 文木は日本語の文の係り受け構造(どの文節がどの文節に係るか)を可視化します。各ボックスは文節、つまり内容語とそれに続く助詞などからなる、日本語の文を区切る基本単位です。 |
+| `helpAboutBody` | 文木は日本語の文の係り受け構造(どの文節がどの文節に係るか)を可視化します。各ボックスは文節、つまり主辞となる内容語と、それに続く助詞・助動詞・活用語尾などの機能要素からなる、日本語の文を区切る基本単位です。 |
 | `helpViewsTitle` | 三つの表示 |
 | `helpViewArcs` | アーチ — 文の上に係り受けをアーチとして描きます。距離や入れ子構造が見やすい表示です。 |
 | `helpViewTree` | ツリー — 文を枝分かれする階層として描きます。何が何にまとまるかが見やすい表示です。 |
@@ -205,7 +205,7 @@ body. Sections 2 and 6 are `<ul>` lists; section 3 is hint + demo + legend.
 | `helpLabel` | 帮助 |
 | `helpClose` | 关闭帮助 |
 | `helpAboutTitle` | 关于本应用 |
-| `helpAboutBody` | 文木(Ayaki)可视化日语句子的依存结构:哪个短语依附于哪个短语。每个方框是一个文节(文節)——日语句子切分的基本短语单位,通常由一个实词及其后附助词组成。 |
+| `helpAboutBody` | 文木(Ayaki)可视化日语句子的依存结构:哪个短语依附于哪个短语。每个方框是一个文节(文節)——日语句子切分的基本短语单位:以一个实词为中心语,后接助词、助动词或活用词尾等功能成分。 |
 | `helpViewsTitle` | 三种视图 |
 | `helpViewArcs` | 弧线——在句子上方以弧线绘制依存关系,便于观察距离与嵌套。 |
 | `helpViewTree` | 树形——将句子绘制为分支层级,便于观察成分的归属。 |
