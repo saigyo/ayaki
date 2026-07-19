@@ -68,9 +68,9 @@ export const ja: Record<keyof typeof en, string> = {
   legendLink: '係り先(その文節が修飾する文節)',
   legendChain: '述語まで続く連鎖',
   legendUncertain: '不確かな係り受け(点線)',
+  legendChainNote: '連鎖の色や表示の有無は設定で変更できます。',
   legendChainDirect:
     '述語に直接係る文節には、その先の連鎖はありません。青いリンク自体が経路のすべてです(上の図で「見に」を選んでみてください)。',
-  legendChainNote: '連鎖の色や表示の有無は設定で変更できます。',
   helpConfidenceTitle: '係り受けの信頼度',
   helpConfidenceBody:
     '解析は統計モデルによるもので、誤ることがあります。「係り受けの信頼度を表示」を有効にすると、不確かな係り受けが点線で描かれ、線にカーソルを合わせるとモデルの確率が表示されます。結果を鵜呑みにしないための手がかりです。',
