@@ -94,6 +94,7 @@
         </li>
         <li><span class="legend-line" aria-hidden="true"></span>{t('legendUncertain')}</li>
       </ul>
+      <p class="help-note">{t('legendChainDirect')}</p>
       <p class="help-note">{t('legendChainNote')}</p>
     </section>
     <section>

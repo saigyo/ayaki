@@ -69,6 +69,8 @@ export const zh: Record<keyof typeof en, string> = {
   legendChain: '一直延伸到谓语的依存链',
   legendUncertain: '不确定的依存(虚线)',
   legendChainNote: '依存链的颜色以及是否显示可在设置中调整。',
+  legendChainDirect:
+    '直接依附于谓语的文节没有后续依存链——蓝色连线本身就是完整路径(可在上图中点击「見に」试试)。',
   helpConfidenceTitle: '依存置信度',
   helpConfidenceBody:
     '句法分析来自统计模型,可能出错。启用「显示依存置信度」后,不确定的依存关系以虚线绘制,将鼠标悬停在连线上可查看模型给出的概率,帮助你对分析结果保持审慎。',
