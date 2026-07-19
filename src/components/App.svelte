@@ -29,6 +29,7 @@
   setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
   let showConfidence = $state(initialSettings.showConfidence)
+  let confidenceThreshold = $state(initialSettings.confidenceThreshold)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
@@ -50,7 +51,7 @@
   }
 
   $effect(() => {
-    saveSettings({ showFurigana, showConfidence, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
+    saveSettings({ showFurigana, showConfidence, confidenceThreshold, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
   })
 
   $effect(() => {
