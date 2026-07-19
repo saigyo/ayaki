@@ -39,7 +39,7 @@
   {#if selected}
     <h2 lang="ja">
       {selected.surface}
-      <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}>🔊</button>
+      <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}>🗣️</button>
     </h2>
     {@const label = confidenceLabel(selected)}
     {#if label}
@@ -53,7 +53,7 @@
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
           {#if m.reading && m.reading !== m.surface}<span class="m-reading" lang="ja">（{m.reading}）</span>{/if}
-          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakItem', { surface: m.surface })} onclick={() => speak(m.surface, rate, voiceURI)}>🔊</button>
+          <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakItem', { surface: m.surface })} onclick={() => speak(m.surface, rate, voiceURI)}>🗣️</button>
         </div>
         <div class="m-pos"><span lang="ja">{m.posJa}</span>{#if pg}<span class="en">{pg}</span>{/if}</div>
         {#if m.baseForm}
@@ -73,7 +73,7 @@
     {#if sentence}
       <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(sentence.text, rate, voiceURI)}>🔊 {t('speakButton')}</button>
+        <button disabled={!canSpeak} title={speakTitle} onclick={() => speak(sentence.text, rate, voiceURI)}>🗣️ {t('speakButton')}</button>
         <button onclick={stopSpeech}>⏹ {t('stopButton')}</button>
         <a href={googleTranslateUrl(sentence.text, currentLocale())} target="_blank" rel="noopener">Google Translate ↗</a>
       </div>

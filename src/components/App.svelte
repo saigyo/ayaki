@@ -2,6 +2,7 @@
   import SentenceInput from './SentenceInput.svelte'
   import Toolbar from './Toolbar.svelte'
   import LocaleSwitcher from './LocaleSwitcher.svelte'
+  import SettingsMenu from './SettingsMenu.svelte'
   import SentenceCard from './SentenceCard.svelte'
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
@@ -83,7 +84,8 @@
       <h1><span lang="ja">文木</span> Ayaki</h1>
       <LocaleSwitcher bind:locale />
     </div>
-    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI />
+    <Toolbar bind:showFurigana bind:view />
+    <SettingsMenu bind:rate bind:voiceURI />
   </header>
   <main>
     <section class="content">

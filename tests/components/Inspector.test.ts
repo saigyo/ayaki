@@ -71,4 +71,8 @@ describe('Inspector — bunsetsu mode', () => {
     expect(jaView.queryByText('verb (independent)')).toBeNull()
     expect(jaView.getByText('動詞・自立')).toBeInTheDocument()
   })
+  it('uses the speaking-head glyph on speak buttons', () => {
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
+    expect(screen.getByRole('button', { name: 'speak bunsetsu' }).textContent).toContain('🗣️')
+  })
 })
