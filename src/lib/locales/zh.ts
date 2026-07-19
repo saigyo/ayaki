@@ -16,7 +16,7 @@ export const zh: Record<keyof typeof en, string> = {
   localeAuto: '自动（浏览器）',
   settingsLabel: '设置',
   confidenceToggle: '显示依存置信度',
-  chainLabel: '主动词依存链',
+  chainLabel: '谓语依存链',
   chainAmber: '琥珀色',
   chainGreen: '绿色',
   chainViolet: '紫色',

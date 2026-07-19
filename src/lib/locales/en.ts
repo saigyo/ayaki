@@ -15,7 +15,7 @@ export const en = {
   localeAuto: 'Auto (browser)',
   settingsLabel: 'settings',
   confidenceToggle: 'show attachment confidence',
-  chainLabel: 'chain to main verb',
+  chainLabel: 'chain to predicate',
   chainAmber: 'amber',
   chainGreen: 'green',
   chainViolet: 'violet',

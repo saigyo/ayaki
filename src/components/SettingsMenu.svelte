@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { listJaVoices } from '../lib/speech'
   import { t } from '../lib/i18n.svelte'
-  import type { ChainColor } from '../lib/chainpalette'
+  import { CHAIN_COLORS, CHAIN_PALETTE, type ChainColor } from '../lib/chainpalette'
 
   let {
     rate = $bindable(),
@@ -31,6 +31,13 @@
 
   const storedVoicePresent = $derived(voices.some((v) => v.voiceURI === voiceURI))
   const noVoices = $derived(voices.length === 0)
+
+  const CHAIN_OPTION_KEYS = {
+    amber: 'chainAmber',
+    green: 'chainGreen',
+    violet: 'chainViolet',
+    none: 'chainNone',
+  } as const
 
   // document-level listeners exist only while the popup is open
   $effect(() => {
@@ -114,15 +121,29 @@
         <label class="row-label" for="conf-{uid}">{t('confidenceToggle')}</label>
         <input id="conf-{uid}" type="checkbox" bind:checked={showConfidence} />
       </div>
-      <div class="row">
-        <label class="row-label" for="chain-{uid}">{t('chainLabel')}</label>
-        <select id="chain-{uid}" bind:value={chainColor}>
-          <option value="amber">{t('chainAmber')}</option>
-          <option value="green">{t('chainGreen')}</option>
-          <option value="violet">{t('chainViolet')}</option>
-          <option value="none">{t('chainNone')}</option>
-        </select>
-      </div>
+      <fieldset class="row chain-row">
+        <legend class="row-label">{t('chainLabel')}</legend>
+        <div class="swatches">
+          {#each CHAIN_COLORS as c (c)}
+            <input
+              class="swatch-input"
+              type="radio"
+              id="chain-{c}-{uid}"
+              name="chain-{uid}"
+              value={c}
+              bind:group={chainColor}
+              aria-label={t(CHAIN_OPTION_KEYS[c])}
+            />
+            <label
+              class="swatch"
+              class:swatch-none={c === 'none'}
+              for="chain-{c}-{uid}"
+              title={t(CHAIN_OPTION_KEYS[c])}
+              style={c !== 'none' ? `--sw: ${CHAIN_PALETTE[c].line}; --sw-soft: ${CHAIN_PALETTE[c].soft}` : undefined}
+            ></label>
+          {/each}
+        </div>
+      </fieldset>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>
       {/if}

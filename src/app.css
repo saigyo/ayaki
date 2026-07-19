@@ -113,3 +113,12 @@ footer a { color: var(--accent); }
 .settings-popup .rate-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
 .settings-popup .no-voice-note { margin: 0; color: #57606a; font-size: 0.8rem; font-style: italic; max-width: 15rem; }
 .settings-popup :disabled { opacity: 0.5; cursor: default; }
+
+/* chain-color swatches: each tile is a miniature of the chain box styling */
+.settings-popup .chain-row { border: none; margin: 0; padding: 0; }
+.settings-popup .chain-row legend { padding: 0; }
+.settings-popup .swatches { display: flex; gap: 10px; margin-top: 0.25rem; }
+.settings-popup .swatch { width: 28px; height: 28px; border-radius: 6px; background: var(--sw-soft); border: 2px solid var(--sw); cursor: pointer; }
+.settings-popup .swatch-none { background: linear-gradient(135deg, transparent 44%, var(--danger) 44%, var(--danger) 56%, transparent 56%), #fff; border: 1px solid var(--box-stroke); }
+.settings-popup .swatch-input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; }
+.settings-popup .swatch-input:checked + .swatch, .settings-popup .swatch-input:focus-visible + .swatch { outline: 2px solid var(--accent); outline-offset: 2px; }
