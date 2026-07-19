@@ -91,7 +91,7 @@ outside-click handling, listbox semantics, and keyboard navigation.
 | --- | --- |
 | Stored locale invalid / null | unchanged — resolver falls back to browser locale then `'en'`; dropdown shows Automatic selected |
 | Select emits unknown value | validated `onchange` maps it to `null` (unchanged logic) |
-| `:has()` unsupported (pre-2023 browsers) | focus ring absent, control still fully operable — acceptable degradation |
+| `:has()` unsupported (pre-2023 browsers) | `@supports not selector(:has(*))` fallback shows the ring via `:focus-within` (Copilot review); truly ancient browsers lose the ring but stay operable |
 
 ## Testing
 
