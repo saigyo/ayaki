@@ -107,7 +107,7 @@
           <span>{rate.toFixed(1)}×</span>
         </span>
       </div>
-      <div class="row">
+      <div class="row check-row">
         <label class="row-label" for="conf-{uid}">{t('confidenceToggle')}</label>
         <input id="conf-{uid}" type="checkbox" bind:checked={showConfidence} />
       </div>
