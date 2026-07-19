@@ -19,19 +19,25 @@ describe('NodeTree', () => {
     expect(rootY).toBeLessThan(depY)
   })
   it('marks low-confidence edges', () => {
-    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    const { container } = render(NodeTree, { props: { bunsetsu, showConfidence: true, onselect: () => {} } })
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(1)
   })
   it('marks forced edges with the forced class, not low', () => {
-    const { container } = render(NodeTree, { props: { bunsetsu: forcedSentenceFixture().bunsetsu, onselect: () => {} } })
+    const { container } = render(NodeTree, {
+      props: { bunsetsu: forcedSentenceFixture().bunsetsu, showConfidence: true, onselect: () => {} },
+    })
     expect(container.querySelectorAll('line.edge.forced')).toHaveLength(1)
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(0)
   })
   it('titles edges with the attachment confidence, including forced edges', () => {
-    const withP = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
-    expect(withP.container.querySelector('line.edge.low title')?.textContent).toContain('55')
-    const forced = render(NodeTree, { props: { bunsetsu: forcedSentenceFixture().bunsetsu, onselect: () => {} } })
-    expect(forced.container.querySelector('line.edge.forced title')?.textContent).toContain('forced attachment')
+    const withP = render(NodeTree, { props: { bunsetsu, showConfidence: true, onselect: () => {} } })
+    expect(withP.container.querySelector('line.edge.low')?.closest('g.connector')?.querySelector('title')?.textContent).toContain('55')
+    const forced = render(NodeTree, {
+      props: { bunsetsu: forcedSentenceFixture().bunsetsu, showConfidence: true, onselect: () => {} },
+    })
+    expect(
+      forced.container.querySelector('line.edge.forced')?.closest('g.connector')?.querySelector('title')?.textContent,
+    ).toContain('forced attachment')
   })
   it('shows furigana above nodes only when enabled, skipping kana-only bunsetsu', () => {
     const off = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
@@ -64,6 +70,25 @@ describe('NodeTree', () => {
       expect(outer).not.toHaveBeenCalled()
     } finally {
       document.body.removeEventListener('click', outer)
+    }
+  })
+  it('renders plain edges by default but keeps the probability title', () => {
+    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    const titles = [...container.querySelectorAll('g.connector title')].map((el) => el.textContent)
+    expect(titles.some((text) => text?.includes('55'))).toBe(true)
+  })
+  it('gives every connector an identical-geometry hit twin', () => {
+    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
+    const groups = [...container.querySelectorAll('g.connector')]
+    expect(groups.length).toBeGreaterThan(0)
+    for (const g of groups) {
+      const visible = g.querySelector('line.edge')!
+      const hit = g.querySelector('line.hit')!
+      expect(hit.getAttribute('x1')).toBe(visible.getAttribute('x1'))
+      expect(hit.getAttribute('y1')).toBe(visible.getAttribute('y1'))
+      expect(hit.getAttribute('x2')).toBe(visible.getAttribute('x2'))
+      expect(hit.getAttribute('y2')).toBe(visible.getAttribute('y2'))
     }
   })
 })

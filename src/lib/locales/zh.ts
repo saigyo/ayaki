@@ -15,6 +15,7 @@ export const zh: Record<keyof typeof en, string> = {
   localeLabel: '语言',
   localeAuto: '自动（浏览器）',
   settingsLabel: '设置',
+  confidenceToggle: '显示依存置信度',
   inputPlaceholder: '请输入日语句子…',
   inputLabel: '要解析的日语文本',
   parseButton: '解析',

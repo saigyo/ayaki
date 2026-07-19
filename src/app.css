@@ -68,6 +68,11 @@ svg line.edge.forced { stroke: var(--uncertain); stroke-dasharray: 2 3; }
 svg line.edge.hl { stroke: var(--accent); stroke-width: 2.5; }
 svg marker path { fill: var(--arc); }
 
+/* readings stay legible where connectors cross them (arcs view especially) */
+svg text.furigana { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+/* invisible fat twin of each connector: a forgiving hover target for the title */
+svg .connector .hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; }
+
 .inspector { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem 1rem; position: sticky; top: 1rem; }
 .inspector h2 { margin-top: 0; font-size: 1.2rem; }
 .inspector .icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
@@ -94,6 +99,8 @@ footer a { color: var(--accent); }
 .icon-button[aria-expanded="true"] { background: var(--accent-soft); color: var(--accent); }
 .settings-popup { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); padding: 0.75rem 1rem; min-width: 15rem; display: flex; flex-direction: column; gap: 0.6rem; }
 .settings-popup .row { display: flex; flex-direction: column; gap: 0.25rem; }
+/* checkbox rows: the control is small, so it sits right of the label instead of orphaned beneath it */
+.settings-popup .check-row { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .settings-popup .row-label { text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.04em; color: #57606a; }
 .settings-popup select { border: 1px solid var(--box-stroke); background: #fff; padding: 0.25rem; border-radius: 6px; }
 .settings-popup .rate-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }

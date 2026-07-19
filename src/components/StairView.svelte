@@ -7,11 +7,13 @@
   let {
     bunsetsu,
     showFurigana = false,
+    showConfidence = false,
     selected = null,
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
+    showConfidence?: boolean
     selected?: number | null
     onselect: (index: number) => void
   } = $props()
@@ -37,8 +39,10 @@
   function connectorClass(dep: number): string {
     const b = bunsetsu[dep]
     const cls = ['arc']
-    if (b.forced) cls.push('forced')
-    else if (isUncertain(b)) cls.push('low')
+    if (showConfidence) {
+      if (b.forced) cls.push('forced')
+      else if (isUncertain(b)) cls.push('low')
+    }
     if (hovered === dep || selected === dep) cls.push('hl')
     return cls.join(' ')
   }
@@ -60,11 +64,13 @@
     <g transform="translate({PAD}, 2)">
       {#each layout.connectors as c (c.dep)}
         {@const label = confidenceLabel(bunsetsu[c.dep])}
-        <path class={connectorClass(c.dep)} d={c.d} marker-end="url(#arrowhead-{uid})">
+        <g class="connector">
           {#if label}
             <title>{label}</title>
           {/if}
-        </path>
+          <path class={connectorClass(c.dep)} d={c.d} marker-end="url(#arrowhead-{uid})" />
+          <path class="hit" d={c.d} />
+        </g>
       {/each}
       {#each bunsetsu as b, i (b.index)}
         {@const box = layout.boxes[i]}

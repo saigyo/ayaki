@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -92,6 +92,14 @@ describe('loadSettings', () => {
     localStorage.setItem(KEY, JSON.stringify({ locale: 7 }))
     expect(loadSettings().locale).toBeNull()
   })
+  it('validates showConfidence and defaults it to false', () => {
+    localStorage.setItem(KEY, JSON.stringify({ showConfidence: true }))
+    expect(loadSettings().showConfidence).toBe(true)
+    localStorage.setItem(KEY, JSON.stringify({ showConfidence: 'yes' }))
+    expect(loadSettings().showConfidence).toBe(false)
+    localStorage.setItem(KEY, JSON.stringify({}))
+    expect(loadSettings().showConfidence).toBe(false)
+  })
 })
 
 describe('saveSettings', () => {
@@ -103,3 +111,4 @@ describe('saveSettings', () => {
     spy.mockRestore()
   })
 })
+

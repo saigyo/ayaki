@@ -24,13 +24,14 @@
   // runs post-mount, which would flash the auto locale on first paint
   setStoredLocale(initialSettings.locale)
   let showFurigana = $state(initialSettings.showFurigana)
+  let showConfidence = $state(initialSettings.showConfidence)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
   let locale = $state(initialSettings.locale)
 
   $effect(() => {
-    saveSettings({ showFurigana, view, rate, voiceURI, locale })
+    saveSettings({ showFurigana, showConfidence, view, rate, voiceURI, locale })
   })
 
   $effect(() => {
@@ -85,7 +86,7 @@
       <LocaleSwitcher bind:locale />
     </div>
     <Toolbar bind:showFurigana bind:view />
-    <SettingsMenu bind:rate bind:voiceURI />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence />
   </header>
   <main>
     <section class="content">
@@ -110,6 +111,7 @@
             {sentence}
             {view}
             {showFurigana}
+            {showConfidence}
             active={sentences.length > 1 && activeSentence === i}
             selected={selection?.sentence === i ? selection.bunsetsu : null}
             onselect={(b) => select(i, b)}
@@ -118,7 +120,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} />
   </main>
   <footer>
     <p>

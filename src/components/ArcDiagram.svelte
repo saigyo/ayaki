@@ -7,11 +7,13 @@
   let {
     bunsetsu,
     showFurigana = false,
+    showConfidence = false,
     selected = null,
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
+    showConfidence?: boolean
     selected?: number | null
     onselect: (index: number) => void
   } = $props()
@@ -24,15 +26,17 @@
   const FURI_H = 16
   const PAD_X = 4
 
-  const layout = $derived(layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head)))
+  const layout = $derived(layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), showFurigana ? 30 : 22))
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
   const svgHeight = $derived(boxTop + BOX_H + 6)
 
   function arcClass(dep: number): string {
     const b = bunsetsu[dep]
     const cls = ['arc']
-    if (b.forced) cls.push('forced')
-    else if (isUncertain(b)) cls.push('low')
+    if (showConfidence) {
+      if (b.forced) cls.push('forced')
+      else if (isUncertain(b)) cls.push('low')
+    }
     if (hovered === dep || selected === dep) cls.push('hl')
     return cls.join(' ')
   }
@@ -47,15 +51,14 @@
     </defs>
     {#each layout.arcs as a (a.dep)}
       {@const label = confidenceLabel(bunsetsu[a.dep])}
-      <path
-        class={arcClass(a.dep)}
-        d="M {a.x1 + PAD_X} {boxTop} C {a.x1 + PAD_X} {boxTop - a.top}, {a.x2 + PAD_X} {boxTop - a.top}, {a.x2 + PAD_X} {boxTop}"
-        marker-end="url(#arrowhead-{uid})"
-      >
+      {@const d = `M ${a.x1 + PAD_X} ${boxTop} C ${a.x1 + PAD_X} ${boxTop - a.top}, ${a.x2 + PAD_X} ${boxTop - a.top}, ${a.x2 + PAD_X} ${boxTop}`}
+      <g class="connector">
         {#if label}
           <title>{label}</title>
         {/if}
-      </path>
+        <path class={arcClass(a.dep)} {d} marker-end="url(#arrowhead-{uid})" />
+        <path class="hit" {d} />
+      </g>
     {/each}
     {#each bunsetsu as b, i (b.index)}
       {@const box = layout.boxes[i]}

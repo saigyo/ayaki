@@ -2,7 +2,7 @@ import { textWidth } from './arclayout'
 
 const BOX_PAD = 10
 const STEP = 24
-const RAIL_GAP = 10
+const RAIL_GAP = 16
 
 export interface StairBox {
   x: number

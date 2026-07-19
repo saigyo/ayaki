@@ -6,9 +6,11 @@
   let {
     rate = $bindable(),
     voiceURI = $bindable(null),
+    showConfidence = $bindable(false),
   }: {
     rate: number
     voiceURI?: string | null
+    showConfidence?: boolean
   } = $props()
 
   const uid = $props.id()
@@ -104,6 +106,10 @@
           />
           <span>{rate.toFixed(1)}×</span>
         </span>
+      </div>
+      <div class="row check-row">
+        <label class="row-label" for="conf-{uid}">{t('confidenceToggle')}</label>
+        <input id="conf-{uid}" type="checkbox" bind:checked={showConfidence} />
       </div>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>

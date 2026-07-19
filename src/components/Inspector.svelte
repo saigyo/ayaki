@@ -14,6 +14,7 @@
     selected,
     rate,
     voiceURI,
+    showConfidence = false,
   }: {
     sentence: ParsedSentence | null
     index: number
@@ -21,6 +22,7 @@
     selected: BunsetsuVM | null
     rate: number
     voiceURI: string | null
+    showConfidence?: boolean
   } = $props()
 
   let canSpeak = $state(false)
@@ -42,7 +44,7 @@
       <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}>🗣️</button>
     </h2>
     {@const label = confidenceLabel(selected)}
-    {#if label}
+    {#if showConfidence && label}
       <p class="confidence" class:uncertain={isUncertain(selected)}>
         {t('attachment', { label })}
       </p>
@@ -77,7 +79,7 @@
         <button onclick={stopSpeech}>⏹ {t('stopButton')}</button>
         <a href={googleTranslateUrl(sentence.text, currentLocale())} target="_blank" rel="noopener">Google Translate ↗</a>
       </div>
-      {#if uncertainCount > 0}
+      {#if showConfidence && uncertainCount > 0}
         <p class="confidence-note">{t('uncertaintyNote', { uncertain: uncertainCount, total: sentence.bunsetsu.length - 1 })}</p>
       {/if}
     {:else}

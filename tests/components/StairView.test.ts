@@ -13,17 +13,17 @@ describe('StairView', () => {
     expect(container.querySelectorAll('path.arc')).toHaveLength(2)
   })
   it('marks low-confidence connectors and titles them with the probability', () => {
-    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
+    const { container } = render(StairView, { props: { bunsetsu, showConfidence: true, onselect: () => {} } })
     const low = container.querySelectorAll('path.arc.low')
     expect(low).toHaveLength(1)
-    expect(low[0].querySelector('title')?.textContent).toContain('55')
+    expect(low[0].closest('g.connector')?.querySelector('title')?.textContent).toContain('55')
   })
   it('titles forced attachments', () => {
     const forced = forcedSentenceFixture().bunsetsu
-    const { container } = render(StairView, { props: { bunsetsu: forced, onselect: () => {} } })
+    const { container } = render(StairView, { props: { bunsetsu: forced, showConfidence: true, onselect: () => {} } })
     const f = container.querySelectorAll('path.arc.forced')
     expect(f.length).toBeGreaterThan(0)
-    expect(f[0].querySelector('title')?.textContent).toMatch(/forced/i)
+    expect(f[0].closest('g.connector')?.querySelector('title')?.textContent).toMatch(/forced/i)
   })
   it('shows furigana only when enabled', () => {
     const off = render(StairView, { props: { bunsetsu, onselect: () => {} } })
@@ -54,5 +54,21 @@ describe('StairView', () => {
     const idB = b.container.querySelector('marker')!.id
     expect(idA).not.toBe(idB)
     expect(a.container.querySelector('svg')!.getAttribute('aria-label')).toBe('CaboCha dependency stairs')
+  })
+  it('renders plain connectors by default but keeps the probability title', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    const titles = [...container.querySelectorAll('svg.stairview g.connector title')].map((el) => el.textContent)
+    expect(titles.some((text) => text?.includes('55'))).toBe(true)
+  })
+  it('gives every connector an identical-geometry hit twin', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
+    const groups = [...container.querySelectorAll('svg.stairview g.connector')]
+    expect(groups.length).toBeGreaterThan(0)
+    for (const g of groups) {
+      const visible = g.querySelector('path.arc')!
+      const hit = g.querySelector('path.hit')!
+      expect(hit.getAttribute('d')).toBe(visible.getAttribute('d'))
+    }
   })
 })

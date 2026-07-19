@@ -143,11 +143,27 @@ describe('App', () => {
     await tick()
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!)).toEqual({
       showFurigana: false,
+      showConfidence: false,
       view: 'tree',
       rate: 1.2,
       voiceURI: null,
       locale: null,
     })
+  })
+  it('persists the confidence toggle and styles arcs without re-parsing', async () => {
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    const user = userEvent.setup()
+    render(App)
+    await user.type(screen.getByRole('textbox'), '猫が魚を食べた。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    await screen.findByText('食べた。')
+    expect(document.querySelectorAll('.low, .forced')).toHaveLength(0)
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    await user.click(screen.getByRole('checkbox', { name: 'show attachment confidence' }))
+    await tick()
+    expect(document.querySelectorAll('path.arc.low').length).toBeGreaterThan(0)
+    expect(JSON.parse(localStorage.getItem('ayaki-settings')!).showConfidence).toBe(true)
+    expect(parseText).toHaveBeenCalledTimes(1)
   })
   it('binds the voice selector to the persisted setting', async () => {
     vi.stubGlobal('speechSynthesis', {

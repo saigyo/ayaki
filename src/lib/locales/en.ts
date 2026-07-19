@@ -14,6 +14,7 @@ export const en = {
   localeLabel: 'language',
   localeAuto: 'Auto (browser)',
   settingsLabel: 'settings',
+  confidenceToggle: 'show attachment confidence',
   // input
   inputPlaceholder: 'Enter a Japanese sentence…',
   inputLabel: 'Japanese text to parse',

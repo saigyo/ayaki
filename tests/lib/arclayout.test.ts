@@ -54,4 +54,13 @@ describe('layoutArcs', () => {
     expect(new Set(tops).size).toBe(tops.length)
     expect(Math.max(...tops)).toBe(22 + 14 * 13)
   })
+  it('raises every arc and the area height by an arcBase delta, defaulting to today', () => {
+    const surfaces = ['猫が', '魚を', '食べた。']
+    const heads = [2, 2, null]
+    const base = layoutArcs(surfaces, heads)
+    const raised = layoutArcs(surfaces, heads, 30)
+    raised.arcs.forEach((a, i) => expect(a.top).toBe(base.arcs[i].top + 8))
+    expect(raised.arcAreaHeight).toBe(base.arcAreaHeight + 8)
+    expect(layoutArcs(surfaces, heads)).toEqual(base)
+  })
 })
