@@ -79,4 +79,7 @@ export const zh: Record<keyof typeof en, string> = {
   helpTipSelect: '点击文节可查看详情并追踪其依存链;再次点击或按 Escape 取消选择。',
   helpTipHover: '将鼠标悬停在连线上可查看依存概率。',
   helpTipSpeak: '🗣️ 可朗读整句(或单个文节)——语音和语速可在设置中调整。',
+  // share
+  shareButton: '分享链接',
+  shareCopied: '已复制',
 }
