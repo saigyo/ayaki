@@ -11,7 +11,7 @@ const fail = (name, detail) => {
   console.log(`FAIL ${name}: ${detail}`)
 }
 
-const browser = await chromium.launch()
+const browser = await chromium.launch({ headless: true })
 // pin the locale: the label assertions (view buttons, locale options) are the
 // English UI, independent of the machine the check runs on
 const page = await browser.newPage({ viewport: { width: 1200, height: 800 }, locale: 'en-US' })

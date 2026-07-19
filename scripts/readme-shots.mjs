@@ -51,7 +51,7 @@ async function shoot(page, path) {
 
 try {
   await waitForServer()
-  browser = await chromium.launch()
+  browser = await chromium.launch({ headless: true })
 
   // scene 1: arcs view, two sentences, no selection
   let page = await freshPage(browser)
