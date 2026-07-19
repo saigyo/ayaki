@@ -52,8 +52,12 @@ build.
      `映画を` selected, furigana off.
 - Waits: after parse, wait for `g.bunsetsu`; after selection, wait for
   `.morpheme` in the inspector. Prints one `written <path>` line per shot.
-- English UI assumed (headless Chromium defaults to `en-US`; scenes never set
-  a locale).
+- English UI guaranteed: the browser context pins `locale: 'en-US'` (and
+  launches explicitly headless), so screenshots are canonical regardless of
+  the machine's system locale or `PWDEBUG`-style env overrides. The live
+  check pins the same for its English label assertions, and additionally
+  records `pageerror` (uncaught page exceptions) alongside console errors.
+  (All three hardenings came out of the final review + Copilot rounds.)
 
 ## Script 2 — `scripts/live-check.mjs` (`npm run live-check [url]`)
 

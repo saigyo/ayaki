@@ -316,3 +316,19 @@ In `README.md`'s Development list, after the `npm run shots` bullet from Task 1,
 git add scripts/live-check.mjs package.json README.md
 git commit -m "chore: add live-check script for post-deploy verification"
 ```
+
+## Deviations
+
+The task snippets above are the as-planned code; the shipped scripts differ by
+three hardenings added during review (the plan text is kept as-executed,
+per this repo's annotate-don't-rewrite convention):
+
+- `fix` e38118c (final whole-branch review): live-check gained a `pageerror`
+  listener (uncaught page exceptions were invisible to the `console` event);
+  readme-shots closes Chromium best-effort in `finally` and captures the
+  preview server's output for boot-failure diagnostics.
+- `fix` 20f2d5a (Copilot round 1): both scripts pin `locale: 'en-US'` on their
+  browser contexts so English-UI selectors/screenshots don't depend on the
+  runner's system locale.
+- `fix` e9a930d (Copilot round 2): both scripts launch Chromium with an
+  explicit `{ headless: true }`, matching the browser-smoke house pattern.
