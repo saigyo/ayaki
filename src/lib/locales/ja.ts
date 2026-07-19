@@ -52,4 +52,31 @@ export const ja: Record<keyof typeof en, string> = {
   footerMorphology: '形態素解析:',
   footerDict: '＋IPAdic 辞書（IPADIC ライセンス）',
   footerSelf: 'Ayaki 本体は MIT ライセンスです。',
+  // help dialog
+  helpLabel: 'ヘルプ',
+  helpClose: 'ヘルプを閉じる',
+  helpAboutTitle: 'このアプリについて',
+  helpAboutBody:
+    '文木は日本語の文の係り受け構造(どの文節がどの文節に係るか)を可視化します。各ボックスは文節、つまり主辞となる内容語と、それに続く助詞・助動詞・活用語尾などの機能要素からなる、日本語の文を区切る基本単位です。',
+  helpViewsTitle: '三つの表示',
+  helpViewArcs: 'アーチ — 文の上に係り受けをアーチとして描きます。距離や入れ子構造が見やすい表示です。',
+  helpViewTree: 'ツリー — 文を枝分かれする階層として描きます。何が何にまとまるかが見やすい表示です。',
+  helpViewStairs: 'CaboCha — 日本語NLPツールで伝統的な階段状レイアウト。各文節は下方の文節に係ります。',
+  helpDiagramTitle: '図の読み方',
+  helpDiagramHint: '試してみましょう — 文節をクリック:',
+  legendSelection: '選択中の文節',
+  legendLink: '係り先(その文節が修飾する文節)',
+  legendChain: '述語まで続く連鎖',
+  legendUncertain: '不確かな係り受け(点線)',
+  legendChainNote: '連鎖の色や表示の有無は設定で変更できます。',
+  helpConfidenceTitle: '係り受けの信頼度',
+  helpConfidenceBody:
+    '解析は統計モデルによるもので、誤ることがあります。「係り受けの信頼度を表示」を有効にすると、不確かな係り受けが点線で描かれ、線にカーソルを合わせるとモデルの確率が表示されます。結果を鵜呑みにしないための手がかりです。',
+  helpTermTitle: '述語と主辞',
+  helpTermBody:
+    'どの連鎖も文の述語 — 動詞・形容詞・コピュラなど、最終的にすべての文節が係っていく要素 — に行き着きます。言語学ではこの要素を主辞と呼びます。',
+  helpTipsTitle: 'ヒント',
+  helpTipSelect: '文節をクリックすると詳細と連鎖が表示されます。もう一度クリックするか Escape で解除します。',
+  helpTipHover: '線にカーソルを合わせると係り受けの確率が表示されます。',
+  helpTipSpeak: '🗣️ で文(または文節)を読み上げます。声と速さは設定で選べます。',
 }

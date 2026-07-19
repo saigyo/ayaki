@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/svelte'
+import { render, screen, within } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { tick } from 'svelte'
 import App from '../../src/components/App.svelte'
 import { setStoredLocale } from '../../src/lib/i18n.svelte'
@@ -12,6 +12,20 @@ vi.mock('../../src/lib/parser', () => ({
   parserReady: vi.fn(() => false),
 }))
 import { parseText } from '../../src/lib/parser'
+
+// jsdom gained <dialog> showModal/close in recent versions; polyfill minimally
+// if this environment lacks them so the help-dialog test doesn't hard-crash
+beforeAll(() => {
+  if (!HTMLDialogElement.prototype.showModal) {
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute('open', '')
+    }
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute('open')
+      this.dispatchEvent(new Event('close'))
+    }
+  }
+})
 
 beforeEach(() => {
   vi.mocked(parseText).mockReset()
@@ -158,11 +172,13 @@ describe('App', () => {
     await user.type(screen.getByRole('textbox'), '猫が魚を食べた。')
     await user.click(screen.getByRole('button', { name: /parse/i }))
     await screen.findByText('食べた。')
-    expect(document.querySelectorAll('.low, .forced')).toHaveLength(0)
+    // scoped to <main>: the always-mounted (but closed) help dialog in the
+    // header carries its own live demo diagram with confidence styling on
+    expect(document.querySelector('main')!.querySelectorAll('.low, .forced')).toHaveLength(0)
     await user.click(screen.getByRole('button', { name: 'settings' }))
     await user.click(screen.getByRole('checkbox', { name: 'show attachment confidence' }))
     await tick()
-    expect(document.querySelectorAll('path.arc.low').length).toBeGreaterThan(0)
+    expect(document.querySelector('main')!.querySelectorAll('path.arc.low').length).toBeGreaterThan(0)
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).showConfidence).toBe(true)
     expect(parseText).toHaveBeenCalledTimes(1)
   })
@@ -220,10 +236,16 @@ describe('App', () => {
     expect(select.closest('.brand')).not.toBeNull()
     expect(select.closest('.toolbar')).toBeNull()
   })
-  it('orders the header: brand, toolbar, settings gear last', () => {
+  it('orders the header: brand, toolbar, help, settings gear last', () => {
     render(App)
     const children = [...document.querySelector('header')!.children]
-    expect(children.map((c) => c.className.split(' ')[0])).toEqual(['brand', 'toolbar', 'settings-menu'])
+    expect(children.map((c) => c.className.split(' ')[0])).toEqual([
+      'brand',
+      'toolbar',
+      'icon-button',
+      'help-dialog',
+      'settings-menu',
+    ])
   })
   it('switches to the cabocha view and persists the choice', async () => {
     vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
@@ -233,7 +255,8 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /parse/i }))
     await screen.findByText('食べた。')
     await user.click(screen.getByRole('button', { name: /CaboCha/ }))
-    expect(container.querySelector('svg.stairview')).not.toBeNull()
+    // scope to main: the help dialog's demo StairView in <header> always exists
+    expect(container.querySelector('main svg.stairview')).not.toBeNull()
     await tick()
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).view).toBe('cabocha')
   })
@@ -243,15 +266,25 @@ describe('App', () => {
     render(App)
     await user.type(screen.getByRole('textbox'), '新しい映画を見に行きました。')
     await user.click(screen.getByRole('button', { name: /parse/i }))
-    const box = await screen.findByText('新しい')
+    // scoped to <main>: the help dialog's demo reuses this same sentence text
+    // for its live example, so an unscoped query would match it too
+    const main = document.querySelector('main')!
+    const box = await within(main).findByText('新しい')
     box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     await tick()
-    expect(document.querySelectorAll('path.arc.chain')).toHaveLength(2)
+    expect(main.querySelectorAll('path.arc.chain')).toHaveLength(2)
     await user.click(screen.getByRole('button', { name: 'settings' }))
     await user.click(screen.getByRole('radio', { name: 'none' }))
     await tick()
-    expect(document.querySelectorAll('.chain')).toHaveLength(0)
+    expect(main.querySelectorAll('.chain')).toHaveLength(0)
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).chainColor).toBe('none')
     expect(parseText).toHaveBeenCalledTimes(1)
+  })
+  it('exposes the help button in the header and opens the help dialog', async () => {
+    const user = userEvent.setup()
+    render(App)
+    await user.click(screen.getByRole('button', { name: 'help' }))
+    const dialog = document.querySelector('dialog.help-dialog') as HTMLDialogElement
+    expect(dialog.open).toBe(true)
   })
 })

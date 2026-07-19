@@ -52,4 +52,31 @@ export const zh: Record<keyof typeof en, string> = {
   footerMorphology: '形态分析:',
   footerDict: '并使用 IPAdic 词典（IPADIC 许可）',
   footerSelf: 'Ayaki 本身采用 MIT 许可。',
+  // help dialog
+  helpLabel: '帮助',
+  helpClose: '关闭帮助',
+  helpAboutTitle: '关于本应用',
+  helpAboutBody:
+    '文木(Ayaki)可视化日语句子的依存结构:哪个短语依附于哪个短语。每个方框是一个文节(文節)——日语句子切分的基本短语单位:以一个实词为中心语,后接助词、助动词或活用词尾等功能成分。',
+  helpViewsTitle: '三种视图',
+  helpViewArcs: '弧线——在句子上方以弧线绘制依存关系,便于观察距离与嵌套。',
+  helpViewTree: '树形——将句子绘制为分支层级,便于观察成分的归属。',
+  helpViewStairs: 'CaboCha——日语NLP工具经典的阶梯布局,每个文节依附于其下方的文节。',
+  helpDiagramTitle: '如何解读图示',
+  helpDiagramHint: '试一试——点击任意文节:',
+  legendSelection: '选中的文节',
+  legendLink: '它的依附对象(该文节所修饰的文节)',
+  legendChain: '一直延伸到谓语的依存链',
+  legendUncertain: '不确定的依存(虚线)',
+  legendChainNote: '依存链的颜色以及是否显示可在设置中调整。',
+  helpConfidenceTitle: '依存置信度',
+  helpConfidenceBody:
+    '句法分析来自统计模型,可能出错。启用「显示依存置信度」后,不确定的依存关系以虚线绘制,将鼠标悬停在连线上可查看模型给出的概率,帮助你对分析结果保持审慎。',
+  helpTermTitle: '谓语与中心语',
+  helpTermBody:
+    '每条依存链最终都汇聚到句子的谓语(述語)——动词、形容词或系词短语,其他成分最终都依附于它。在语言学中,这一成分称为句子的中心语(主辞)。',
+  helpTipsTitle: '小提示',
+  helpTipSelect: '点击文节可查看详情并追踪其依存链;再次点击或按 Escape 取消选择。',
+  helpTipHover: '将鼠标悬停在连线上可查看依存概率。',
+  helpTipSpeak: '🗣️ 可朗读整句(或单个文节)——语音和语速可在设置中调整。',
 }

@@ -57,13 +57,14 @@ try {
   let page = await freshPage(browser)
   await page.getByRole('textbox').fill('猫が魚を食べた。犬は公園で遊んだ。')
   await page.getByRole('button', { name: /parse/i }).click()
-  await page.waitForSelector('g.bunsetsu', { timeout: 60_000 })
+  // scope to main: the help dialog's demo StairView in <header> always exists in the DOM
+  await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
   await shoot(page, 'docs/images/screenshot.png')
 
   // scene 2: tree view, built-in example, furigana on, 映画を selected
   page = await freshPage(browser)
   await page.getByTestId('example-link').click()
-  await page.waitForSelector('g.bunsetsu', { timeout: 60_000 })
+  await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
   await page.getByRole('button', { name: /tree/ }).click()
   await page.waitForSelector('svg line.edge')
   await page.getByRole('checkbox', { name: /furigana/ }).check()
@@ -74,9 +75,9 @@ try {
   // scene 3: cabocha view, built-in example, 映画を selected, furigana off
   page = await freshPage(browser)
   await page.getByTestId('example-link').click()
-  await page.waitForSelector('g.bunsetsu', { timeout: 60_000 })
+  await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
   await page.getByRole('button', { name: /CaboCha/ }).click()
-  await page.waitForSelector('svg.stairview path.arc')
+  await page.waitForSelector('main svg.stairview path.arc')
   await page.getByRole('button', { name: '映画を' }).click()
   await page.waitForSelector('.morpheme')
   await shoot(page, 'docs/images/screenshot-cabocha.png')

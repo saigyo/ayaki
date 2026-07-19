@@ -56,4 +56,31 @@ export const en = {
   footerMorphology: 'morphology by',
   footerDict: 'with the IPAdic dictionary (IPADIC license)',
   footerSelf: 'Ayaki itself is MIT.',
+  // help dialog
+  helpLabel: 'help',
+  helpClose: 'close help',
+  helpAboutTitle: 'What is this?',
+  helpAboutBody:
+    'Ayaki (文木) visualizes the dependency structure of Japanese sentences: which phrase attaches to which. Each box is a bunsetsu (文節) — the small phrase unit Japanese sentences are chunked into: a content word as its head, followed by function elements such as particles, auxiliaries, or inflectional endings.',
+  helpViewsTitle: 'The three views',
+  helpViewArcs: 'Arcs — dependencies drawn as arches above the running sentence; good for seeing distance and nesting.',
+  helpViewTree: 'Tree — the sentence as a branching hierarchy; good for seeing what groups under what.',
+  helpViewStairs: 'CaboCha — the classic stair layout of Japanese NLP tools; each bunsetsu attaches to one further down.',
+  helpDiagramTitle: 'Reading the diagram',
+  helpDiagramHint: 'Try it — click any bunsetsu:',
+  legendSelection: 'selected bunsetsu',
+  legendLink: 'its attachment (the bunsetsu it modifies)',
+  legendChain: 'the chain onward to the predicate',
+  legendUncertain: 'uncertain attachment (dotted)',
+  legendChainNote: 'The chain color — and whether it shows at all — is configurable in the settings.',
+  helpConfidenceTitle: 'Attachment confidence',
+  helpConfidenceBody:
+    'The parse comes from a statistical model — it can be wrong. With "show attachment confidence" enabled, uncertain attachments are drawn dotted, and hovering a connector shows the model\'s probability, helping you stay critical of the analysis.',
+  helpTermTitle: 'Predicate and head',
+  helpTermBody:
+    'Every chain ends at the sentence\'s predicate (述語) — the verb, adjective, or copula phrase that everything else ultimately attaches to. In linguistics this element is called the head (主辞) of the sentence.',
+  helpTipsTitle: 'Tips',
+  helpTipSelect: 'Click a bunsetsu to inspect it and trace its chain; click again or press Escape to clear.',
+  helpTipHover: 'Hover a connector line to see its attachment probability.',
+  helpTipSpeak: '🗣️ reads the sentence (or a single bunsetsu) aloud — voice and speed are in the settings.',
 } as const

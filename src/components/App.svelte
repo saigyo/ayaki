@@ -3,6 +3,7 @@
   import Toolbar from './Toolbar.svelte'
   import LocaleSwitcher from './LocaleSwitcher.svelte'
   import SettingsMenu from './SettingsMenu.svelte'
+  import HelpDialog from './HelpDialog.svelte'
   import SentenceCard from './SentenceCard.svelte'
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
@@ -87,6 +88,7 @@
       <LocaleSwitcher bind:locale />
     </div>
     <Toolbar bind:showFurigana bind:view />
+    <HelpDialog {chainColor} />
     <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:chainColor />
   </header>
   <main>
