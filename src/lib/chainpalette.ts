@@ -31,6 +31,9 @@ export function chainFrom(heads: (number | null)[], selected: number): ChainSets
     visited.add(cur)
     const next = heads[cur]
     if (next === null || next === undefined) break
+    // malformed cycle pointing back into the walked path: stop before a
+    // visited index (possibly the selected bunsetsu itself) lands in `boxes`
+    if (visited.has(next)) break
     links.add(cur)
     boxes.add(next)
     cur = next

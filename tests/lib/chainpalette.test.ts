@@ -13,9 +13,13 @@ describe('chainFrom', () => {
     expect(chainFrom(heads, 2).boxes.size).toBe(0)
     expect(chainFrom(heads, 3).links.size).toBe(0)
   })
-  it('terminates on malformed cyclic heads', () => {
-    const { links } = chainFrom([1, 0], 0)
+  it('terminates on malformed cyclic heads without chain-classing walked indices', () => {
+    const { links, boxes } = chainFrom([1, 0], 0)
     expect(links.size).toBeLessThanOrEqual(2)
+    // the selected bunsetsu and its immediate head must never land in the
+    // chain sets, even when a cycle points back at them
+    expect(boxes.has(0)).toBe(false)
+    expect(boxes.has(1)).toBe(false)
   })
 })
 
