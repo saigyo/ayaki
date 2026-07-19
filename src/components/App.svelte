@@ -1,6 +1,7 @@
 <script lang="ts">
   import SentenceInput from './SentenceInput.svelte'
   import Toolbar from './Toolbar.svelte'
+  import LocaleSwitcher from './LocaleSwitcher.svelte'
   import SentenceCard from './SentenceCard.svelte'
   import Inspector from './Inspector.svelte'
   import { parseText, parserReady } from '../lib/parser'
@@ -78,8 +79,11 @@
 
 <div class="app">
   <header>
-    <h1><span lang="ja">文木</span> Ayaki</h1>
-    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI bind:locale />
+    <div class="brand">
+      <h1><span lang="ja">文木</span> Ayaki</h1>
+      <LocaleSwitcher bind:locale />
+    </div>
+    <Toolbar bind:showFurigana bind:view bind:rate bind:voiceURI />
   </header>
   <main>
     <section class="content">
