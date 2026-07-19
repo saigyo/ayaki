@@ -15,6 +15,7 @@
     rate,
     voiceURI,
     showConfidence = false,
+    shareUrl = '',
   }: {
     sentence: ParsedSentence | null
     index: number
@@ -23,6 +24,7 @@
     rate: number
     voiceURI: string | null
     showConfidence?: boolean
+    shareUrl?: string
   } = $props()
 
   let canSpeak = $state(false)
@@ -48,7 +50,29 @@
       speaking = true
     }
   }
+
+  let copied = $state(false)
+  let copyTimer: ReturnType<typeof setTimeout> | undefined
+
+  async function copyShare() {
+    try {
+      if (!navigator.clipboard) throw new Error('clipboard unavailable')
+      await navigator.clipboard.writeText(shareUrl)
+      copied = true
+      clearTimeout(copyTimer)
+      copyTimer = setTimeout(() => (copied = false), 2000)
+    } catch {
+      window.prompt(t('shareButton'), shareUrl)
+    }
+  }
 </script>
+
+{#snippet shareButton()}
+  <button aria-live="polite" onclick={copyShare}>
+    {#if copied}{t('shareCopied')}
+    {:else}<span class="emoji" aria-hidden="true">🔗</span> {t('shareButton')}{/if}
+  </button>
+{/snippet}
 
 <aside class="inspector">
   {#if selected}
@@ -85,6 +109,9 @@
         {/if}
       </div>
     {/each}
+    <div class="actions">
+      {@render shareButton()}
+    </div>
   {:else}
     <h2>{total > 1 ? t('sentenceHeadingN', { index: index + 1, total }) : t('sentenceHeading')}</h2>
     {#if sentence}
@@ -95,6 +122,7 @@
           {:else}<span class="emoji" aria-hidden="true">🗣️</span> {t('speakButton')}{/if}
         </button>
         <a href={googleTranslateUrl(sentence.text, currentLocale())} target="_blank" rel="noopener">Google Translate ↗</a>
+        {@render shareButton()}
       </div>
       {#if showConfidence && uncertainCount > 0}
         <p class="confidence-note">{t('uncertaintyNote', { uncertain: uncertainCount, total: sentence.bunsetsu.length - 1 })}</p>

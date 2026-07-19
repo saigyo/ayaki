@@ -9,12 +9,13 @@
   import { parseText, parserReady } from '../lib/parser'
   import { loadSettings, saveSettings, type ViewKind } from '../lib/settings'
   import { setStoredLocale, t } from '../lib/i18n.svelte'
-  import { parseShareParams } from '../lib/share'
+  import { buildShareUrl, parseShareParams } from '../lib/share'
   import type { ParsedSentence } from '../lib/types'
 
   const EXAMPLE = '昨日、私は友達と新しい映画を見に行きました。'
 
   let inputText = $state('')
+  let parsedText = $state('')
   let sentences = $state<ParsedSentence[]>([])
   let status = $state<'idle' | 'loading' | 'ready' | 'error'>('idle')
   let errorMsg = $state('')
@@ -61,6 +62,7 @@
     status = 'loading'
     try {
       sentences = await parseText(inputText)
+      parsedText = inputText
       status = 'ready'
       applyPendingJump()
     } catch (e) {
@@ -100,6 +102,15 @@
   const activeVM = $derived(sentences[activeSentence] ?? null)
   const selectedBunsetsu = $derived(
     selection ? (sentences[selection.sentence]?.bunsetsu[selection.bunsetsu] ?? null) : null,
+  )
+  const shareUrl = $derived(
+    buildShareUrl(
+      location.origin + location.pathname,
+      parsedText,
+      view,
+      selection ? selection.sentence : activeSentence > 0 ? activeSentence : null,
+      selection ? selection.bunsetsu : null,
+    ),
   )
 </script>
 
@@ -154,7 +165,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {shareUrl} />
   </main>
   <footer>
     <p>

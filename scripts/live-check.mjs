@@ -98,6 +98,31 @@ try {
     } catch (e) {
       fail('help', String(e))
     }
+
+    try {
+      // the views check above stored 'cabocha' via real clicks — capture it,
+      // open a *tree* share link, and assert the store is untouched
+      const viewBefore = await page.evaluate(
+        () => JSON.parse(localStorage.getItem('ayaki-settings') ?? '{}').view ?? null,
+      )
+      const share = new URL(target)
+      share.searchParams.set('text', '猫が魚を食べた。')
+      share.searchParams.set('view', 'tree')
+      share.searchParams.set('s', '0')
+      share.searchParams.set('b', '1')
+      await page.goto(share.toString(), { waitUntil: 'networkidle' })
+      await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
+      const state = await page.evaluate(() => ({
+        tree: !!document.querySelector('main svg line.edge'),
+        selected: document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label') ?? null,
+        storedView: JSON.parse(localStorage.getItem('ayaki-settings') ?? '{}').view ?? null,
+      }))
+      if (!state.tree || state.selected !== '魚を' || state.storedView !== viewBefore)
+        throw new Error(`before=${viewBefore} after=${JSON.stringify(state)}`)
+      ok('share: link opens tree with 魚を selected, stored view untouched')
+    } catch (e) {
+      fail('share', String(e))
+    }
   }
 
   if (consoleErrors.length === 0) ok('console: no errors')
