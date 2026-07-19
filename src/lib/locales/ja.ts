@@ -16,7 +16,7 @@ export const ja: Record<keyof typeof en, string> = {
   localeAuto: '自動（ブラウザ）',
   settingsLabel: '設定',
   confidenceToggle: '係り受けの信頼度を表示',
-  chainLabel: '主動詞への連鎖',
+  chainLabel: '述語への連鎖',
   chainAmber: '琥珀色',
   chainGreen: '緑',
   chainViolet: '紫',

@@ -248,7 +248,7 @@ describe('App', () => {
     await tick()
     expect(document.querySelectorAll('path.arc.chain')).toHaveLength(2)
     await user.click(screen.getByRole('button', { name: 'settings' }))
-    await user.selectOptions(screen.getByRole('combobox', { name: 'chain to main verb' }), 'none')
+    await user.click(screen.getByRole('radio', { name: 'none' }))
     await tick()
     expect(document.querySelectorAll('.chain')).toHaveLength(0)
     expect(JSON.parse(localStorage.getItem('ayaki-settings')!).chainColor).toBe('none')

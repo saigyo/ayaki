@@ -16,7 +16,7 @@ export const de: Record<keyof typeof en, string> = {
   localeAuto: 'Auto (Browser)',
   settingsLabel: 'Einstellungen',
   confidenceToggle: 'Zeige Anbindungskonfidenz',
-  chainLabel: 'Kette zum Hauptverb',
+  chainLabel: 'Kette zum Prädikat',
   chainAmber: 'Bernstein',
   chainGreen: 'Grün',
   chainViolet: 'Violett',
