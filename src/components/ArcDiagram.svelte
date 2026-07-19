@@ -3,18 +3,21 @@
   import { confidenceLabel, isUncertain } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
+  import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
 
   let {
     bunsetsu,
     showFurigana = false,
     showConfidence = false,
     selected = null,
+    chainColor = 'none',
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
     showFurigana?: boolean
     showConfidence?: boolean
     selected?: number | null
+    chainColor?: ChainColor
     onselect: (index: number) => void
   } = $props()
 
@@ -30,6 +33,13 @@
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
   const svgHeight = $derived(boxTop + BOX_H + 6)
 
+  const chain = $derived(
+    selected !== null && chainColor !== 'none'
+      ? chainFrom(bunsetsu.map((b) => b.head), selected)
+      : { links: new Set<number>(), boxes: new Set<number>() },
+  )
+  const palette = $derived(chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
+
   function arcClass(dep: number): string {
     const b = bunsetsu[dep]
     const cls = ['arc']
@@ -38,15 +48,26 @@
       else if (isUncertain(b)) cls.push('low')
     }
     if (hovered === dep || selected === dep) cls.push('hl')
+    if (chain.links.has(dep)) cls.push('chain')
     return cls.join(' ')
   }
 </script>
 
 <div class="tree-scroll">
-  <svg width={layout.width + 2 * PAD_X} height={svgHeight} class="arcdiagram" role="group" aria-label={t('arcsGroupLabel')}>
+  <svg
+    width={layout.width + 2 * PAD_X}
+    height={svgHeight}
+    class="arcdiagram"
+    role="group"
+    aria-label={t('arcsGroupLabel')}
+    style={palette ? `--chain: ${palette.line}; --chain-soft: ${palette.soft}` : undefined}
+  >
     <defs>
       <marker id="arrowhead-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
         <path d="M 0 0 L 10 5 L 0 10 z" />
+      </marker>
+      <marker id="arrowhead-chain-{uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" style="fill: var(--chain)" />
       </marker>
     </defs>
     {#each layout.arcs as a (a.dep)}
@@ -56,7 +77,7 @@
         {#if label}
           <title>{label}</title>
         {/if}
-        <path class={arcClass(a.dep)} {d} marker-end="url(#arrowhead-{uid})" />
+        <path class={arcClass(a.dep)} {d} marker-end={chain.links.has(a.dep) ? `url(#arrowhead-chain-${uid})` : `url(#arrowhead-${uid})`} />
         <path class="hit" {d} />
       </g>
     {/each}
@@ -67,6 +88,7 @@
         class:selected={selected === i}
         class:hl={hovered === i || (hovered !== null && bunsetsu[hovered].head === i)}
         class:root={b.head === null}
+        class:chain={chain.boxes.has(i)}
         role="button"
         tabindex="0"
         aria-label={b.surface}
