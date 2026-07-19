@@ -52,4 +52,31 @@ export const de: Record<keyof typeof en, string> = {
   footerMorphology: 'Morphologie durch',
   footerDict: 'mit dem IPAdic-Wörterbuch (IPADIC-Lizenz)',
   footerSelf: 'Ayaki selbst steht unter MIT-Lizenz.',
+  // help dialog
+  helpLabel: 'Hilfe',
+  helpClose: 'Hilfe schließen',
+  helpAboutTitle: 'Worum geht es?',
+  helpAboutBody:
+    'Ayaki (文木) visualisiert die Dependenzstruktur japanischer Sätze: welche Phrase sich an welche anschließt. Jeder Kasten ist ein Bunsetsu (文節) — die kleine Phraseneinheit, in die japanische Sätze zerlegt werden: ein Inhaltswort als ihr Kopf, gefolgt von Funktionselementen wie Partikeln, Hilfsverben oder Flexionsendungen.',
+  helpViewsTitle: 'Die drei Ansichten',
+  helpViewArcs: 'Bögen — Abhängigkeiten als Bögen über dem laufenden Satz; gut, um Distanz und Verschachtelung zu sehen.',
+  helpViewTree: 'Baum — der Satz als verzweigte Hierarchie; gut, um zu sehen, was sich wem unterordnet.',
+  helpViewStairs: 'CaboCha — das klassische Treppenlayout japanischer NLP-Werkzeuge; jedes Bunsetsu schließt sich an ein weiter unten stehendes an.',
+  helpDiagramTitle: 'Das Diagramm lesen',
+  helpDiagramHint: 'Probieren Sie es aus — klicken Sie ein Bunsetsu an:',
+  legendSelection: 'ausgewähltes Bunsetsu',
+  legendLink: 'seine Anbindung (das Bunsetsu, das es modifiziert)',
+  legendChain: 'die weitere Kette zum Prädikat',
+  legendUncertain: 'unsichere Anbindung (gepunktet)',
+  legendChainNote: 'Die Kettenfarbe — und ob sie überhaupt angezeigt wird — lässt sich in den Einstellungen anpassen.',
+  helpConfidenceTitle: 'Anbindungskonfidenz',
+  helpConfidenceBody:
+    'Die Analyse stammt von einem statistischen Modell — sie kann falsch sein. Mit aktivierter Option „Zeige Anbindungskonfidenz" werden unsichere Anbindungen gepunktet dargestellt, und beim Überfahren einer Verbindungslinie erscheint die Wahrscheinlichkeit des Modells — so bleiben Sie den Ergebnissen gegenüber kritisch.',
+  helpTermTitle: 'Prädikat und Kopf',
+  helpTermBody:
+    'Jede Kette endet beim Prädikat (述語) des Satzes — der Verb-, Adjektiv- oder Kopulaphrase, an die sich letztlich alles anschließt. In der Linguistik heißt dieses Element auch der Kopf (主辞) des Satzes.',
+  helpTipsTitle: 'Tipps',
+  helpTipSelect: 'Klicken Sie ein Bunsetsu an, um es zu inspizieren und seine Kette zu verfolgen; erneutes Klicken oder Escape hebt die Auswahl auf.',
+  helpTipHover: 'Fahren Sie über eine Verbindungslinie, um ihre Anbindungswahrscheinlichkeit zu sehen.',
+  helpTipSpeak: '🗣️ liest den Satz (oder ein einzelnes Bunsetsu) vor — Stimme und Tempo finden Sie in den Einstellungen.',
 }
