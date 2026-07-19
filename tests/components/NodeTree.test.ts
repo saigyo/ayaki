@@ -29,6 +29,13 @@ describe('NodeTree', () => {
     expect(container.querySelectorAll('line.edge.forced')).toHaveLength(1)
     expect(container.querySelectorAll('line.edge.low')).toHaveLength(0)
   })
+  it('renders a confidently-forced attachment solid, tooltip still disclosing forcedness', () => {
+    const s = forcedSentenceFixture()
+    s.bunsetsu[0].probability = 0.97
+    const { container } = render(NodeTree, { props: { bunsetsu: s.bunsetsu, showConfidence: true, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    expect(container.querySelector('g.connector title')?.textContent).toBe('P = 97% (forced)')
+  })
   it('titles edges with the attachment confidence, including forced edges', () => {
     const withP = render(NodeTree, { props: { bunsetsu, showConfidence: true, onselect: () => {} } })
     expect(withP.container.querySelector('line.edge.low')?.closest('g.connector')?.querySelector('title')?.textContent).toContain('55')
