@@ -35,8 +35,9 @@ try {
   if (booted) {
     try {
       await page.getByTestId('example-link').click()
-      await page.waitForSelector('g.bunsetsu', { timeout: 60_000 })
-      ok(`parse: example renders ${await page.locator('g.bunsetsu').count()} bunsetsu`)
+      // scope to main: the help dialog's demo StairView in <header> always exists in the DOM
+      await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
+      ok(`parse: example renders ${await page.locator('main g.bunsetsu').count()} bunsetsu`)
     } catch (e) {
       fail('parse', String(e))
     }
@@ -44,7 +45,7 @@ try {
     const views = [
       { label: 'arcs', name: /arcs/, sel: 'svg.arcdiagram path.arc' },
       { label: 'tree', name: /tree/, sel: 'svg line.edge' },
-      { label: 'cabocha', name: /CaboCha/, sel: 'svg.stairview path.arc' },
+      { label: 'cabocha', name: /CaboCha/, sel: 'main svg.stairview path.arc' },
     ]
     for (const v of views) {
       try {
@@ -84,6 +85,18 @@ try {
       ok('locale: de switch + reload persistence + reset to auto')
     } catch (e) {
       fail('locale', String(e))
+    }
+
+    try {
+      await page.getByRole('button', { name: 'help' }).click()
+      await page.waitForSelector('dialog.help-dialog[open]', { timeout: 5_000 })
+      const demoBoxes = await page.locator('dialog.help-dialog g.bunsetsu').count()
+      if (demoBoxes !== 4) throw new Error(`demo bunsetsu: ${demoBoxes}`)
+      await page.getByRole('button', { name: 'close help' }).click()
+      await page.waitForSelector('dialog.help-dialog[open]', { state: 'hidden', timeout: 5_000 })
+      ok('help: dialog opens with 4-bunsetsu demo and closes')
+    } catch (e) {
+      fail('help', String(e))
     }
   }
 
