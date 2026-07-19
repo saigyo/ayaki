@@ -37,6 +37,9 @@ Everything runs client-side; there is no backend. Parsing is powered by
   build used, which is why the script always passes `--base=/ayaki/` itself. Any bump of
   `sasara`, `kuromojin`/`kuromoji.js`, or `vite` should never be merged without a green
   `npm run smoke` run — the CI build job runs it on every push.
+- `npm run shots` — regenerates all three README screenshots via headless Chromium
+  (builds first, so they are never stale). Run after any UI-visible change: every
+  screenshot shows the app chrome, so a chrome change invalidates the whole set.
 
 ## License
 

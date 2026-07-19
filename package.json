@@ -15,7 +15,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "smoke": "node scripts/browser-smoke.mjs"
+    "smoke": "node scripts/browser-smoke.mjs",
+    "preshots": "npm run build -- --base=/ayaki/",
+    "shots": "node scripts/readme-shots.mjs"
   },
   "dependencies": {
     "pako": "^3.0.1",
