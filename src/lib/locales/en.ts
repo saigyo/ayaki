@@ -83,4 +83,7 @@ export const en = {
   helpTipSelect: 'Click a bunsetsu to inspect it and trace its chain; click again or press Escape to clear.',
   helpTipHover: 'Hover a connector line to see its attachment probability.',
   helpTipSpeak: '🗣️ reads the sentence (or a single bunsetsu) aloud — voice and speed are in the settings.',
+  // share
+  shareButton: 'share link',
+  shareCopied: 'copied!',
 } as const

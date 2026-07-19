@@ -79,4 +79,7 @@ export const ja: Record<keyof typeof en, string> = {
   helpTipSelect: '文節をクリックすると詳細と連鎖が表示されます。もう一度クリックするか Escape で解除します。',
   helpTipHover: '線にカーソルを合わせると係り受けの確率が表示されます。',
   helpTipSpeak: '🗣️ で文(または文節)を読み上げます。声と速さは設定で選べます。',
+  // share
+  shareButton: 'リンクを共有',
+  shareCopied: 'コピーしました',
 }

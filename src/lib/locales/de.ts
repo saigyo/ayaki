@@ -79,4 +79,7 @@ export const de: Record<keyof typeof en, string> = {
   helpTipSelect: 'Klicken Sie ein Bunsetsu an, um es zu inspizieren und seine Kette zu verfolgen; erneutes Klicken oder Escape hebt die Auswahl auf.',
   helpTipHover: 'Fahren Sie über eine Verbindungslinie, um ihre Anbindungswahrscheinlichkeit zu sehen.',
   helpTipSpeak: '🗣️ liest den Satz (oder ein einzelnes Bunsetsu) vor — Stimme und Tempo finden Sie in den Einstellungen.',
+  // share
+  shareButton: 'Link teilen',
+  shareCopied: 'kopiert!',
 }

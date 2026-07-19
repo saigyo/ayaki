@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import Toolbar from '../../src/components/Toolbar.svelte'
 import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
@@ -33,5 +33,14 @@ describe('Toolbar view buttons', () => {
     const toolbar = document.querySelector('.toolbar')!
     expect(toolbar.children[0].classList.contains('views')).toBe(true)
     expect(toolbar.children[1].querySelector('input[type="checkbox"]')).not.toBeNull()
+  })
+  it('reports every deliberate view click via onviewclick, including the current view', async () => {
+    const user = userEvent.setup()
+    const spy = vi.fn()
+    render(Toolbar, { props: { showFurigana: false, view: 'arcs', onviewclick: spy } })
+    await user.click(screen.getByRole('button', { name: /arcs/ }))
+    expect(spy).toHaveBeenCalledOnce()
+    await user.click(screen.getByRole('button', { name: /tree/ }))
+    expect(spy).toHaveBeenCalledTimes(2)
   })
 })

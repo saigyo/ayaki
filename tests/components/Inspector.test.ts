@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/svelte'
-import { afterEach, describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/svelte'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
 import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
@@ -85,5 +85,54 @@ describe('Inspector — bunsetsu mode', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(screen.getByRole('button', { name: 'speak 食べ' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'speak 。' })).toBeNull()
+  })
+})
+
+describe('Inspector — share button', () => {
+  const setClipboard = (value: unknown) =>
+    Object.defineProperty(navigator, 'clipboard', { value, configurable: true })
+  afterEach(() => {
+    setClipboard(undefined)
+    vi.useRealTimers()
+  })
+
+  it('copies the share url and flips the label for two seconds', async () => {
+    vi.useFakeTimers()
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    setClipboard({ writeText })
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    expect(writeText).toHaveBeenCalledWith('https://x/?text=a')
+    await vi.waitFor(() => expect(screen.getByText('copied!')).toBeInTheDocument())
+    await vi.advanceTimersByTimeAsync(2100)
+    expect(screen.queryByText('copied!')).toBeNull()
+    expect(screen.getByRole('button', { name: 'share link' })).toBeInTheDocument()
+  })
+
+  it('falls back to window.prompt without a clipboard', async () => {
+    setClipboard(undefined)
+    const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null)
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await vi.waitFor(() => expect(prompt).toHaveBeenCalledWith('share link', 'https://x/?text=a'))
+    prompt.mockRestore()
+  })
+
+  it('resets a stale copied label when a later copy fails', async () => {
+    const writeText = vi.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('denied'))
+    setClipboard({ writeText })
+    const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null)
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await vi.waitFor(() => expect(screen.getByText('copied!')).toBeInTheDocument())
+    await fireEvent.click(screen.getByText('copied!'))
+    await vi.waitFor(() => expect(prompt).toHaveBeenCalledWith('share link', 'https://x/?text=a'))
+    expect(screen.queryByText('copied!')).toBeNull()
+    prompt.mockRestore()
+  })
+
+  it('offers the share button on the bunsetsu card too', () => {
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&b=1' } })
+    expect(screen.getByRole('button', { name: 'share link' })).toBeInTheDocument()
   })
 })
