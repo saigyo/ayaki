@@ -6,6 +6,7 @@ class FakeUtterance {
   voice: unknown = null
   lang = ''
   rate = 1
+  addEventListener = vi.fn()
   constructor(text: string) {
     this.text = text
   }
@@ -113,5 +114,15 @@ describe('speech', () => {
     speak('こんにちは', 1, 'cloud')
     const u = synth.speak.mock.calls[0][0] as FakeUtterance
     expect((u.voice as SpeechSynthesisVoice).name).toBe('Cloud')
+  })
+  it('speak registers onDone for both the end and error events', () => {
+    const synth = fakeSynth([{ lang: 'ja-JP', localService: true, name: 'Kyoko' }])
+    vi.stubGlobal('speechSynthesis', synth)
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance)
+    const onDone = vi.fn()
+    speak('こんにちは', 1, null, onDone)
+    const u = synth.speak.mock.calls[0][0] as FakeUtterance
+    expect(u.addEventListener).toHaveBeenCalledWith('end', onDone)
+    expect(u.addEventListener).toHaveBeenCalledWith('error', onDone)
   })
 })

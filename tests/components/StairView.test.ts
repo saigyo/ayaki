@@ -25,6 +25,13 @@ describe('StairView', () => {
     expect(f.length).toBeGreaterThan(0)
     expect(f[0].closest('g.connector')?.querySelector('title')?.textContent).toMatch(/forced/i)
   })
+  it('renders a confidently-forced attachment solid, tooltip still disclosing forcedness', () => {
+    const s = forcedSentenceFixture()
+    s.bunsetsu[0].probability = 0.97
+    const { container } = render(StairView, { props: { bunsetsu: s.bunsetsu, showConfidence: true, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    expect(container.querySelector('g.connector title')?.textContent).toBe('P = 97% (forced)')
+  })
   it('shows furigana only when enabled', () => {
     const off = render(StairView, { props: { bunsetsu, onselect: () => {} } })
     expect(off.container.querySelectorAll('text.furigana')).toHaveLength(0)

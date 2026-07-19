@@ -81,9 +81,11 @@ svg .bunsetsu.chain rect { fill: var(--chain-soft); stroke: var(--chain); }
 svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: var(--accent); stroke-width: 2; }
 
 .inspector { background: #fff; border: 1px solid var(--box-stroke); border-radius: 10px; padding: 0.75rem 1rem; position: sticky; top: 1rem; }
-.inspector h2 { margin-top: 0; font-size: 1.2rem; }
-.inspector .icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
+.inspector h2 { margin-top: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 0.35rem; }
+.inspector .icon { background: none; border: none; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; padding: 0; }
 .inspector .icon:disabled { opacity: 0.4; cursor: default; }
+.inspector .m-head { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+.emoji { line-height: 1; }
 .inspector .confidence.uncertain { color: var(--uncertain); }
 .morpheme { border-top: 1px solid #eaeef2; padding: 0.5rem 0; font-size: 0.92rem; }
 .morpheme .m-surface { font-size: 1.05rem; font-weight: 600; }
@@ -91,7 +93,7 @@ svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: va
 .morpheme .en { color: #57606a; margin-left: 0.4rem; }
 .morpheme a { color: var(--accent); text-decoration: none; }
 .actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-.actions button { border: 1px solid var(--box-stroke); background: #fff; border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; }
+.actions button { border: 1px solid var(--box-stroke); background: #fff; border-radius: 6px; padding: 0.3rem 0.6rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; }
 .actions button:disabled { opacity: 0.5; cursor: default; }
 .confidence-note { color: var(--uncertain); font-size: 0.85rem; }
 .full-text { font-size: 1.05rem; }
@@ -99,7 +101,8 @@ svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: va
 footer { margin-top: 1.5rem; padding: 0.75rem 0; border-top: 1px solid var(--box-stroke); font-size: 0.78rem; color: #57606a; }
 footer a { color: var(--accent); }
 
-.settings-menu { position: relative; margin-left: auto; }
+.help-trigger { margin-left: auto; }
+.settings-menu { position: relative; }
 .icon-button { border: none; background: none; cursor: pointer; padding: 0.35rem; border-radius: 6px; color: #57606a; display: inline-flex; }
 .icon-button:hover { background: var(--accent-soft); }
 .icon-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }

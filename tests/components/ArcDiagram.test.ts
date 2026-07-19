@@ -48,6 +48,13 @@ describe('ArcDiagram', () => {
     )
     expect(container.querySelectorAll('path.arc.low')).toHaveLength(0)
   })
+  it('renders a confidently-forced attachment solid, tooltip still disclosing forcedness', () => {
+    const s = forcedSentenceFixture()
+    s.bunsetsu[0].probability = 0.97
+    const { container } = render(ArcDiagram, { props: { bunsetsu: s.bunsetsu, showConfidence: true, onselect: () => {} } })
+    expect(container.querySelectorAll('.low, .forced')).toHaveLength(0)
+    expect(container.querySelector('g.connector title')?.textContent).toBe('P = 97% (forced)')
+  })
   it('skips furigana for bunsetsu without readings', () => {
     const forced = forcedSentenceFixture().bunsetsu
     const { container } = render(ArcDiagram, { props: { bunsetsu: forced, showFurigana: true, onselect: () => {} } })

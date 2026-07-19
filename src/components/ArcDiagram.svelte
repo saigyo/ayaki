@@ -43,10 +43,7 @@
   function arcClass(dep: number): string {
     const b = bunsetsu[dep]
     const cls = ['arc']
-    if (showConfidence) {
-      if (b.forced) cls.push('forced')
-      else if (isUncertain(b)) cls.push('low')
-    }
+    if (showConfidence && isUncertain(b)) cls.push(b.forced ? 'forced' : 'low')
     if (hovered === dep || selected === dep) cls.push('hl')
     if (chain.links.has(dep)) cls.push('chain')
     return cls.join(' ')

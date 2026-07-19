@@ -29,6 +29,7 @@ describe('HelpDialog', () => {
     const user = userEvent.setup()
     render(HelpDialog, { props: { chainColor: 'amber' } })
     const trigger = screen.getByRole('button', { name: 'help' })
+    expect(trigger.classList.contains('help-trigger')).toBe(true)
     expect(getDialog().open).toBe(false)
     await user.click(trigger)
     const dialog = getDialog()

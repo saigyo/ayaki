@@ -65,8 +65,8 @@
         {/if}
         <line
           class="edge"
-          class:low={showConfidence && !bunsetsu[e.to].forced && isUncertain(bunsetsu[e.to])}
-          class:forced={showConfidence && bunsetsu[e.to].forced}
+          class:low={showConfidence && isUncertain(bunsetsu[e.to]) && !bunsetsu[e.to].forced}
+          class:forced={showConfidence && isUncertain(bunsetsu[e.to]) && bunsetsu[e.to].forced}
           class:hl={hovered === e.to || selected === e.to}
           class:chain={chain.links.has(e.to)}
           {x1}

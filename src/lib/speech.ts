@@ -28,8 +28,9 @@ export function speechAvailable(): boolean {
   return synth() !== undefined && pickVoice() !== null
 }
 
-/** Speak Japanese text, cancelling any utterance already in progress. */
-export function speak(text: string, rate = 1, voiceURI: string | null = null): void {
+/** Speak Japanese text, cancelling any utterance already in progress.
+ *  `onDone` fires when the utterance finishes, errors, or is cancelled. */
+export function speak(text: string, rate = 1, voiceURI: string | null = null, onDone?: () => void): void {
   const s = synth()
   if (!s) return
   s.cancel()
@@ -38,6 +39,10 @@ export function speak(text: string, rate = 1, voiceURI: string | null = null): v
   if (voice) utterance.voice = voice
   utterance.lang = 'ja-JP'
   utterance.rate = rate
+  if (onDone) {
+    utterance.addEventListener('end', onDone)
+    utterance.addEventListener('error', onDone)
+  }
   s.speak(utterance)
 }
 

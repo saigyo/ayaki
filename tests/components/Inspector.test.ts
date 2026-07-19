@@ -81,4 +81,9 @@ describe('Inspector — bunsetsu mode', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(screen.getByRole('button', { name: 'speak bunsetsu' }).textContent).toContain('🗣️')
   })
+  it('offers no speak button on punctuation morphemes', () => {
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
+    expect(screen.getByRole('button', { name: 'speak 食べ' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'speak 。' })).toBeNull()
+  })
 })

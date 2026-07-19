@@ -82,10 +82,12 @@ describe('toParsedSentence', () => {
 
 describe('isUncertain', () => {
   const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
-  it('is true below 0.7, for forced edges, and false otherwise', () => {
+  it('lets a known probability win; forced matters only without one', () => {
     expect(isUncertain({ ...base, probability: 0.69, forced: false })).toBe(true)
-    expect(isUncertain({ ...base, probability: null, forced: true })).toBe(true)
+    expect(isUncertain({ ...base, probability: 0.55, forced: true })).toBe(true)
     expect(isUncertain({ ...base, probability: 0.9, forced: false })).toBe(false)
+    expect(isUncertain({ ...base, probability: 0.97, forced: true })).toBe(false)
+    expect(isUncertain({ ...base, probability: null, forced: true })).toBe(true)
     expect(isUncertain({ ...base, probability: null, forced: false })).toBe(false)
   })
 })

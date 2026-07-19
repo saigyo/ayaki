@@ -21,7 +21,7 @@
 </script>
 
 <button
-  class="icon-button"
+  class="icon-button help-trigger"
   aria-label={t('helpLabel')}
   title={t('helpLabel')}
   aria-haspopup="dialog"

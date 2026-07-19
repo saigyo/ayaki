@@ -7,7 +7,7 @@ import type { BunsetsuVM, MorphemeVM, ParsedSentence } from './types'
 export const LOW_CONFIDENCE = 0.7
 
 export function isUncertain(b: BunsetsuVM): boolean {
-  return b.forced || (b.probability !== null && b.probability < LOW_CONFIDENCE)
+  return b.probability !== null ? b.probability < LOW_CONFIDENCE : b.forced
 }
 
 /**
