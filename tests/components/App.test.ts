@@ -334,7 +334,9 @@ describe('App — share links', () => {
     const scrollSpy = vi.fn()
     Element.prototype.scrollIntoView = scrollSpy
     const { container } = render(App)
-    await screen.findByText('行きました。')
+    // scope to main: the help demo carries the identical surface and would
+    // otherwise satisfy this wait before the diagram even rendered
+    await within(document.querySelector('main') as HTMLElement).findByText('行きました。')
     await vi.waitFor(() => expect(scrollSpy).toHaveBeenCalledWith({ block: 'center' }))
     // NOTE: the brief's original assertion here (`heading 'Sentence 2 / 2'`) is
     // unsatisfiable together with a bunsetsu selection: applyPendingJump sets
@@ -347,5 +349,24 @@ describe('App — share links', () => {
     // instead, since that's what the test title actually describes.
     expect(container.querySelectorAll('.card')[1].classList.contains('active')).toBe(true)
     expect(document.querySelector('main g.bunsetsu.selected')?.getAttribute('aria-label')).toBe('映画を')
+  })
+
+  it('discards the pending jump when the boot parse fails', async () => {
+    history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。')}&view=arcs&s=0&b=1`)
+    vi.mocked(parseText).mockRejectedValueOnce(new Error('dict failed'))
+    const user = userEvent.setup()
+    render(App)
+    await screen.findByText(/dict failed/)
+    vi.mocked(parseText).mockResolvedValue([chainSentenceFixture()])
+    const box = screen.getByRole('textbox')
+    await user.clear(box)
+    await user.type(box, '新しい映画を見に行きました。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    // scoped to <main>: the help dialog's demo reuses this same sentence text
+    // (see helpexample.ts's HELP_SENTENCE) for its live example, so an
+    // unscoped query would match it too
+    const main = document.querySelector('main')!
+    await within(main).findByText('行きました。')
+    expect(main.querySelector('g.bunsetsu.selected')).toBeNull()
   })
 })

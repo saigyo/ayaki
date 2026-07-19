@@ -135,4 +135,38 @@ describe('Inspector — share button', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&b=1' } })
     expect(screen.getByRole('button', { name: 'share link' })).toBeInTheDocument()
   })
+
+  it('resets the copied label when the share url changes without a card switch', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    setClipboard({ writeText })
+    const { rerender } = render(Inspector, { props: { sentence, index: 0, total: 2, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await vi.waitFor(() => expect(screen.getByText('copied!')).toBeInTheDocument())
+    // switch to another sentence: still sentence mode (selected stays null), url differs
+    await rerender({ sentence, index: 1, total: 2, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&s=1' })
+    expect(screen.queryByText('copied!')).toBeNull()
+  })
+
+  it('ignores a copy that resolves only after the card switched', async () => {
+    let resolveWrite: () => void
+    const writeText = vi.fn(() => new Promise<void>((r) => (resolveWrite = r)))
+    setClipboard({ writeText })
+    const { rerender } = render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await rerender({ sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&b=1' })
+    resolveWrite!()
+    await vi.waitFor(() => expect(writeText).toHaveBeenCalled())
+    expect(screen.queryByText('copied!')).toBeNull()
+  })
+
+  it('resets the copied label when the card switches', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    setClipboard({ writeText })
+    const { rerender } = render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await vi.waitFor(() => expect(screen.getByText('copied!')).toBeInTheDocument())
+    await rerender({ sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&b=1' })
+    expect(screen.queryByText('copied!')).toBeNull()
+    expect(screen.getByRole('button', { name: 'share link' })).toBeInTheDocument()
+  })
 })

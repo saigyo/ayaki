@@ -39,25 +39,46 @@
   const uncertainCount = $derived(sentence ? sentence.bunsetsu.filter(isUncertain).length : 0)
 
   let speaking = $state(false)
+  // bumped on every toggle transition: a completion callback from a superseded
+  // utterance (its end fires asynchronously after cancel) must not flip the state
+  let speakGen = 0
 
   function toggleSpeech() {
     if (!sentence) return
     if (speaking) {
+      speakGen++
       stopSpeech()
       speaking = false
     } else {
-      speak(sentence.text, rate, voiceURI, () => (speaking = false))
+      const gen = ++speakGen
+      speak(sentence.text, rate, voiceURI, () => {
+        if (gen === speakGen) speaking = false
+      })
       speaking = true
     }
   }
 
   let copied = $state(false)
   let copyTimer: ReturnType<typeof setTimeout> | undefined
+  // mirrors speakGen: a writeText that resolves after the card switched away
+  // must not flip "copied!" onto the other card's button
+  let copyGen = 0
+
+  // "copied!" is a claim about the CURRENT share url — any change (card switch,
+  // sentence switch, view switch) invalidates it and voids in-flight copies
+  $effect(() => {
+    void shareUrl
+    copyGen++
+    clearTimeout(copyTimer)
+    copied = false
+  })
 
   async function copyShare() {
     try {
       if (!navigator.clipboard) throw new Error('clipboard unavailable')
+      const gen = ++copyGen
       await navigator.clipboard.writeText(shareUrl)
+      if (gen !== copyGen) return
       copied = true
       clearTimeout(copyTimer)
       copyTimer = setTimeout(() => (copied = false), 2000)
@@ -120,7 +141,7 @@
     {#if sentence}
       <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak} title={speakTitle} onclick={toggleSpeech}>
+        <button disabled={!canSpeak && !speaking} title={speaking ? t('speakTitle') : speakTitle} onclick={toggleSpeech}>
           {#if speaking}<span class="emoji" aria-hidden="true">⏹</span> {t('stopButton')}
           {:else}<span class="emoji" aria-hidden="true">🗣️</span> {t('speakButton')}{/if}
         </button>
