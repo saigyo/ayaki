@@ -329,8 +329,13 @@ describe('App — share links', () => {
   it('activates a later sentence from s in a multi-sentence link', async () => {
     history.replaceState(null, '', `?text=${encodeURIComponent('猫が魚を食べた。新しい映画を見に行きました。')}&view=arcs&s=1&b=1`)
     vi.mocked(parseText).mockResolvedValue([sentenceFixture(), chainSentenceFixture()])
+    // jsdom lacks scrollIntoView; install a spy so the scroll-after-flush path is
+    // pinned — the call only happens if the card elements exist when it fires
+    const scrollSpy = vi.fn()
+    Element.prototype.scrollIntoView = scrollSpy
     const { container } = render(App)
     await screen.findByText('行きました。')
+    await vi.waitFor(() => expect(scrollSpy).toHaveBeenCalledWith({ block: 'center' }))
     // NOTE: the brief's original assertion here (`heading 'Sentence 2 / 2'`) is
     // unsatisfiable together with a bunsetsu selection: applyPendingJump sets
     // `selection`, which Inspector.svelte's unconditional `{#if selected}` gate
