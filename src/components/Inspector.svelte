@@ -62,6 +62,9 @@
       clearTimeout(copyTimer)
       copyTimer = setTimeout(() => (copied = false), 2000)
     } catch {
+      // a failed copy must not keep showing a stale "copied!" from a prior success
+      clearTimeout(copyTimer)
+      copied = false
       window.prompt(t('shareButton'), shareUrl)
     }
   }

@@ -118,6 +118,19 @@ describe('Inspector — share button', () => {
     prompt.mockRestore()
   })
 
+  it('resets a stale copied label when a later copy fails', async () => {
+    const writeText = vi.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('denied'))
+    setClipboard({ writeText })
+    const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null)
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a' } })
+    await fireEvent.click(screen.getByRole('button', { name: 'share link' }))
+    await vi.waitFor(() => expect(screen.getByText('copied!')).toBeInTheDocument())
+    await fireEvent.click(screen.getByText('copied!'))
+    await vi.waitFor(() => expect(prompt).toHaveBeenCalledWith('share link', 'https://x/?text=a'))
+    expect(screen.queryByText('copied!')).toBeNull()
+    prompt.mockRestore()
+  })
+
   it('offers the share button on the bunsetsu card too', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null, shareUrl: 'https://x/?text=a&b=1' } })
     expect(screen.getByRole('button', { name: 'share link' })).toBeInTheDocument()
