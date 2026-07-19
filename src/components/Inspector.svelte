@@ -39,20 +39,35 @@
   const uncertainCount = $derived(sentence ? sentence.bunsetsu.filter(isUncertain).length : 0)
 
   let speaking = $state(false)
+  // bumped on every toggle transition: a completion callback from a superseded
+  // utterance (its end fires asynchronously after cancel) must not flip the state
+  let speakGen = 0
 
   function toggleSpeech() {
     if (!sentence) return
     if (speaking) {
+      speakGen++
       stopSpeech()
       speaking = false
     } else {
-      speak(sentence.text, rate, voiceURI, () => (speaking = false))
+      const gen = ++speakGen
+      speak(sentence.text, rate, voiceURI, () => {
+        if (gen === speakGen) speaking = false
+      })
       speaking = true
     }
   }
 
   let copied = $state(false)
   let copyTimer: ReturnType<typeof setTimeout> | undefined
+
+  // switching between the sentence and bunsetsu cards must not carry a stale
+  // "copied!" onto a button that copied nothing
+  $effect(() => {
+    void selected
+    clearTimeout(copyTimer)
+    copied = false
+  })
 
   async function copyShare() {
     try {
@@ -120,7 +135,7 @@
     {#if sentence}
       <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak} title={speakTitle} onclick={toggleSpeech}>
+        <button disabled={!canSpeak && !speaking} title={speakTitle} onclick={toggleSpeech}>
           {#if speaking}<span class="emoji" aria-hidden="true">⏹</span> {t('stopButton')}
           {:else}<span class="emoji" aria-hidden="true">🗣️</span> {t('speakButton')}{/if}
         </button>

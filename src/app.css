@@ -85,7 +85,7 @@ svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: va
 .inspector .icon { background: none; border: none; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; padding: 0; }
 .inspector .icon:disabled { opacity: 0.4; cursor: default; }
 .inspector .m-head { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
-.emoji { line-height: 1; }
+.inspector .emoji { line-height: 1; }
 .inspector .confidence.uncertain { color: var(--uncertain); }
 .morpheme { border-top: 1px solid #eaeef2; padding: 0.5rem 0; font-size: 0.92rem; }
 .morpheme .m-surface { font-size: 1.05rem; font-weight: 600; }
