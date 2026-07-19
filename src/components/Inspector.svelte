@@ -60,11 +60,15 @@
 
   let copied = $state(false)
   let copyTimer: ReturnType<typeof setTimeout> | undefined
+  // mirrors speakGen: a writeText that resolves after the card switched away
+  // must not flip "copied!" onto the other card's button
+  let copyGen = 0
 
   // switching between the sentence and bunsetsu cards must not carry a stale
   // "copied!" onto a button that copied nothing
   $effect(() => {
     void selected
+    copyGen++
     clearTimeout(copyTimer)
     copied = false
   })
@@ -72,7 +76,9 @@
   async function copyShare() {
     try {
       if (!navigator.clipboard) throw new Error('clipboard unavailable')
+      const gen = ++copyGen
       await navigator.clipboard.writeText(shareUrl)
+      if (gen !== copyGen) return
       copied = true
       clearTimeout(copyTimer)
       copyTimer = setTimeout(() => (copied = false), 2000)
@@ -135,7 +141,7 @@
     {#if sentence}
       <p class="full-text" lang="ja">{sentence.text}</p>
       <div class="actions">
-        <button disabled={!canSpeak && !speaking} title={speakTitle} onclick={toggleSpeech}>
+        <button disabled={!canSpeak && !speaking} title={speaking ? t('speakTitle') : speakTitle} onclick={toggleSpeech}>
           {#if speaking}<span class="emoji" aria-hidden="true">⏹</span> {t('stopButton')}
           {:else}<span class="emoji" aria-hidden="true">🗣️</span> {t('speakButton')}{/if}
         </button>

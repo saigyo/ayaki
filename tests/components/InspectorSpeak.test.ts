@@ -94,6 +94,8 @@ describe('Inspector speak pass-through', () => {
     await tick()
     expect(btn.textContent).toContain('Stop')
     expect(btn).toBeEnabled()
+    // the tooltip must not claim "no voice" while Stop is live and working
+    expect(btn).toHaveAttribute('title', expect.stringMatching(/web speech/i))
     const onDone = vi.mocked(speak).mock.calls.at(-1)![3] as () => void
     onDone()
     await tick()
