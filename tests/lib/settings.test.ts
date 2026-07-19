@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -99,6 +99,14 @@ describe('loadSettings', () => {
     expect(loadSettings().showConfidence).toBe(false)
     localStorage.setItem(KEY, JSON.stringify({}))
     expect(loadSettings().showConfidence).toBe(false)
+  })
+  it('validates chainColor and defaults it to amber', () => {
+    localStorage.setItem(KEY, JSON.stringify({ chainColor: 'violet' }))
+    expect(loadSettings().chainColor).toBe('violet')
+    localStorage.setItem(KEY, JSON.stringify({ chainColor: 'pink' }))
+    expect(loadSettings().chainColor).toBe('amber')
+    localStorage.setItem(KEY, JSON.stringify({}))
+    expect(loadSettings().chainColor).toBe('amber')
   })
 })
 

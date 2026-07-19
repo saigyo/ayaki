@@ -29,9 +29,10 @@
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
   let locale = $state(initialSettings.locale)
+  let chainColor = $state(initialSettings.chainColor)
 
   $effect(() => {
-    saveSettings({ showFurigana, showConfidence, view, rate, voiceURI, locale })
+    saveSettings({ showFurigana, showConfidence, view, rate, voiceURI, locale, chainColor })
   })
 
   $effect(() => {

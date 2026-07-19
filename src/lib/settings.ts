@@ -1,4 +1,5 @@
 import { SUPPORTED_LOCALES, type Locale } from './i18n.svelte'
+import { CHAIN_COLORS, type ChainColor } from './chainpalette'
 
 export type ViewKind = 'arcs' | 'tree' | 'cabocha'
 
@@ -9,9 +10,10 @@ export interface Settings {
   rate: number
   voiceURI: string | null
   locale: Locale | null
+  chainColor: ChainColor
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, view: 'arcs', rate: 1, voiceURI: null, locale: null }
+export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -22,6 +24,7 @@ const RATE_MAX = 1.5
 const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefined } = {
   showFurigana: (v) => (typeof v === 'boolean' ? v : undefined),
   showConfidence: (v) => (typeof v === 'boolean' ? v : undefined),
+  chainColor: (v) => (CHAIN_COLORS.includes(v as ChainColor) ? (v as ChainColor) : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>
     typeof v === 'number' && Number.isFinite(v)

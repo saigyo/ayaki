@@ -148,6 +148,7 @@ describe('App', () => {
       rate: 1.2,
       voiceURI: null,
       locale: null,
+      chainColor: 'amber',
     })
   })
   it('persists the confidence toggle and styles arcs without re-parsing', async () => {
