@@ -40,6 +40,9 @@ Everything runs client-side; there is no backend. Parsing is powered by
 - `npm run shots` — regenerates all three README screenshots via headless Chromium
   (builds first, so they are never stale). Run after any UI-visible change: every
   screenshot shows the app chrome, so a chrome change invalidates the whole set.
+- `npm run live-check [-- <url>]` — post-deploy verification against production
+  (default `https://saigyo.github.io/ayaki/`): boots the app, parses the example,
+  exercises all three views and the language switcher, and fails on any console error.
 
 ## License
 
