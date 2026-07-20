@@ -25,7 +25,7 @@ function getDialog(): HTMLDialogElement {
 }
 
 describe('HelpDialog', () => {
-  it('renders the trigger and opens a dialog with all six sections', async () => {
+  it('renders the trigger and opens a dialog with all seven sections', async () => {
     const user = userEvent.setup()
     render(HelpDialog, { props: { chainColor: 'amber' } })
     const trigger = screen.getByRole('button', { name: 'help' })
@@ -41,8 +41,13 @@ describe('HelpDialog', () => {
       'Reading the diagram',
       'Attachment confidence',
       'Predicate and head',
+      'The parts of a bunsetsu',
       'Tips',
     ])
+    expect(within(dialog).getAllByRole('listitem').map((li) => li.textContent)).toEqual(
+      expect.arrayContaining([expect.stringContaining('auxiliary')]),
+    )
+    expect(dialog.querySelectorAll('.parts-example .part')).toHaveLength(5)
     expect(within(dialog).getByText(/directly to the predicate/)).toBeInTheDocument()
   })
 

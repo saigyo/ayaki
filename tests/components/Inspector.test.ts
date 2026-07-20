@@ -36,8 +36,8 @@ describe('Inspector — sentence mode', () => {
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
-    expect(screen.getByRole('heading', { name: /食べた。/ })).toBeInTheDocument()
-    expect(screen.getByText('食べ')).toBeInTheDocument()
+    expect(screen.getByRole('heading')).toHaveTextContent('食べ。')
+    expect(screen.getAllByText('食べ')).toHaveLength(2)
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
     expect(screen.getByText('動詞・自立')).toBeInTheDocument()
     expect(screen.getByText('verb (independent)')).toBeInTheDocument()
@@ -64,7 +64,7 @@ describe('Inspector — bunsetsu mode', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', jishoUrl: null })
     const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
     render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
-    expect(screen.getAllByText('！')).toHaveLength(2)
+    expect(screen.getAllByText('！')).toHaveLength(4)
   })
   afterEach(() => setStoredLocale('en'))
 
@@ -85,6 +85,52 @@ describe('Inspector — bunsetsu mode', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(screen.getByRole('button', { name: 'speak 食べ' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'speak 。' })).toBeNull()
+  })
+})
+
+describe('segmented parts', () => {
+  it('links segments to entries bidirectionally and scrolls on segment hover', async () => {
+    const scrollSpy = vi.fn()
+    // jsdom has no scrollIntoView, so vi.spyOn cannot attach — stub and restore manually
+    const original = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = scrollSpy
+    try {
+      const s = sentenceFixture()
+      const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[2], rate: 1, voiceURI: null } })
+      const parts = container.querySelectorAll('.part')
+      const entries = container.querySelectorAll('.morpheme')
+      expect(parts.length).toBe(entries.length)
+      await fireEvent.mouseEnter(parts[1])
+      expect(entries[1]).toHaveClass('active')
+      expect(parts[1]).toHaveClass('active')
+      expect(scrollSpy).toHaveBeenCalled()
+      await fireEvent.mouseEnter(entries[0])
+      expect(parts[0]).toHaveClass('active')
+      expect(entries[1]).not.toHaveClass('active')
+      await fireEvent.mouseLeave(entries[0])
+      expect(parts[0]).not.toHaveClass('active')
+    } finally {
+      Element.prototype.scrollIntoView = original
+    }
+  })
+  it('keeps the segment highlight while focus moves within the same entry', async () => {
+    const s = sentenceFixture()
+    const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null } })
+    const entries = container.querySelectorAll('.morpheme')
+    const parts = container.querySelectorAll('.part')
+    const controls = entries[0].querySelectorAll('button, a')
+    await fireEvent.focusIn(entries[0])
+    expect(parts[0]).toHaveClass('active')
+    await fireEvent.focusOut(entries[0], { relatedTarget: controls[controls.length - 1] })
+    expect(parts[0]).toHaveClass('active')
+    await fireEvent.focusOut(entries[0], { relatedTarget: document.body })
+    expect(parts[0]).not.toHaveClass('active')
+  })
+  it('renders quiet parts and entries when quietParts is on', () => {
+    const s = sentenceFixture()
+    const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null, quietParts: true } })
+    expect(container.querySelector('.part')).toHaveClass('quiet')
+    expect(container.querySelector('.morpheme')).toHaveClass('quiet')
   })
 })
 

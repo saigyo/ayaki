@@ -100,6 +100,23 @@ try {
     }
 
     try {
+      if ((await page.locator('main g.bunsetsu').count()) === 0) {
+        // the locale check's reload above cleared the loaded sentence — restore it
+        await page.getByTestId('example-link').click()
+        await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
+      }
+      await page.locator('main g.bunsetsu').first().click()
+      await page.waitForSelector('.inspector .part', { timeout: 5_000 })
+      const parts = await page.locator('.inspector .part').count()
+      const entries = await page.locator('.inspector .morpheme').count()
+      if (parts < 2 || parts !== entries) throw new Error(`parts=${parts} entries=${entries}`)
+      await page.keyboard.press('Escape')
+      ok(`parts: segmented heading with ${parts} parts matching ${entries} entries`)
+    } catch (e) {
+      fail('parts', String(e))
+    }
+
+    try {
       // the views check above stored 'cabocha' via real clicks — capture it,
       // open a *tree* share link, and assert the store is untouched
       const viewBefore = await page.evaluate(

@@ -6,6 +6,8 @@
   import { currentLocale, t } from '../lib/i18n.svelte'
   import { conjugationGloss, posGloss } from '../lib/pos'
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
+  import SegmentedSurface from './SegmentedSurface.svelte'
+  import { morphemeRole, PART_PALETTE } from '../lib/partroles'
 
   let {
     sentence,
@@ -16,6 +18,7 @@
     voiceURI,
     showConfidence = false,
     confidenceThreshold = LOW_CONFIDENCE,
+    quietParts = false,
     shareUrl = '',
   }: {
     sentence: ParsedSentence | null
@@ -26,6 +29,7 @@
     voiceURI: string | null
     showConfidence?: boolean
     confidenceThreshold?: number
+    quietParts?: boolean
     shareUrl?: string
   } = $props()
 
@@ -44,6 +48,20 @@
   // bumped on every toggle transition: a completion callback from a superseded
   // utterance (its end fires asynchronously after cancel) must not flip the state
   let speakGen = 0
+
+  let hoverPart = $state<number | null>(null)
+  let entryEls: HTMLElement[] = []
+
+  // switching bunsetsu must not carry a stale highlight over
+  $effect(() => {
+    void selected
+    hoverPart = null
+  })
+
+  function hoverSegment(i: number | null) {
+    hoverPart = i
+    if (i !== null) entryEls[i]?.scrollIntoView({ block: 'nearest' })
+  }
 
   function toggleSpeech() {
     if (!sentence) return
@@ -103,7 +121,7 @@
 <aside class="inspector">
   {#if selected}
     <h2 lang="ja">
-      {selected.surface}
+      <SegmentedSurface morphemes={selected.morphemes} quiet={quietParts} active={hoverPart} onhover={hoverSegment} />
       <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}><span class="emoji" aria-hidden="true">🗣️</span></button>
     </h2>
     {@const label = confidenceLabel(selected)}
@@ -112,9 +130,27 @@
         {t('attachment', { label })}
       </p>
     {/if}
-    {#each selected.morphemes as m}
+    {#each selected.morphemes as m, mi}
       {@const pg = posGloss(m.posJa, currentLocale())}
-      <div class="morpheme">
+      <!-- Pointer-only hover affordance: keyboard focus reaching the entry's own
+           speak button or Jisho link triggers the same styling via :focus-within,
+           so making the div itself focusable would only add a dead tab stop. -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div
+        class="morpheme"
+        class:active={hoverPart === mi}
+        class:quiet={quietParts}
+        style="--part: {PART_PALETTE[morphemeRole(m.posJa)]}"
+        bind:this={entryEls[mi]}
+        onmouseenter={() => (hoverPart = mi)}
+        onfocusin={() => (hoverPart = mi)}
+        onfocusout={(e) => {
+          // focusout bubbles on moves between controls inside the entry —
+          // only clear when focus actually leaves the entry's subtree
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) hoverPart = null
+        }}
+        onmouseleave={() => (hoverPart = null)}
+      >
         <div class="m-head">
           <span class="m-surface" lang="ja">{m.surface}</span>
           {#if m.reading && m.reading !== m.surface}<span class="m-reading" lang="ja">（{m.reading}）</span>{/if}

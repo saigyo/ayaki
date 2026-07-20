@@ -1,8 +1,10 @@
 <script lang="ts">
   import StairView from './StairView.svelte'
-  import { HELP_SENTENCE } from '../lib/helpexample'
+  import SegmentedSurface from './SegmentedSurface.svelte'
+  import { HELP_SENTENCE, HELP_PARTS } from '../lib/helpexample'
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_PALETTE, type ChainColor } from '../lib/chainpalette'
+  import { PART_LABEL_KEYS, PART_PALETTE, PART_ROLES } from '../lib/partroles'
 
   let { chainColor = 'amber' }: { chainColor?: ChainColor } = $props()
 
@@ -104,6 +106,16 @@
     <section>
       <h3>{t('helpTermTitle')}</h3>
       <p>{t('helpTermBody')}</p>
+    </section>
+    <section>
+      <h3>{t('helpPartsTitle')}</h3>
+      <p>{t('helpPartsIntro')}</p>
+      <p class="parts-example"><SegmentedSurface morphemes={HELP_PARTS} /></p>
+      <ul class="help-legend">
+        {#each PART_ROLES as r (r)}
+          <li><span class="legend-swatch" style="background: color-mix(in srgb, {PART_PALETTE[r]} 30%, transparent); border: 2px solid {PART_PALETTE[r]}" aria-hidden="true"></span>{t(PART_LABEL_KEYS[r])}</li>
+        {/each}
+      </ul>
     </section>
     <section>
       <h3>{t('helpTipsTitle')}</h3>
