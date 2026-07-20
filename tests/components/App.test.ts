@@ -109,7 +109,7 @@ describe('App', () => {
     const box = await screen.findByText('これは')
     box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     // bunsetsu mode for the clicked bunsetsu of sentence 2
-    expect(await screen.findByRole('heading', { name: /これは/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /これ/ })).toBeInTheDocument()
     // Escape returns to the sentence view of the now-active second sentence
     await user.keyboard('{Escape}')
     expect(await screen.findByText('これは何。')).toBeInTheDocument()
