@@ -132,6 +132,9 @@
     {/if}
     {#each selected.morphemes as m, mi}
       {@const pg = posGloss(m.posJa, currentLocale())}
+      <!-- Pointer-only hover affordance: keyboard focus reaching the entry's own
+           speak button or Jisho link triggers the same styling via :focus-within,
+           so making the div itself focusable would only add a dead tab stop. -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
         class="morpheme"
