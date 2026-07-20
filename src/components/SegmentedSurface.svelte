@@ -16,16 +16,19 @@
   } = $props()
 </script>
 
-<span class="parts" lang="ja" role="presentation" onmouseleave={() => onhover(null)}>
+<!-- Pointer-only hover affordance: keyboard users get the segment↔entry link
+     via :focus-within on the entries. Making parts focusable would add dead
+     tab stops that announce as buttons doing nothing. -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<span class="parts" lang="ja" onmouseleave={() => onhover(null)}>
   {#each morphemes as m, i}
     {@const role = morphemeRole(m.posJa)}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <span
       class="part"
       class:quiet
       class:active={active === i}
       data-role={role}
-      role="button"
-      tabindex="0"
       style="--part: {PART_PALETTE[role]}"
       title={t(PART_LABEL_KEYS[role])}
       onmouseenter={() => onhover(i)}
