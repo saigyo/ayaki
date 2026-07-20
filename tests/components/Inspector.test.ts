@@ -91,21 +91,27 @@ describe('Inspector — bunsetsu mode', () => {
 describe('segmented parts', () => {
   it('links segments to entries bidirectionally and scrolls on segment hover', async () => {
     const scrollSpy = vi.fn()
+    // jsdom has no scrollIntoView, so vi.spyOn cannot attach — stub and restore manually
+    const original = Element.prototype.scrollIntoView
     Element.prototype.scrollIntoView = scrollSpy
-    const s = sentenceFixture()
-    const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[2], rate: 1, voiceURI: null } })
-    const parts = container.querySelectorAll('.part')
-    const entries = container.querySelectorAll('.morpheme')
-    expect(parts.length).toBe(entries.length)
-    await fireEvent.mouseEnter(parts[1])
-    expect(entries[1]).toHaveClass('active')
-    expect(parts[1]).toHaveClass('active')
-    expect(scrollSpy).toHaveBeenCalled()
-    await fireEvent.mouseEnter(entries[0])
-    expect(parts[0]).toHaveClass('active')
-    expect(entries[1]).not.toHaveClass('active')
-    await fireEvent.mouseLeave(entries[0])
-    expect(parts[0]).not.toHaveClass('active')
+    try {
+      const s = sentenceFixture()
+      const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[2], rate: 1, voiceURI: null } })
+      const parts = container.querySelectorAll('.part')
+      const entries = container.querySelectorAll('.morpheme')
+      expect(parts.length).toBe(entries.length)
+      await fireEvent.mouseEnter(parts[1])
+      expect(entries[1]).toHaveClass('active')
+      expect(parts[1]).toHaveClass('active')
+      expect(scrollSpy).toHaveBeenCalled()
+      await fireEvent.mouseEnter(entries[0])
+      expect(parts[0]).toHaveClass('active')
+      expect(entries[1]).not.toHaveClass('active')
+      await fireEvent.mouseLeave(entries[0])
+      expect(parts[0]).not.toHaveClass('active')
+    } finally {
+      Element.prototype.scrollIntoView = original
+    }
   })
   it('keeps the segment highlight while focus moves within the same entry', async () => {
     const s = sentenceFixture()
