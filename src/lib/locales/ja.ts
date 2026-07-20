@@ -84,6 +84,9 @@ export const ja: Record<keyof typeof en, string> = {
   helpTermTitle: '述語と主辞',
   helpTermBody:
     'どの連鎖も文の述語 — 動詞・形容詞・コピュラなど、最終的にすべての文節が係っていく要素 — に行き着きます。言語学ではこの要素を主辞と呼びます。',
+  helpPartsTitle: '文節の内部構造',
+  helpPartsIntro:
+    '文節を選択すると、その表層が部分ごとに分割され、役割別の色で表示されます。部分にカーソルを合わせると、下の対応する項目が強調されます。控えめな配色は設定で選べます。',
   helpTipsTitle: 'ヒント',
   helpTipSelect: '文節をクリックすると詳細と連鎖が表示されます。もう一度クリックするか Escape で解除します。',
   helpTipHover: '線にカーソルを合わせると係り受けの確率が表示されます。',

@@ -84,6 +84,9 @@ export const zh: Record<keyof typeof en, string> = {
   helpTermTitle: '谓语与中心语',
   helpTermBody:
     '每条依存链最终都汇聚到句子的谓语(述語)——动词、形容词或系词短语,其他成分最终都依附于它。在语言学中,这一成分称为句子的中心语(主辞)。',
+  helpPartsTitle: '文节的组成部分',
+  helpPartsIntro:
+    '选中文节后，其表层会按组成部分拆分，并按角色着色——将鼠标悬停在某一部分上，可高亮下方对应的条目。可在设置中改用低调配色。',
   helpTipsTitle: '小提示',
   helpTipSelect: '点击文节可查看详情并追踪其依存链;再次点击或按 Escape 取消选择。',
   helpTipHover: '将鼠标悬停在连线上可查看依存概率。',

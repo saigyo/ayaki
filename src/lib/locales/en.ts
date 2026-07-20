@@ -88,6 +88,9 @@ export const en = {
   helpTermTitle: 'Predicate and head',
   helpTermBody:
     'Every chain ends at the sentence\'s predicate (述語) — the verb, adjective, or copula phrase that everything else ultimately attaches to. In linguistics this element is called the head (主辞) of the sentence.',
+  helpPartsTitle: 'The parts of a bunsetsu',
+  helpPartsIntro:
+    'When a bunsetsu is selected, its surface is shown split into its parts, colored by role — hover a part to highlight its entry below. A quieter style is available in the settings.',
   helpTipsTitle: 'Tips',
   helpTipSelect: 'Click a bunsetsu to inspect it and trace its chain; click again or press Escape to clear.',
   helpTipHover: 'Hover a connector line to see its attachment probability.',

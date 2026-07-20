@@ -93,6 +93,7 @@ svg .bunsetsu.chain.hl rect, svg .bunsetsu.chain:focus-visible rect { stroke: va
 .part.active { background: color-mix(in srgb, var(--part) 34%, transparent); }
 .part.quiet { background: color-mix(in srgb, currentColor 7%, transparent); }
 .part.quiet.active { background: color-mix(in srgb, var(--part) 30%, transparent); }
+.parts-example { font-size: 1.5rem; font-weight: 600; margin: 0.4rem 0; }
 .morpheme { border-top: 1px solid #eaeef2; padding: 0.5rem 0 0.5rem 0.45rem; font-size: 0.92rem; border-left: 3px solid var(--part, transparent); transition: background 0.12s, border-color 0.12s; }
 .morpheme.quiet { border-left-color: color-mix(in srgb, currentColor 15%, transparent); }
 .morpheme.active, .morpheme:focus-within { background: color-mix(in srgb, var(--part) 10%, transparent); }
