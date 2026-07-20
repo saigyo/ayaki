@@ -86,7 +86,7 @@ export const de: Record<keyof typeof en, string> = {
     'Jede Kette endet beim Prädikat (述語) des Satzes — der Verb-, Adjektiv- oder Kopulaphrase, an die sich letztlich alles anschließt. In der Linguistik heißt dieses Element auch der Kopf (主辞) des Satzes.',
   helpPartsTitle: 'Die Teile eines Bunsetsu',
   helpPartsIntro:
-    'Bei einem ausgewählten Bunsetsu wird die Oberfläche in ihre Teile zerlegt angezeigt, nach Rolle eingefärbt — beim Überfahren eines Teils wird der zugehörige Eintrag darunten hervorgehoben. Eine dezentere Darstellung lässt sich in den Einstellungen wählen.',
+    'Bei einem ausgewählten Bunsetsu wird die Oberfläche in ihre Teile zerlegt angezeigt, nach Rolle eingefärbt — beim Überfahren eines Teils wird der zugehörige Eintrag darunter hervorgehoben. Eine dezentere Darstellung lässt sich in den Einstellungen wählen.',
   helpTipsTitle: 'Tipps',
   helpTipSelect: 'Klicken Sie ein Bunsetsu an, um es zu inspizieren und seine Kette zu verfolgen; erneutes Klicken oder Escape hebt die Auswahl auf.',
   helpTipHover: 'Fahren Sie über eine Verbindungslinie, um ihre Anbindungswahrscheinlichkeit zu sehen.',
