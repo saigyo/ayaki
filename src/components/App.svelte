@@ -30,6 +30,7 @@
   let showFurigana = $state(initialSettings.showFurigana)
   let showConfidence = $state(initialSettings.showConfidence)
   let confidenceThreshold = $state(initialSettings.confidenceThreshold)
+  let quietParts = $state(initialSettings.quietParts)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
@@ -51,7 +52,7 @@
   }
 
   $effect(() => {
-    saveSettings({ showFurigana, showConfidence, confidenceThreshold, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
+    saveSettings({ showFurigana, showConfidence, confidenceThreshold, quietParts, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
   })
 
   $effect(() => {
@@ -137,7 +138,7 @@
     </div>
     <Toolbar bind:showFurigana bind:view onviewclick={() => (viewFromLink = false)} />
     <HelpDialog {chainColor} />
-    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:chainColor />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:quietParts bind:chainColor />
   </header>
   <main>
     <section class="content">

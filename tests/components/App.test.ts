@@ -159,6 +159,7 @@ describe('App', () => {
       showFurigana: false,
       showConfidence: false,
       confidenceThreshold: 0.7,
+      quietParts: false,
       view: 'tree',
       rate: 1.2,
       voiceURI: null,

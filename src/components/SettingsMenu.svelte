@@ -10,12 +10,14 @@
     voiceURI = $bindable(null),
     showConfidence = $bindable(false),
     confidenceThreshold = $bindable(0.7),
+    quietParts = $bindable(false),
     chainColor = $bindable('amber'),
   }: {
     rate: number
     voiceURI?: string | null
     showConfidence?: boolean
     confidenceThreshold?: number
+    quietParts?: boolean
     chainColor?: ChainColor
   } = $props()
 
@@ -163,6 +165,10 @@
           {/each}
         </div>
       </fieldset>
+      <div class="row check-row">
+        <label class="row-label" for="quiet-{uid}">{t('quietPartsToggle')}</label>
+        <input id="quiet-{uid}" type="checkbox" bind:checked={quietParts} />
+      </div>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>
       {/if}

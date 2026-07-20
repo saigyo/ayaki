@@ -16,6 +16,7 @@ export const en = {
   settingsLabel: 'settings',
   confidenceToggle: 'show attachment confidence',
   confidenceThresholdLabel: 'uncertainty cutoff',
+  quietPartsToggle: 'quiet part colors',
   chainLabel: 'chain to predicate',
   chainAmber: 'amber',
   chainGreen: 'green',
