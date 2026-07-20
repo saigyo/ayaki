@@ -144,7 +144,11 @@
         bind:this={entryEls[mi]}
         onmouseenter={() => (hoverPart = mi)}
         onfocusin={() => (hoverPart = mi)}
-        onfocusout={() => (hoverPart = null)}
+        onfocusout={(e) => {
+          // focusout bubbles on moves between controls inside the entry —
+          // only clear when focus actually leaves the entry's subtree
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) hoverPart = null
+        }}
         onmouseleave={() => (hoverPart = null)}
       >
         <div class="m-head">
