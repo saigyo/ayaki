@@ -113,7 +113,7 @@
       <p class="parts-example"><SegmentedSurface morphemes={HELP_PARTS} /></p>
       <ul class="help-legend">
         {#each PART_ROLES as r (r)}
-          <li><span class="legend-swatch" style="background: color-mix(in srgb, {PART_PALETTE[r]} 30%, transparent); border-color: {PART_PALETTE[r]}" aria-hidden="true"></span>{t(PART_LABEL_KEYS[r])}</li>
+          <li><span class="legend-swatch" style="background: color-mix(in srgb, {PART_PALETTE[r]} 30%, transparent); border: 2px solid {PART_PALETTE[r]}" aria-hidden="true"></span>{t(PART_LABEL_KEYS[r])}</li>
         {/each}
       </ul>
     </section>

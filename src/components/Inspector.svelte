@@ -143,6 +143,8 @@
         style="--part: {PART_PALETTE[morphemeRole(m.posJa)]}"
         bind:this={entryEls[mi]}
         onmouseenter={() => (hoverPart = mi)}
+        onfocusin={() => (hoverPart = mi)}
+        onfocusout={() => (hoverPart = null)}
         onmouseleave={() => (hoverPart = null)}
       >
         <div class="m-head">
