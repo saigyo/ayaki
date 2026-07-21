@@ -153,7 +153,9 @@ export function bunsetsuRelation(all: RelationInput[], i: number): RelationLabel
     // read it off the next sibling attached to the same head
     if (detail(lastP).includes('並立助詞')) {
       for (let j = i + 1; j < all.length; j++) {
-        if (all[j].head === headIdx) return bunsetsuRelation(all, j)
+        if (all[j].head !== headIdx) continue
+        const label = bunsetsuRelation(all, j)
+        if (label !== null) return label
       }
       return 'nounmod'
     }

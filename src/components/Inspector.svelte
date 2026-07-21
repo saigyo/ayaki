@@ -133,7 +133,7 @@
         <span class="relation-term">{t(RELATION_TERM_KEYS[selected.relation])}</span>
         {#if headB}<span class="relation-head" lang="ja">→ {headB.surface}</span>{/if}
         <span class="relation-explain">{t(RELATION_EXPLAIN_KEYS[selected.relation])}</span>
-        <a class="relation-ud" href="https://universaldependencies.org/u/dep/{RELATION_UD[selected.relation]}.html" target="_blank" rel="noopener">UD: {RELATION_UD[selected.relation]} ↗</a>
+        <a class="relation-ud" href="https://universaldependencies.org/u/dep/{RELATION_UD[selected.relation]}.html" target="_blank" rel="noopener">UD: {selected.relation === 'topic' ? 'usually ' : ''}{RELATION_UD[selected.relation]} ↗</a>
       </p>
     {/if}
     {@const label = confidenceLabel(selected)}

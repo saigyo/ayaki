@@ -2,7 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
-import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
 import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
@@ -109,6 +109,22 @@ describe('relation line', () => {
     expect(line.textContent).toContain('predicate')
     expect(line.textContent).not.toContain('→')
     expect(line.querySelector('a')!.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/root.html')
+  })
+  it('hedges the UD link with "usually" for topic only, linking nsubj', () => {
+    // topic deliberately deviates from UD (no topic relation there), so its
+    // link text hedges — "usually nsubj" — while other labels stay bare
+    const topicBunsetsu = bunsetsuFixture(0, '私は', 2, null, 'わたしは', [morphemeFixture({ surface: '私', reading: 'わたし' })], 'topic')
+    const topicSentence = { text: '私は食べた。', error: null, bunsetsu: [topicBunsetsu, sentence.bunsetsu[2]] }
+    const topicView = render(Inspector, { props: { sentence: topicSentence, index: 0, total: 1, selected: topicBunsetsu, rate: 1, voiceURI: null } })
+    const topicLine = topicView.container.querySelector('.relation-line')!
+    const topicLink = topicLine.querySelector('a')!
+    expect(topicLink.textContent).toBe('UD: usually nsubj ↗')
+    expect(topicLink.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/nsubj.html')
+
+    // subject case must not carry the hedge
+    const subjectView = render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[0], rate: 1, voiceURI: null } })
+    const subjectLine = subjectView.container.querySelector('.relation-line')!
+    expect(subjectLine.querySelector('a')!.textContent).not.toContain('usually')
   })
 })
 

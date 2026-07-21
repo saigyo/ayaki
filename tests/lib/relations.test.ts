@@ -77,6 +77,15 @@ describe('bunsetsuRelation particle rules', () => {
     const all = [b(1, ['パン', '名詞・一般'], ['や', '助詞・並立助詞']), PRED]
     expect(bunsetsuRelation(all, 0)).toBe('nounmod')
   })
+  it('並立助詞 skips a symbol-only sibling (which labels null) and inherits from the next one', () => {
+    const all = [
+      b(3, ['すみれ', '名詞・固有名詞'], ['と', '助詞・並立助詞']),
+      b(3, ['、', '記号・読点']), // symbol-only sibling on the same head → labels null, must be skipped
+      b(3, ['彩', '名詞・固有名詞'], ['は', '助詞・係助詞']),
+      PRED,
+    ]
+    expect(bunsetsuRelation(all, 0)).toBe('topic')
+  })
   it('という before a noun → relative clause', () => {
     const all = [b(1, ['出す', '動詞・自立'], ['という', '助詞・格助詞']), b(2, ['方法', '名詞・一般'], ['が', '助詞・格助詞']), PRED]
     expect(bunsetsuRelation(all, 0)).toBe('relclause')

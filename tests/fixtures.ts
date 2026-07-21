@@ -13,7 +13,8 @@ export function morphemeFixture(over: Partial<MorphemeVM> = {}): MorphemeVM {
   }
 }
 
-function b(
+/** builds a BunsetsuVM; relation defaults to null but tests can pass an explicit label */
+export function bunsetsuFixture(
   index: number,
   surface: string,
   head: number | null,
@@ -24,6 +25,8 @@ function b(
 ): BunsetsuVM {
   return { index, surface, head, probability, forced: false, reading, morphemes, relation }
 }
+
+const b = bunsetsuFixture
 
 /** 猫が(→2, P=.95) 魚を(→2, P=.55 = uncertain) 食べた。(root) */
 export function sentenceFixture(): ParsedSentence {
@@ -57,13 +60,18 @@ export function chainSentenceFixture(): ParsedSentence {
     text: '新しい映画を見に行きました。',
     error: null,
     bunsetsu: [
-      b(0, '新しい', 1, 0.9, 'あたらしい', [morphemeFixture({ surface: '新しい', reading: 'あたらしい', posJa: '形容詞・自立' })]),
+      // clausal (形容詞・自立) directly before the noun head 映画 → relclause
+      b(0, '新しい', 1, 0.9, 'あたらしい', [morphemeFixture({ surface: '新しい', reading: 'あたらしい', posJa: '形容詞・自立' })], 'relclause'),
+      // trailing 格助詞 を → object
       b(1, '映画を', 2, 0.55, 'えいがを', [
         morphemeFixture({ surface: '映画', reading: 'えいが' }),
         morphemeFixture({ surface: 'を', reading: 'を', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%82%92' }),
-      ]),
-      b(2, '見に', 3, 0.9, 'みに', [morphemeFixture({ surface: '見', reading: 'み' })]),
-      b(3, '行きました。', null, null, 'いきました。', [morphemeFixture({ surface: '行きました', reading: 'いきました' })]),
+      ], 'object'),
+      // single placeholder morpheme (名詞・一般, no separate に particle); no particle
+      // chain and a predicating (root) head → adverbial per the particle-less rules
+      b(2, '見に', 3, 0.9, 'みに', [morphemeFixture({ surface: '見', reading: 'み' })], 'adverbial'),
+      // sentence root → predicate
+      b(3, '行きました。', null, null, 'いきました。', [morphemeFixture({ surface: '行きました', reading: 'いきました' })], 'predicate'),
     ],
   }
 }
@@ -74,8 +82,11 @@ export function forcedSentenceFixture(): ParsedSentence {
     text: 'これは何。',
     error: null,
     bunsetsu: [
-      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })], relation: null },
-      { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })], relation: null },
+      // single placeholder morpheme (名詞・代名詞, no separate は particle); no particle
+      // chain and a predicating (root) head → adverbial per the particle-less rules
+      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })], relation: 'adverbial' },
+      // sentence root → predicate
+      { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })], relation: 'predicate' },
     ],
   }
 }

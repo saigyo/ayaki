@@ -14,10 +14,10 @@ accuracy. (Measured 2026-07-21 against UD_Japanese-GSD.)
 | topic | — (see below) | bare …は/も |
 | object | obj, iobj | …を |
 | adverbial | obl, advmod | …に/で/へ/から/まで, comitative と, adverbs, adverb-capable nouns |
-| noun modifier | nmod, det, amod, nummod, compound | …の, 連体詞, bare noun before noun |
+| noun modifier | nmod, det, amod, nummod, compound, appos | …の, 連体詞, bare noun before noun |
 | relative clause | acl | clause before noun, …という |
 | linked clause | advcl, ccomp | …て/ので/…, quoting と, 連用中止, 形容動詞語幹+に |
-| connector | cc | 接続詞 bunsetsu |
+| connector | cc, discourse | 接続詞 bunsetsu |
 | predicate | root | the sentence root |
 
 **topic is a deliberate UD deviation.** UD has no topic relation and
@@ -83,6 +83,10 @@ cd ../ayaki && npx tsx scripts/relation-eval.ts # dev-set measurement
 # held-out: fetch ja_gsd-ud-train.conllu from the UD_Japanese-GSD repo, then
 npx tsx scripts/relation-eval.ts path/to/ja_gsd-ud-train.conllu
 ```
+
+With the shipped rules this prints ≈92.4% learner-label accuracy on the
+dev split (slightly above the pre-topic-deviation 91.9% research figure,
+because topic widens acceptance).
 
 The script imports the shipped labeler, so it measures exactly what the
 app displays; run it after any rule change.
