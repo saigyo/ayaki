@@ -111,6 +111,9 @@ export const ja: Record<keyof typeof en, string> = {
   helpPartsTitle: '文節の内部構造',
   helpPartsIntro:
     '文節を選択すると、その表層が部分ごとに分割され、役割別の色で表示されます。部分にカーソルを合わせると、下の対応する項目が強調されます。控えめな配色は設定で選べます。',
+  helpRelationsTitle: '各部分のはたらき — 関係ラベル',
+  helpRelationsIntro:
+    '各文節には、係り先との文法的な関係が表示されます。ラベルは助詞や品詞から規則で導かれ、およそ9割の精度です。インスペクターでは対応する Universal Dependencies の関係へのリンクも示されます。設定で非表示にできます。',
   helpTipsTitle: 'ヒント',
   helpTipSelect: '文節をクリックすると詳細と連鎖が表示されます。もう一度クリックするか Escape で解除します。',
   helpTipHover: '線にカーソルを合わせると係り受けの確率が表示されます。',

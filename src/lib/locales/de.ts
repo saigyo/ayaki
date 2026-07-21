@@ -111,6 +111,9 @@ export const de: Record<keyof typeof en, string> = {
   helpPartsTitle: 'Die Teile eines Bunsetsu',
   helpPartsIntro:
     'Bei einem ausgewählten Bunsetsu wird die Oberfläche in ihre Teile zerlegt angezeigt, nach Rolle eingefärbt — beim Überfahren eines Teils wird der zugehörige Eintrag darunter hervorgehoben. Eine dezentere Darstellung lässt sich in den Einstellungen wählen.',
+  helpRelationsTitle: 'Was die Teile tun — Relationsbeschriftungen',
+  helpRelationsIntro:
+    'Jedes Bunsetsu trägt seine grammatische Relation zu der Phrase, an die es sich anschließt. Die Beschriftungen werden regelbasiert aus Partikeln und Wortarten abgeleitet und stimmen in etwa 9 von 10 Fällen — der Inspektor verlinkt zu jeder Beschriftung die passende Universal-Dependencies-Relation. In den Einstellungen lassen sie sich ausblenden.',
   helpTipsTitle: 'Tipps',
   helpTipSelect: 'Klicken Sie ein Bunsetsu an, um es zu inspizieren und seine Kette zu verfolgen; erneutes Klicken oder Escape hebt die Auswahl auf.',
   helpTipHover: 'Fahren Sie über eine Verbindungslinie, um ihre Anbindungswahrscheinlichkeit zu sehen.',

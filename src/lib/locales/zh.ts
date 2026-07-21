@@ -111,6 +111,9 @@ export const zh: Record<keyof typeof en, string> = {
   helpPartsTitle: '文节的组成部分',
   helpPartsIntro:
     '选中文节后，其表层会按组成部分拆分，并按角色着色——将鼠标悬停在某一部分上，可高亮下方对应的条目。可在设置中改用低调配色。',
+  helpRelationsTitle: '各部分的作用 — 关系标签',
+  helpRelationsIntro:
+    '每个文节都标注了它与所依附短语的语法关系。标签由助词和词类规则推导，准确率约九成 — 检查面板会为每个标签链接对应的 Universal Dependencies 关系。可在设置中隐藏。',
   helpTipsTitle: '小提示',
   helpTipSelect: '点击文节可查看详情并追踪其依存链;再次点击或按 Escape 取消选择。',
   helpTipHover: '将鼠标悬停在连线上可查看依存概率。',

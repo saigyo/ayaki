@@ -115,6 +115,9 @@ export const en = {
   helpPartsTitle: 'The parts of a bunsetsu',
   helpPartsIntro:
     'When a bunsetsu is selected, its surface is shown split into its parts, colored by role — hover a part to highlight its entry below. A quieter style is available in the settings.',
+  helpRelationsTitle: 'What each part does — relation labels',
+  helpRelationsIntro:
+    'Each bunsetsu is labeled with its grammatical relation to the phrase it attaches to. The labels are derived by rules from particles and word classes and are right about 9 times out of 10 — the inspector links the matching Universal Dependencies relation for every label. They can be hidden in the settings.',
   helpTipsTitle: 'Tips',
   helpTipSelect: 'Click a bunsetsu to inspect it and trace its chain; click again or press Escape to clear.',
   helpTipHover: 'Hover a connector line to see its attachment probability.',
