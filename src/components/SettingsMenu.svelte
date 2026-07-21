@@ -11,6 +11,7 @@
     showConfidence = $bindable(false),
     confidenceThreshold = $bindable(0.7),
     quietParts = $bindable(false),
+    showRelations = $bindable(true),
     chainColor = $bindable('amber'),
   }: {
     rate: number
@@ -18,6 +19,7 @@
     showConfidence?: boolean
     confidenceThreshold?: number
     quietParts?: boolean
+    showRelations?: boolean
     chainColor?: ChainColor
   } = $props()
 
@@ -168,6 +170,10 @@
       <div class="row check-row">
         <label class="row-label" for="quiet-{uid}">{t('quietPartsToggle')}</label>
         <input id="quiet-{uid}" type="checkbox" bind:checked={quietParts} />
+      </div>
+      <div class="row check-row">
+        <label class="row-label" for="rel-{uid}">{t('relationsToggle')}</label>
+        <input id="rel-{uid}" type="checkbox" bind:checked={showRelations} />
       </div>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>

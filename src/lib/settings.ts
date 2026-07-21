@@ -8,6 +8,7 @@ export interface Settings {
   showConfidence: boolean
   confidenceThreshold: number
   quietParts: boolean
+  showRelations: boolean
   view: ViewKind
   rate: number
   voiceURI: string | null
@@ -15,7 +16,7 @@ export interface Settings {
   chainColor: ChainColor
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, confidenceThreshold: 0.7, quietParts: false, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
+export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, confidenceThreshold: 0.7, quietParts: false, showRelations: true, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -33,6 +34,7 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
       ? Math.min(CONFIDENCE_MAX, Math.max(CONFIDENCE_MIN, v))
       : undefined,
   quietParts: (v) => (typeof v === 'boolean' ? v : undefined),
+  showRelations: (v) => (typeof v === 'boolean' ? v : undefined),
   chainColor: (v) => (CHAIN_COLORS.includes(v as ChainColor) ? (v as ChainColor) : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>

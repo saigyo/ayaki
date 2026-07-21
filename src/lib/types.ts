@@ -1,3 +1,5 @@
+import type { RelationLabel } from './relations'
+
 export interface MorphemeVM {
   surface: string
   /** hiragana reading, null when the dictionary has none (unknown words) */
@@ -21,6 +23,8 @@ export interface BunsetsuVM {
   /** hiragana furigana for the whole bunsetsu, '' when it contains no kanji */
   reading: string
   morphemes: MorphemeVM[]
+  /** learner-facing dependency relation, null only for symbol-only bunsetsu */
+  relation: RelationLabel | null
 }
 
 export interface ParsedSentence {

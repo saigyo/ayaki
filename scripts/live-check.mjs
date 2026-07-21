@@ -119,6 +119,18 @@ try {
     }
 
     try {
+      const badges = await page.locator('main .relation-label').count()
+      const boxes = await page.locator('main .bunsetsu').count()
+      const badgeTexts = await page.locator('main .relation-label').allTextContents()
+      if (badges === 0 || badges !== boxes) throw new Error(`badges=${badges} boxes=${boxes}`)
+      if (!badgeTexts.includes('object') || !badgeTexts.includes('predicate'))
+        throw new Error(`unexpected badge texts: ${badgeTexts.join(',')}`)
+      ok(`relations: ${badges} badges matching ${boxes} bunsetsu (${badgeTexts.join('/')})`)
+    } catch (e) {
+      fail('relations', String(e))
+    }
+
+    try {
       // the views check above stored 'cabocha' via real clicks — capture it,
       // open a *tree* share link, and assert the store is untouched
       const viewBefore = await page.evaluate(

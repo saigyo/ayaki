@@ -19,6 +19,7 @@
     showConfidence = false,
     confidenceThreshold = LOW_CONFIDENCE,
     chainColor = 'none',
+    showRelations = false,
   }: {
     sentence: ParsedSentence
     view: ViewKind
@@ -30,6 +31,7 @@
     showConfidence?: boolean
     confidenceThreshold?: number
     chainColor?: ChainColor
+    showRelations?: boolean
   } = $props()
 </script>
 
@@ -42,10 +44,10 @@
   {#if sentence.error}
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
-    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
+    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
   {:else if view === 'tree'}
-    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
   {:else}
-    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} />
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
   {/if}
 </div>

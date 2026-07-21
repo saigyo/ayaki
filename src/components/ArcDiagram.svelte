@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { layoutArcs } from '../lib/arclayout'
+  import { layoutArcs, textWidth } from '../lib/arclayout'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
+  import { RELATION_TERM_KEYS } from '../lib/relations'
   import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
 
   let {
@@ -12,6 +13,7 @@
     confidenceThreshold = LOW_CONFIDENCE,
     selected = null,
     chainColor = 'none',
+    showRelations = false,
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
@@ -20,6 +22,7 @@
     confidenceThreshold?: number
     selected?: number | null
     chainColor?: ChainColor
+    showRelations?: boolean
     onselect: (index: number) => void
   } = $props()
 
@@ -30,10 +33,26 @@
   const BOX_H = 34
   const FURI_H = 16
   const PAD_X = 4
+  const REL_H = 15
 
-  const layout = $derived(layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), showFurigana ? 30 : 22))
+  const relH = $derived(showRelations ? REL_H : 0)
+  const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
+  // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
+  const relWidth = (b: BunsetsuVM) => {
+    const label = relText(b)
+    return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
+  }
+
+  const layout = $derived(
+    layoutArcs(
+      bunsetsu.map((b) => b.surface),
+      bunsetsu.map((b) => b.head),
+      showFurigana ? 30 : 22,
+      showRelations ? bunsetsu.map(relWidth) : undefined,
+    ),
+  )
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
-  const svgHeight = $derived(boxTop + BOX_H + 6)
+  const svgHeight = $derived(boxTop + BOX_H + 6 + relH)
 
   const chain = $derived(
     selected !== null && chainColor !== 'none'
@@ -111,6 +130,9 @@
         {/if}
         <rect x={box.x + PAD_X} y={boxTop} width={box.width} height={BOX_H} rx="6" />
         <text class="surface" x={box.cx + PAD_X} y={boxTop + 22} text-anchor="middle">{b.surface}</text>
+        {#if showRelations && relText(b)}
+          <text class="relation-label" aria-hidden="true" x={box.cx + PAD_X} y={boxTop + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
+        {/if}
       </g>
     {/each}
   </svg>

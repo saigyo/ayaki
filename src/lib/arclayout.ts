@@ -69,14 +69,14 @@ export interface ArcLayout {
  * depth, non-crossing input can never render crossing arcs, and there is no
  * need to cap the height — it is naturally bounded by how deeply arcs nest.
  */
-export function layoutArcs(surfaces: string[], heads: (number | null)[], arcBase = ARC_BASE): ArcLayout {
+export function layoutArcs(surfaces: string[], heads: (number | null)[], arcBase = ARC_BASE, minWidths?: number[]): ArcLayout {
   const boxes: ArcBox[] = []
   let x = 0
-  for (const s of surfaces) {
-    const width = textWidth(s) + 2 * BOX_PAD
+  surfaces.forEach((s, i) => {
+    const width = Math.max(textWidth(s) + 2 * BOX_PAD, minWidths?.[i] ?? 0)
     boxes.push({ x, width, cx: x + width / 2 })
     x += width + BOX_GAP
-  }
+  })
   const pairs: DepPair[] = []
   heads.forEach((head, dep) => {
     if (head === null) return

@@ -5,6 +5,7 @@
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_PALETTE, type ChainColor } from '../lib/chainpalette'
   import { PART_LABEL_KEYS, PART_PALETTE, PART_ROLES } from '../lib/partroles'
+  import { RELATION_EXPLAIN_KEYS, RELATION_LABELS, RELATION_TERM_KEYS } from '../lib/relations'
 
   let { chainColor = 'amber' }: { chainColor?: ChainColor } = $props()
 
@@ -79,6 +80,7 @@
         <StairView
           bunsetsu={HELP_SENTENCE}
           showConfidence={true}
+          showRelations={true}
           selected={demoSelected}
           chainColor={demoChain}
           onselect={(i) => (demoSelected = demoSelected === i ? null : i)}
@@ -114,6 +116,15 @@
       <ul class="help-legend">
         {#each PART_ROLES as r (r)}
           <li><span class="legend-swatch" style="background: color-mix(in srgb, {PART_PALETTE[r]} 30%, transparent); border: 2px solid {PART_PALETTE[r]}" aria-hidden="true"></span>{t(PART_LABEL_KEYS[r])}</li>
+        {/each}
+      </ul>
+    </section>
+    <section>
+      <h3>{t('helpRelationsTitle')}</h3>
+      <p>{t('helpRelationsIntro')}</p>
+      <ul class="help-legend relations-legend">
+        {#each RELATION_LABELS as r (r)}
+          <li><strong>{t(RELATION_TERM_KEYS[r])}</strong> — {t(RELATION_EXPLAIN_KEYS[r])}</li>
         {/each}
       </ul>
     </section>

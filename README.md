@@ -23,7 +23,8 @@ Everything runs client-side; there is no backend. Parsing is powered by
 ![The classic CaboCha-style stair view — one bunsetsu per row with right-hand rails connecting dependents to their heads, the selected bunsetsu highlighted and its chain to the predicate traced in amber](docs/images/screenshot-cabocha.png)
 
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).
-Background on the confidence display: [`docs/attachment-confidence.md`](docs/attachment-confidence.md).*
+Background on the confidence display: [`docs/attachment-confidence.md`](docs/attachment-confidence.md).
+Background on the relation labels (their UD mapping and measured ~92% accuracy): [`docs/relation-labels.md`](docs/relation-labels.md).*
 
 ## Development
 

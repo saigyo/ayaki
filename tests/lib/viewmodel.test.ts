@@ -78,10 +78,17 @@ describe('toParsedSentence', () => {
     expect(s.bunsetsu[0].probability).toBeNull()
     expect(s.bunsetsu[0].forced).toBe(true)
   })
+  it('computes relation labels per bunsetsu', () => {
+    const s = toParsedSentence('魚を食べた。', [
+      bun({ index: 0, surface: '魚を', head: 1, tokens: [tok({ surface_form: '魚', pos: '名詞', pos_detail_1: '一般' }), tok({ surface_form: 'を', pos: '助詞', pos_detail_1: '格助詞' })] }),
+      bun({ index: 1, surface: '食べた。', head: null, tokens: [tok({ surface_form: '食べ', pos: '動詞', pos_detail_1: '自立' }), tok({ surface_form: 'た', pos: '助動詞', pos_detail_1: '*' }), tok({ surface_form: '。', pos: '記号', pos_detail_1: '句点' })] }),
+    ])
+    expect(s.bunsetsu.map((b) => b.relation)).toEqual(['object', 'predicate'])
+  })
 })
 
 describe('isUncertain', () => {
-  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
+  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [], relation: null }
   it('lets a known probability win; forced matters only without one', () => {
     expect(isUncertain({ ...base, probability: 0.69, forced: false })).toBe(true)
     expect(isUncertain({ ...base, probability: 0.55, forced: true })).toBe(true)
@@ -104,7 +111,7 @@ describe('confidenceLabel', () => {
   // environment's default.
   beforeEach(() => setStoredLocale('en'))
 
-  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [] }
+  const base = { index: 0, surface: '', head: 1, reading: '', morphemes: [], relation: null }
   it('formats a probability, appending (forced) when applicable', () => {
     expect(confidenceLabel({ ...base, probability: 0.55, forced: false })).toBe('P = 55%')
     expect(confidenceLabel({ ...base, probability: 0.93, forced: true })).toBe('P = 93% (forced)')

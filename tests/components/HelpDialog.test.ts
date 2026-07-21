@@ -25,7 +25,7 @@ function getDialog(): HTMLDialogElement {
 }
 
 describe('HelpDialog', () => {
-  it('renders the trigger and opens a dialog with all seven sections', async () => {
+  it('renders the trigger and opens a dialog with all eight sections', async () => {
     const user = userEvent.setup()
     render(HelpDialog, { props: { chainColor: 'amber' } })
     const trigger = screen.getByRole('button', { name: 'help' })
@@ -42,6 +42,7 @@ describe('HelpDialog', () => {
       'Attachment confidence',
       'Predicate and head',
       'The parts of a bunsetsu',
+      'What each part does — relation labels',
       'Tips',
     ])
     expect(within(dialog).getAllByRole('listitem').map((li) => li.textContent)).toEqual(
@@ -125,5 +126,24 @@ describe('HelpDialog', () => {
     await user.click(screen.getByRole('button', { name: 'close help' }))
     await user.click(screen.getByRole('button', { name: 'help' }))
     expect(boxes[0].classList.contains('selected')).toBe(true)
+  })
+
+  it('lists all nine relations with glosses', async () => {
+    const user = userEvent.setup()
+    render(HelpDialog, { props: { chainColor: 'amber' } })
+    await user.click(screen.getByRole('button', { name: 'help' }))
+    const dialog = getDialog()
+    const items = [...dialog.querySelectorAll('.relations-legend li')]
+    expect(items.length).toBe(9)
+    expect(items[0].textContent).toContain('subject')
+    expect(items[8].textContent).toContain('predicate')
+  })
+
+  it('demo diagram shows relation badges', async () => {
+    const user = userEvent.setup()
+    render(HelpDialog, { props: { chainColor: 'amber' } })
+    await user.click(screen.getByRole('button', { name: 'help' }))
+    // spec pins the demo's showRelations on — HELP_SENTENCE has 4 bunsetsu
+    expect(document.querySelectorAll('dialog .relation-label').length).toBe(4)
   })
 })

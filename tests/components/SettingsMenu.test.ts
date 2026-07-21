@@ -91,6 +91,17 @@ describe('SettingsMenu', () => {
     expect(screen.getByRole('checkbox', { name: 'quiet part colors' })).not.toBeChecked()
   })
 
+  it('binds the relation-labels checkbox', async () => {
+    vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
+    const user = userEvent.setup()
+    render(SettingsMenu, { props: { ...base } })
+    await user.click(screen.getByRole('button', { name: 'settings' }))
+    const box = screen.getByLabelText('relation labels')
+    expect(box).toBeChecked()
+    await fireEvent.click(box)
+    expect(box).not.toBeChecked()
+  })
+
   it('enables the controls live when voiceschanged delivers voices', async () => {
     let voices: Array<Partial<SpeechSynthesisVoice>> = []
     const synth = fakeSynth([])

@@ -2,7 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import Inspector from '../../src/components/Inspector.svelte'
-import { forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import type { BunsetsuVM } from '../../src/lib/types'
 import { setStoredLocale } from '../../src/lib/i18n.svelte'
 
@@ -64,7 +64,7 @@ describe('Inspector — bunsetsu mode', () => {
   })
   it('renders bunsetsu with duplicate identical morphemes without crashing', () => {
     const dup = morphemeFixture({ surface: '！', reading: null, posJa: '記号・一般', jishoUrl: null })
-    const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }] }
+    const bunsetsu: BunsetsuVM = { index: 0, surface: '！！', head: null, probability: null, forced: false, reading: '', morphemes: [dup, { ...dup }], relation: null }
     render(Inspector, { props: { sentence: null, index: 0, total: 1, selected: bunsetsu, rate: 1, voiceURI: null } })
     expect(screen.getAllByText('！')).toHaveLength(4)
   })
@@ -87,6 +87,44 @@ describe('Inspector — bunsetsu mode', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     expect(screen.getByRole('button', { name: 'speak 食べ' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'speak 。' })).toBeNull()
+  })
+})
+
+describe('relation line', () => {
+  it('shows term, head surface, explanation, and UD link', () => {
+    // render with the fixture's non-root bunsetsu selected (e.g. 魚を → 食べた。)
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null } })
+    const line = document.querySelector('.inspector .relation-line')!
+    expect(line.textContent).toContain('object')
+    expect(line.textContent).toContain('→ 食べた。')
+    expect(line.textContent).toContain('what the action directly acts on (を)')
+    const link = line.querySelector('a')!
+    expect(link.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/obj.html')
+    expect(link.getAttribute('target')).toBe('_blank')
+  })
+  it('root shows predicate without an arrow', () => {
+    // select the root bunsetsu
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
+    const line = document.querySelector('.inspector .relation-line')!
+    expect(line.textContent).toContain('predicate')
+    expect(line.textContent).not.toContain('→')
+    expect(line.querySelector('a')!.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/root.html')
+  })
+  it('hedges the UD link with "usually" for topic only, linking nsubj', () => {
+    // topic deliberately deviates from UD (no topic relation there), so its
+    // link text hedges — "usually nsubj" — while other labels stay bare
+    const topicBunsetsu = bunsetsuFixture(0, '私は', 2, null, 'わたしは', [morphemeFixture({ surface: '私', reading: 'わたし' })], 'topic')
+    const topicSentence = { text: '私は食べた。', error: null, bunsetsu: [topicBunsetsu, sentence.bunsetsu[2]] }
+    const topicView = render(Inspector, { props: { sentence: topicSentence, index: 0, total: 1, selected: topicBunsetsu, rate: 1, voiceURI: null } })
+    const topicLine = topicView.container.querySelector('.relation-line')!
+    const topicLink = topicLine.querySelector('a')!
+    expect(topicLink.textContent).toBe('UD: usually nsubj ↗')
+    expect(topicLink.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/nsubj.html')
+
+    // subject case must not carry the hedge
+    const subjectView = render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[0], rate: 1, voiceURI: null } })
+    const subjectLine = subjectView.container.querySelector('.relation-line')!
+    expect(subjectLine.querySelector('a')!.textContent).not.toContain('usually')
   })
 })
 
