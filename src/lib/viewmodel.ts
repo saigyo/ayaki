@@ -2,6 +2,7 @@ import type { Bunsetsu, KuromojiToken } from 'sasara'
 import { combinePos, hasKanji, toHiragana } from './pos'
 import { jishoUrl } from './links'
 import { t } from './i18n.svelte'
+import { bunsetsuRelation } from './relations'
 import type { BunsetsuVM, MorphemeVM, ParsedSentence } from './types'
 
 export const LOW_CONFIDENCE = 0.7
@@ -50,22 +51,23 @@ function bunsetsuReading(tokens: KuromojiToken[], surface: string): string {
 }
 
 export function toParsedSentence(text: string, bunsetsu: Bunsetsu[]): ParsedSentence {
+  const vms = bunsetsu.map((b): Omit<BunsetsuVM, 'relation'> => {
+    const conf = (b as Bunsetsu & { confidence?: ConfidenceLike }).confidence
+    const p = conf?.probability
+    return {
+      index: b.index,
+      surface: b.surface,
+      head: b.head,
+      probability: typeof p === 'number' && !Number.isNaN(p) ? p : null,
+      forced: conf?.forced ?? false,
+      reading: bunsetsuReading(b.tokens, b.surface),
+      morphemes: b.tokens.map(toMorpheme),
+    }
+  })
   return {
     text,
     error: null,
-    bunsetsu: bunsetsu.map((b): BunsetsuVM => {
-      const conf = (b as Bunsetsu & { confidence?: ConfidenceLike }).confidence
-      const p = conf?.probability
-      return {
-        index: b.index,
-        surface: b.surface,
-        head: b.head,
-        probability: typeof p === 'number' && !Number.isNaN(p) ? p : null,
-        forced: conf?.forced ?? false,
-        reading: bunsetsuReading(b.tokens, b.surface),
-        morphemes: b.tokens.map(toMorpheme),
-      }
-    }),
+    bunsetsu: vms.map((vm, i) => ({ ...vm, relation: bunsetsuRelation(vms, i) })),
   }
 }
 

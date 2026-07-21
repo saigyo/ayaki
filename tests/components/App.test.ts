@@ -160,6 +160,7 @@ describe('App', () => {
       showConfidence: false,
       confidenceThreshold: 0.7,
       quietParts: false,
+      showRelations: true,
       view: 'tree',
       rate: 1.2,
       voiceURI: null,

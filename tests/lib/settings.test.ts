@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const, confidenceThreshold: 0.85, quietParts: true }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const, confidenceThreshold: 0.85, quietParts: true, showRelations: false }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -62,6 +62,10 @@ describe('loadSettings', () => {
   it('rejects non-boolean quietParts values', () => {
     localStorage.setItem(KEY, JSON.stringify({ quietParts: 'yes' }))
     expect(loadSettings().quietParts).toBe(false)
+  })
+  it('rejects non-boolean showRelations values', () => {
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: 'yes' }))
+    expect(loadSettings().showRelations).toBe(true)
   })
   it('ignores unknown keys', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree', theme: 'dark' }))

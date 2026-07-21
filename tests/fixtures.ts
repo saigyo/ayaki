@@ -1,4 +1,5 @@
 import type { BunsetsuVM, MorphemeVM, ParsedSentence } from '../src/lib/types'
+import type { RelationLabel } from '../src/lib/relations'
 
 export function morphemeFixture(over: Partial<MorphemeVM> = {}): MorphemeVM {
   return {
@@ -19,8 +20,9 @@ function b(
   probability: number | null,
   reading: string,
   morphemes: MorphemeVM[],
+  relation: RelationLabel | null = null,
 ): BunsetsuVM {
-  return { index, surface, head, probability, forced: false, reading, morphemes }
+  return { index, surface, head, probability, forced: false, reading, morphemes, relation }
 }
 
 /** 猫が(→2, P=.95) 魚を(→2, P=.55 = uncertain) 食べた。(root) */
@@ -72,8 +74,8 @@ export function forcedSentenceFixture(): ParsedSentence {
     text: 'これは何。',
     error: null,
     bunsetsu: [
-      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })] },
-      { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })] },
+      { index: 0, surface: 'これは', head: 1, probability: null, forced: true, reading: '', morphemes: [morphemeFixture({ surface: 'これ', reading: 'これ', posJa: '名詞・代名詞', jishoUrl: 'https://jisho.org/search/%E3%81%93%E3%82%8C' })], relation: null },
+      { index: 1, surface: '何。', head: null, probability: null, forced: false, reading: 'なに。', morphemes: [morphemeFixture({ surface: '何', reading: 'なに', jishoUrl: 'https://jisho.org/search/%E4%BD%95' })], relation: null },
     ],
   }
 }

@@ -18,6 +18,7 @@ export const de: Record<keyof typeof en, string> = {
   confidenceToggle: 'Zeige Anbindungskonfidenz',
   confidenceThresholdLabel: 'Unsicherheitsschwelle',
   quietPartsToggle: 'Dezente Teilfarben',
+  relationsToggle: 'Relationsbeschriftungen',
   chainLabel: 'Kette zum Prädikat',
   chainAmber: 'Bernstein',
   chainGreen: 'Grün',
