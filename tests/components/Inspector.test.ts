@@ -36,9 +36,9 @@ describe('Inspector — sentence mode', () => {
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
-    const heading = screen.getByRole('heading').textContent!
-    expect(heading).toContain('食べ')
-    expect(heading).toContain('。')
+    // the pills carry the raw surfaces; labels/ruby are aria-hidden annotations
+    const parts = [...screen.getByRole('heading').querySelectorAll('.part')].map((p) => p.textContent)
+    expect(parts).toEqual(['食べ', '。'])
     expect(screen.getAllByText('食べ')).toHaveLength(2)
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
     expect(screen.getByText('動詞・自立')).toBeInTheDocument()

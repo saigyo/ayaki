@@ -34,10 +34,12 @@
       onmouseenter={() => onhover(i)}
     >
       {#if showFurigana}
-        <span class="part-ruby">{m.reading && m.reading !== m.surface ? m.reading : ''}</span>
+        <!-- annotations are aria-hidden: the heading's accessible name must stay
+             the bunsetsu surface, not "魚 head を particle" -->
+        <span class="part-ruby" aria-hidden="true">{m.reading && m.reading !== m.surface ? m.reading : ''}</span>
       {/if}
       <span class="part" class:quiet class:active={active === i}>{m.surface}</span>
-      <span class="part-label">{t(PART_SHORT_KEYS[role])}</span>
+      <span class="part-label" aria-hidden="true">{t(PART_SHORT_KEYS[role])}</span>
     </span>
   {/each}
 </span>
