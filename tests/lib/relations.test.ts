@@ -109,7 +109,7 @@ describe('bunsetsuRelation particle-less rules', () => {
     expect(bunsetsuRelation(all, 0)).toBe('topic')
   })
   it('連体詞 → noun modifier', () => {
-    const all = [b(1, ['この', '連体詞'], ), b(2, ['本', '名詞・一般'], ['を', '助詞・格助詞']), PRED]
+    const all = [b(1, ['この', '連体詞']), b(2, ['本', '名詞・一般'], ['を', '助詞・格助詞']), PRED]
     expect(bunsetsuRelation(all, 0)).toBe('nounmod')
   })
   it('副詞 → adverbial', () => {
