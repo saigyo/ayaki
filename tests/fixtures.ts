@@ -34,11 +34,11 @@ export function sentenceFixture(): ParsedSentence {
       b(0, '猫が', 2, 0.95, 'ねこが', [
         morphemeFixture({ surface: '猫', reading: 'ねこ', jishoUrl: 'https://jisho.org/search/%E7%8C%AB' }),
         morphemeFixture({ surface: 'が', reading: 'が', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%81%8C' }),
-      ]),
+      ], 'subject'),
       b(1, '魚を', 2, 0.55, 'さかなを', [
         morphemeFixture(),
         morphemeFixture({ surface: 'を', reading: 'を', posJa: '助詞・格助詞', jishoUrl: 'https://jisho.org/search/%E3%82%92' }),
-      ]),
+      ], 'object'),
       b(2, '食べた。', null, null, 'たべた。', [
         morphemeFixture({
           surface: '食べ', reading: 'たべ', posJa: '動詞・自立',
@@ -46,7 +46,7 @@ export function sentenceFixture(): ParsedSentence {
           jishoUrl: 'https://jisho.org/search/%E9%A3%9F%E3%81%B9%E3%82%8B',
         }),
         morphemeFixture({ surface: '。', reading: null, posJa: '記号・句点', jishoUrl: null }),
-      ]),
+      ], 'predicate'),
     ],
   }
 }

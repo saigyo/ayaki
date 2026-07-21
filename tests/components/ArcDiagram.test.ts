@@ -116,4 +116,16 @@ describe('ArcDiagram', () => {
     const unselected = render(ArcDiagram, { props: { bunsetsu: chainB, chainColor: 'amber', onselect: () => {} } })
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
+  it('shows relation badges when showRelations is on', () => {
+    const { container, getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const labels = [...container.querySelectorAll('.relation-label')]
+    expect(labels.length).toBe(bunsetsu.length)
+    expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
+    // badges must not change the accessible name of the box itself
+    expect(getByRole('button', { name: '魚を' })).toBeInTheDocument()
+  })
+  it('shows no badges by default', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
 })

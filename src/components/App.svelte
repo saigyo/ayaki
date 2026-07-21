@@ -168,6 +168,7 @@
               {showConfidence}
               {confidenceThreshold}
               {chainColor}
+              {showRelations}
               active={sentences.length > 1 && activeSentence === i}
               selected={selection?.sentence === i ? selection.bunsetsu : null}
               onselect={(b) => select(i, b)}

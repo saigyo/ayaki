@@ -1,8 +1,10 @@
 <script lang="ts">
   import { layoutStairs } from '../lib/stairlayout'
+  import { textWidth } from '../lib/arclayout'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
+  import { RELATION_TERM_KEYS } from '../lib/relations'
   import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
 
   let {
@@ -12,6 +14,7 @@
     confidenceThreshold = LOW_CONFIDENCE,
     selected = null,
     chainColor = 'none',
+    showRelations = false,
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
@@ -20,6 +23,7 @@
     confidenceThreshold?: number
     selected?: number | null
     chainColor?: ChainColor
+    showRelations?: boolean
     onselect: (index: number) => void
   } = $props()
 
@@ -31,13 +35,21 @@
   const FURI_H = 16
   const ROW_GAP = 12
   const PAD = 4
+  const REL_H = 15
 
   const furiH = $derived(showFurigana ? FURI_H : 0)
+  const relH = $derived(showRelations ? REL_H : 0)
+  const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
+  // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
+  const relWidth = (b: BunsetsuVM) => {
+    const label = relText(b)
+    return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
+  }
   const layout = $derived(
     layoutStairs(
       bunsetsu.map((b) => b.surface),
       bunsetsu.map((b) => b.head),
-      { rowHeight: furiH + BOX_H + ROW_GAP, boxCenterOffset: furiH + BOX_H / 2 },
+      { rowHeight: furiH + BOX_H + relH + ROW_GAP, boxCenterOffset: furiH + BOX_H / 2 },
     ),
   )
 
@@ -121,6 +133,9 @@
           {/if}
           <rect x={box.x} y={box.y + furiH} width={box.width} height={BOX_H} rx="6" />
           <text class="surface" x={box.x + box.width / 2} y={box.y + furiH + 22} text-anchor="middle">{b.surface}</text>
+          {#if showRelations && relText(b)}
+            <text class="relation-label" aria-hidden="true" x={box.x + box.width / 2} y={box.y + furiH + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
+          {/if}
         </g>
       {/each}
     </g>
