@@ -1,6 +1,5 @@
 <script lang="ts">
   import { layoutStairs } from '../lib/stairlayout'
-  import { textWidth } from '../lib/arclayout'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
@@ -40,11 +39,6 @@
   const furiH = $derived(showFurigana ? FURI_H : 0)
   const relH = $derived(showRelations ? REL_H : 0)
   const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
-  // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
-  const relWidth = (b: BunsetsuVM) => {
-    const label = relText(b)
-    return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
-  }
   const layout = $derived(
     layoutStairs(
       bunsetsu.map((b) => b.surface),
