@@ -19,6 +19,7 @@
     showConfidence = false,
     confidenceThreshold = LOW_CONFIDENCE,
     quietParts = false,
+    showFurigana = false,
     shareUrl = '',
   }: {
     sentence: ParsedSentence | null
@@ -30,6 +31,7 @@
     showConfidence?: boolean
     confidenceThreshold?: number
     quietParts?: boolean
+    showFurigana?: boolean
     shareUrl?: string
   } = $props()
 
@@ -121,7 +123,7 @@
 <aside class="inspector">
   {#if selected}
     <h2 lang="ja">
-      <SegmentedSurface morphemes={selected.morphemes} quiet={quietParts} active={hoverPart} onhover={hoverSegment} />
+      <SegmentedSurface morphemes={selected.morphemes} quiet={quietParts} {showFurigana} active={hoverPart} onhover={hoverSegment} />
       <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}><span class="emoji" aria-hidden="true">🗣️</span></button>
     </h2>
     {@const label = confidenceLabel(selected)}

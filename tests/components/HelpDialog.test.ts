@@ -48,6 +48,8 @@ describe('HelpDialog', () => {
       expect.arrayContaining([expect.stringContaining('auxiliary')]),
     )
     expect(dialog.querySelectorAll('.parts-example .part')).toHaveLength(5)
+    expect([...dialog.querySelectorAll('.parts-example .part-ruby')].map((r) => r.textContent)).toEqual(['いき', '', '', '', ''])
+    expect(dialog.querySelectorAll('.parts-example .part-label')).toHaveLength(5)
     expect(within(dialog).getByText(/directly to the predicate/)).toBeInTheDocument()
   })
 

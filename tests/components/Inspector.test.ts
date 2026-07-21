@@ -128,6 +128,14 @@ describe('segmented parts', () => {
     await fireEvent.focusOut(entries[0], { relatedTarget: document.body })
     expect(parts[0]).not.toHaveClass('active')
   })
+  it('shows ruby in the heading when furigana is on', () => {
+    const s = sentenceFixture()
+    const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null, showFurigana: true } })
+    const rubies = [...container.querySelectorAll('.part-ruby')].map((r) => r.textContent)
+    expect(rubies).toEqual(['ねこ', ''])
+    const off = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null } })
+    expect(off.container.querySelectorAll('.part-ruby')).toHaveLength(0)
+  })
   it('renders quiet parts and entries when quietParts is on', () => {
     const s = sentenceFixture()
     const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null, quietParts: true } })

@@ -176,7 +176,7 @@
         {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {quietParts} {shareUrl} />
+    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {quietParts} {showFurigana} {shareUrl} />
   </main>
   <footer>
     <p>
