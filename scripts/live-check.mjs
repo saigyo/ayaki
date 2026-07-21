@@ -109,9 +109,11 @@ try {
       await page.waitForSelector('.inspector .part', { timeout: 5_000 })
       const parts = await page.locator('.inspector .part').count()
       const entries = await page.locator('.inspector .morpheme').count()
-      if (parts < 2 || parts !== entries) throw new Error(`parts=${parts} entries=${entries}`)
+      const labels = await page.locator('.inspector .part-label').count()
+      if (parts < 2 || parts !== entries || labels !== parts)
+        throw new Error(`parts=${parts} entries=${entries} labels=${labels}`)
       await page.keyboard.press('Escape')
-      ok(`parts: segmented heading with ${parts} parts matching ${entries} entries`)
+      ok(`parts: segmented heading with ${parts} labeled parts matching ${entries} entries`)
     } catch (e) {
       fail('parts', String(e))
     }
