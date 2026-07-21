@@ -1,3 +1,5 @@
+import type { MessageKey } from './i18n.svelte'
+
 export type PartRole = 'head' | 'aux' | 'particle' | 'affix' | 'symbol'
 
 /** legend/display order */
@@ -18,7 +20,7 @@ export const PART_LABEL_KEYS = {
   particle: 'partParticle',
   affix: 'partAffix',
   symbol: 'partSymbol',
-} as const
+} as const satisfies Record<PartRole, MessageKey>
 
 /** i18n catalog key holding the SHORT under-pill label of each role */
 export const PART_SHORT_KEYS = {
@@ -27,7 +29,7 @@ export const PART_SHORT_KEYS = {
   particle: 'partParticleShort',
   affix: 'partAffixShort',
   symbol: 'partSymbolShort',
-} as const
+} as const satisfies Record<PartRole, MessageKey>
 
 /**
  * Structural role of a morpheme within its bunsetsu, from the combined
