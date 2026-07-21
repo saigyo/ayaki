@@ -24,6 +24,7 @@ Everything runs client-side; there is no backend. Parsing is powered by
 
 *Design documents live in [`docs/superpowers/specs/`](docs/superpowers/specs/).
 Background on the confidence display: [`docs/attachment-confidence.md`](docs/attachment-confidence.md).*
+- [docs/relation-labels.md](docs/relation-labels.md) — what the relation badges mean, their UD mapping, and the measured ~92% labeling accuracy
 
 ## Development
 
