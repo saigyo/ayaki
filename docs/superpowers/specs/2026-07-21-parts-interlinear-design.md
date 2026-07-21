@@ -19,7 +19,11 @@ in one geometry change.
   renders only when the morpheme's reading exists AND differs from its
   surface (the entries' existing rule) — so 行き gets いき; ましょ/う/ね/。
   get an empty placeholder row (keeps baselines aligned). With furigana
-  off, the ruby row is absent entirely.
+  off, the ruby row is absent entirely. (Implementation note: pill-bottom
+  alignment across mixed ruby/no-ruby columns comes from the container's
+  `align-items: flex-end`, not from the placeholder height — and the
+  container wraps, so long auxiliary chains break into rows of intact
+  columns.)
 - **Role labels** are always visible, style A: small muted gray text under
   each pill, in BOTH colored and quiet modes. Short localized forms;
   unabbreviated German. The long forms stay in tooltips and the help
