@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { morphemeRole, PART_PALETTE, PART_ROLES } from '../../src/lib/partroles'
+import { morphemeRole, PART_PALETTE, PART_ROLES, PART_SHORT_KEYS } from '../../src/lib/partroles'
 
 describe('morphemeRole', () => {
   it.each([
@@ -25,5 +25,9 @@ describe('palette', () => {
   it('covers every role, in legend order', () => {
     expect(PART_ROLES).toEqual(['head', 'aux', 'particle', 'affix', 'symbol'])
     for (const r of PART_ROLES) expect(PART_PALETTE[r]).toMatch(/^#[0-9a-f]{6}$/)
+  })
+
+  it('maps every role to a short label key', () => {
+    expect(Object.keys(PART_SHORT_KEYS).sort()).toEqual([...PART_ROLES].sort())
   })
 })

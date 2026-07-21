@@ -36,7 +36,9 @@ describe('Inspector — sentence mode', () => {
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
-    expect(screen.getByRole('heading')).toHaveTextContent('食べ。')
+    // the pills carry the raw surfaces; labels/ruby are aria-hidden annotations
+    const parts = [...screen.getByRole('heading').querySelectorAll('.part')].map((p) => p.textContent)
+    expect(parts).toEqual(['食べ', '。'])
     expect(screen.getAllByText('食べ')).toHaveLength(2)
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
     expect(screen.getByText('動詞・自立')).toBeInTheDocument()
@@ -100,7 +102,7 @@ describe('segmented parts', () => {
       const parts = container.querySelectorAll('.part')
       const entries = container.querySelectorAll('.morpheme')
       expect(parts.length).toBe(entries.length)
-      await fireEvent.mouseEnter(parts[1])
+      await fireEvent.mouseEnter(container.querySelectorAll('.part-col')[1])
       expect(entries[1]).toHaveClass('active')
       expect(parts[1]).toHaveClass('active')
       expect(scrollSpy).toHaveBeenCalled()
@@ -125,6 +127,14 @@ describe('segmented parts', () => {
     expect(parts[0]).toHaveClass('active')
     await fireEvent.focusOut(entries[0], { relatedTarget: document.body })
     expect(parts[0]).not.toHaveClass('active')
+  })
+  it('shows ruby in the heading when furigana is on', () => {
+    const s = sentenceFixture()
+    const { container } = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null, showFurigana: true } })
+    const rubies = [...container.querySelectorAll('.part-ruby')].map((r) => r.textContent)
+    expect(rubies).toEqual(['ねこ', ''])
+    const off = render(Inspector, { props: { sentence: s, index: 0, total: 1, selected: s.bunsetsu[0], rate: 1, voiceURI: null } })
+    expect(off.container.querySelectorAll('.part-ruby')).toHaveLength(0)
   })
   it('renders quiet parts and entries when quietParts is on', () => {
     const s = sentenceFixture()
