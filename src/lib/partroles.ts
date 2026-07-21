@@ -20,6 +20,15 @@ export const PART_LABEL_KEYS = {
   symbol: 'partSymbol',
 } as const
 
+/** i18n catalog key holding the SHORT under-pill label of each role */
+export const PART_SHORT_KEYS = {
+  head: 'partHeadShort',
+  aux: 'partAuxShort',
+  particle: 'partParticleShort',
+  affix: 'partAffixShort',
+  symbol: 'partSymbolShort',
+} as const
+
 /**
  * Structural role of a morpheme within its bunsetsu, from the combined
  * IPAdic POS (`pos・detail1`). Head is the default: any content word that
