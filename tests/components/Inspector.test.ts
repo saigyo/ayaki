@@ -36,7 +36,9 @@ describe('Inspector — sentence mode', () => {
 describe('Inspector — bunsetsu mode', () => {
   it('renders one card per morpheme with reading, POS pair, base form and Jisho link', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
-    expect(screen.getByRole('heading')).toHaveTextContent('食べ。')
+    const heading = screen.getByRole('heading').textContent!
+    expect(heading).toContain('食べ')
+    expect(heading).toContain('。')
     expect(screen.getAllByText('食べ')).toHaveLength(2)
     expect(screen.getByText('（たべ）')).toBeInTheDocument()
     expect(screen.getByText('動詞・自立')).toBeInTheDocument()
@@ -100,7 +102,7 @@ describe('segmented parts', () => {
       const parts = container.querySelectorAll('.part')
       const entries = container.querySelectorAll('.morpheme')
       expect(parts.length).toBe(entries.length)
-      await fireEvent.mouseEnter(parts[1])
+      await fireEvent.mouseEnter(container.querySelectorAll('.part-col')[1])
       expect(entries[1]).toHaveClass('active')
       expect(parts[1]).toHaveClass('active')
       expect(scrollSpy).toHaveBeenCalled()

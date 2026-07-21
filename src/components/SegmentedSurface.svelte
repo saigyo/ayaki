@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { morphemeRole, PART_LABEL_KEYS, PART_PALETTE } from '../lib/partroles'
+  import { morphemeRole, PART_LABEL_KEYS, PART_PALETTE, PART_SHORT_KEYS } from '../lib/partroles'
   import { t } from '../lib/i18n.svelte'
   import type { MorphemeVM } from '../lib/types'
 
@@ -7,11 +7,13 @@
     morphemes,
     quiet = false,
     active = null,
+    showFurigana = false,
     onhover = () => {},
   }: {
     morphemes: MorphemeVM[]
     quiet?: boolean
     active?: number | null
+    showFurigana?: boolean
     onhover?: (index: number | null) => void
   } = $props()
 </script>
@@ -25,13 +27,17 @@
     {@const role = morphemeRole(m.posJa)}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <span
-      class="part"
-      class:quiet
-      class:active={active === i}
+      class="part-col"
       data-role={role}
       style="--part: {PART_PALETTE[role]}"
       title={t(PART_LABEL_KEYS[role])}
       onmouseenter={() => onhover(i)}
-    >{m.surface}</span>
+    >
+      {#if showFurigana}
+        <span class="part-ruby">{m.reading && m.reading !== m.surface ? m.reading : ''}</span>
+      {/if}
+      <span class="part" class:quiet class:active={active === i}>{m.surface}</span>
+      <span class="part-label">{t(PART_SHORT_KEYS[role])}</span>
+    </span>
   {/each}
 </span>

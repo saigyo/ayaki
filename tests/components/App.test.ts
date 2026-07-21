@@ -44,7 +44,7 @@ describe('App', () => {
     const box = await screen.findByText('魚を')
     box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     // Inspector switches to bunsetsu mode
-    expect(await screen.findByRole('heading', { name: /魚を/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /魚.*を/ })).toBeInTheDocument()
     expect(screen.getByText('（さかな）')).toBeInTheDocument()
   })
   it('parses the built-in example from the idle hint', async () => {
@@ -123,7 +123,7 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /parse/i }))
     const box = await screen.findByText('魚を')
     box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    expect(await screen.findByRole('heading', { name: /魚を/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /魚.*を/ })).toBeInTheDocument()
     const card = container.querySelector('.card')!
     // single sentence → no active border
     expect(card.classList.contains('active')).toBe(false)
