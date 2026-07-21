@@ -14,7 +14,6 @@ function b(head: number | null, ...ms: [string, string][]): RelationInput {
 }
 
 const PRED = b(null, ['行き', '動詞・自立'], ['まし', '助動詞'], ['た', '助動詞'], ['。', '記号・句点'])
-const NOUN_PRED = b(null, ['映画', '名詞・一般'], ['を', '助詞・格助詞'])
 
 describe('bunsetsuRelation particle rules', () => {
   it('が → subject', () => {
