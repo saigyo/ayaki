@@ -90,6 +90,28 @@ describe('Inspector — bunsetsu mode', () => {
   })
 })
 
+describe('relation line', () => {
+  it('shows term, head surface, explanation, and UD link', () => {
+    // render with the fixture's non-root bunsetsu selected (e.g. 魚を → 食べた。)
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[1], rate: 1, voiceURI: null } })
+    const line = document.querySelector('.inspector .relation-line')!
+    expect(line.textContent).toContain('object')
+    expect(line.textContent).toContain('→ 食べた。')
+    expect(line.textContent).toContain('what the action directly acts on (を)')
+    const link = line.querySelector('a')!
+    expect(link.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/obj.html')
+    expect(link.getAttribute('target')).toBe('_blank')
+  })
+  it('root shows predicate without an arrow', () => {
+    // select the root bunsetsu
+    render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
+    const line = document.querySelector('.inspector .relation-line')!
+    expect(line.textContent).toContain('predicate')
+    expect(line.textContent).not.toContain('→')
+    expect(line.querySelector('a')!.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/root.html')
+  })
+})
+
 describe('segmented parts', () => {
   it('links segments to entries bidirectionally and scrolls on segment hover', async () => {
     const scrollSpy = vi.fn()

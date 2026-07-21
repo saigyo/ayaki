@@ -8,6 +8,7 @@
   import type { BunsetsuVM, ParsedSentence } from '../lib/types'
   import SegmentedSurface from './SegmentedSurface.svelte'
   import { morphemeRole, PART_PALETTE } from '../lib/partroles'
+  import { RELATION_EXPLAIN_KEYS, RELATION_TERM_KEYS, RELATION_UD } from '../lib/relations'
 
   let {
     sentence,
@@ -126,6 +127,15 @@
       <SegmentedSurface morphemes={selected.morphemes} quiet={quietParts} {showFurigana} active={hoverPart} onhover={hoverSegment} />
       <button class="icon" disabled={!canSpeak} title={speakTitle} aria-label={t('speakBunsetsu')} onclick={() => speak(selected.surface, rate, voiceURI)}><span class="emoji" aria-hidden="true">🗣️</span></button>
     </h2>
+    {#if selected.relation}
+      {@const headB = selected.head !== null ? (sentence?.bunsetsu[selected.head] ?? null) : null}
+      <p class="relation-line">
+        <span class="relation-term">{t(RELATION_TERM_KEYS[selected.relation])}</span>
+        {#if headB}<span class="relation-head" lang="ja">→ {headB.surface}</span>{/if}
+        <span class="relation-explain">{t(RELATION_EXPLAIN_KEYS[selected.relation])}</span>
+        <a class="relation-ud" href="https://universaldependencies.org/u/dep/{RELATION_UD[selected.relation]}.html" target="_blank" rel="noopener">UD: {RELATION_UD[selected.relation]} ↗</a>
+      </p>
+    {/if}
     {@const label = confidenceLabel(selected)}
     {#if showConfidence && label}
       <p class="confidence" class:uncertain={isUncertain(selected, confidenceThreshold)}>
