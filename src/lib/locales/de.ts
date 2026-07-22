@@ -44,6 +44,7 @@ export const de: Record<keyof typeof en, string> = {
   sentenceHeadingN: 'Satz {index} / {total}',
   sentenceHint: 'Analysiere einen Satz und klicke dann auf einen Teil, um Lesungen und Wortarten zu sehen.',
   speakButton: 'Vorlesen',
+  translateButton: 'Übersetzen',
   stopButton: 'Stopp',
   uncertaintyNote: '{uncertain} von {total} Anbindungen unsicher',
   attachment: 'Anbindung: {label}',

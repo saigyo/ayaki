@@ -13,9 +13,14 @@ describe('Inspector — sentence mode', () => {
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: null, rate: 1, voiceURI: null, showConfidence: true } })
     expect(screen.getByRole('heading', { name: 'Sentence' })).toBeInTheDocument()
     expect(screen.getByText(sentence.text)).toBeInTheDocument()
-    const gt = screen.getByRole('link', { name: /google translate/i })
+    const gt = screen.getByRole('link', { name: /translate/i })
     expect(gt).toHaveAttribute('href', expect.stringContaining('translate.google.com'))
     expect(gt).toHaveAttribute('href', expect.stringContaining(encodeURIComponent(sentence.text)))
+    // styled as a button with the Google Translate favicon as a decorative icon
+    const icon = gt.querySelector('img.gt-icon')
+    expect(icon).not.toBeNull()
+    expect(icon).toHaveAttribute('alt', '')
+    expect(icon!.getAttribute('src')).toMatch(/^data:image\/png;base64,/)
     // fixture has 1 uncertain of 2 non-root attachments; no "Sentence N:" prefix
     expect(screen.getByText('1 of 2 attachments uncertain')).toBeInTheDocument()
     // jsdom has no speechSynthesis → speech buttons disabled with explanation

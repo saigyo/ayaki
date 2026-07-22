@@ -44,6 +44,7 @@ export const ja: Record<keyof typeof en, string> = {
   sentenceHeadingN: '文 {index} / {total}',
   sentenceHint: '文を解析してから、文節をクリックすると読みと品詞が確認できます。',
   speakButton: '読み上げ',
+  translateButton: '翻訳',
   stopButton: '停止',
   uncertaintyNote: '係り先 {total} 件中 {uncertain} 件が不確実',
   attachment: '係り受け：{label}',

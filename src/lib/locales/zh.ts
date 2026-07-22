@@ -44,6 +44,7 @@ export const zh: Record<keyof typeof en, string> = {
   sentenceHeadingN: '句子 {index} / {total}',
   sentenceHint: '解析句子后，点击句子成分即可查看读音和词性。',
   speakButton: '朗读',
+  translateButton: '翻译',
   stopButton: '停止',
   uncertaintyNote: '{total} 个依存关系中有 {uncertain} 个不确定',
   attachment: '依存关系：{label}',
