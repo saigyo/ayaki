@@ -34,12 +34,47 @@ try {
 
   if (booted) {
     try {
+      const idle = await page.evaluate(() => ({
+        results: !!document.querySelector('main .results'),
+        entry: !!document.querySelector('main .entry .sentence-input'),
+        rules: document.querySelectorAll('hr.rule').length,
+      }))
+      if (idle.results || !idle.entry || idle.rules !== 1) throw new Error(JSON.stringify(idle))
+      ok('layout idle: entry band, one rule, no results grid')
+    } catch (e) {
+      fail('layout idle', String(e))
+    }
+
+    try {
       await page.getByTestId('example-link').click()
       // scope to main: the help dialog's demo StairView in <header> always exists in the DOM
       await page.waitForSelector('main g.bunsetsu', { timeout: 60_000 })
       ok(`parse: example renders ${await page.locator('main g.bunsetsu').count()} bunsetsu`)
     } catch (e) {
       fail('parse', String(e))
+    }
+
+    try {
+      const geo = await page.evaluate(() => {
+        const r = (s) => document.querySelector(s)?.getBoundingClientRect() ?? null
+        const card = r('main .results .card')
+        const insp = r('main .results .inspector')
+        const ta = r('main .entry .sentence-input textarea')
+        const btn = r('main .entry .sentence-input button')
+        if (!card || !insp || !ta || !btn) return null
+        const contentWidth = insp.right - card.left
+        return {
+          inspectorNotAboveCard: insp.top >= card.top - 2,
+          buttonTopAligned: Math.abs(btn.top - ta.top) <= 4,
+          inputSpansWidth: ta.width >= contentWidth * 0.7,
+          rules: document.querySelectorAll('hr.rule').length,
+        }
+      })
+      if (!geo || !geo.inspectorNotAboveCard || !geo.buttonTopAligned || !geo.inputSpansWidth || geo.rules !== 2)
+        throw new Error(JSON.stringify(geo))
+      ok('layout: full-width input, top-aligned button, inspector level with first card, two rules')
+    } catch (e) {
+      fail('layout', String(e))
     }
 
     const views = [

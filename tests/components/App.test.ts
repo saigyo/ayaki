@@ -79,6 +79,59 @@ describe('App', () => {
     expect(screen.getByText(/CC BY-SA 4\.0/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /sasara/i })).toBeInTheDocument()
   })
+  it('shows the entry band but no results grid before the first parse', () => {
+    render(App)
+    expect(document.querySelector('.entry .sentence-input')).not.toBeNull()
+    expect(document.querySelector('.results')).toBeNull()
+    // only the header↔entry rule exists before results
+    expect(document.querySelectorAll('hr.rule')).toHaveLength(1)
+  })
+  it('lays out three bands after a parse: entry outside a results grid, two rules', async () => {
+    vi.mocked(parseText).mockResolvedValue([sentenceFixture()])
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), '猫が魚を食べた。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    await screen.findByText('食べた。')
+    const results = container.querySelector('.results')!
+    expect(results).not.toBeNull()
+    // the results grid holds the cards and the inspector...
+    expect(results.querySelector('.cards')).not.toBeNull()
+    expect(results.querySelector('.inspector')).not.toBeNull()
+    // ...but NOT the input — that lives in the full-width entry band above
+    expect(results.querySelector('.sentence-input')).toBeNull()
+    const entry = container.querySelector('.entry')!
+    expect(entry.querySelector('.sentence-input')).not.toBeNull()
+    // entry precedes results in document order
+    expect(entry.compareDocumentPosition(results) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    // header↔entry and entry↔results rules
+    expect(container.querySelectorAll('hr.rule')).toHaveLength(2)
+  })
+  it('shows no results grid while loading', async () => {
+    let resolveParse: (v: ReturnType<typeof sentenceFixture>[]) => void = () => {}
+    vi.mocked(parseText).mockImplementation(() => new Promise((r) => { resolveParse = r }))
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), '猫。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    // loading: no results grid yet, still a single rule
+    expect(container.querySelector('.results')).toBeNull()
+    expect(container.querySelectorAll('hr.rule')).toHaveLength(1)
+    resolveParse([sentenceFixture()])
+    await screen.findByText('食べた。')
+    expect(container.querySelector('.results')).not.toBeNull()
+  })
+  it('shows the error banner in the entry band with no results grid', async () => {
+    vi.mocked(parseText).mockRejectedValueOnce(new Error('boom'))
+    const user = userEvent.setup()
+    const { container } = render(App)
+    await user.type(screen.getByRole('textbox'), '猫。')
+    await user.click(screen.getByRole('button', { name: /parse/i }))
+    await screen.findByText(/boom/)
+    expect(container.querySelector('.entry .error-banner')).not.toBeNull()
+    expect(container.querySelector('.results')).toBeNull()
+    expect(container.querySelectorAll('hr.rule')).toHaveLength(1)
+  })
   it('scopes the inspector to the active sentence and switches on card click', async () => {
     // two sentences: 猫が魚を食べた。 and これは何。
     vi.mocked(parseText).mockResolvedValue([sentenceFixture(), forcedSentenceFixture()])

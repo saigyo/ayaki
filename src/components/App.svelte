@@ -142,8 +142,9 @@
     <HelpDialog {chainColor} />
     <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:quietParts bind:relationDisplay bind:arrowDirection bind:chainColor />
   </header>
+  <hr class="rule" />
   <main>
-    <section class="content">
+    <section class="entry">
       <SentenceInput bind:text={inputText} busy={status === 'loading'} onparse={handleParse} />
       {#if status === 'idle'}
         <p class="hint">
@@ -159,28 +160,34 @@
           <p>{t('initError', { message: errorMsg })}</p>
           <button onclick={handleParse}>{t('retry')}</button>
         </div>
-      {:else}
-        {#each sentences as sentence, i (i)}
-          <div class="card-slot" bind:this={cardEls[i]}>
-            <SentenceCard
-              {sentence}
-              {view}
-              {showFurigana}
-              {showConfidence}
-              {confidenceThreshold}
-              {chainColor}
-              {relationDisplay}
-              {arrowDirection}
-              active={sentences.length > 1 && activeSentence === i}
-              selected={selection?.sentence === i ? selection.bunsetsu : null}
-              onselect={(b) => select(i, b)}
-              onactivate={() => activate(i)}
-            />
-          </div>
-        {/each}
       {/if}
     </section>
-    <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {quietParts} {showFurigana} {shareUrl} />
+    {#if status === 'ready'}
+      <hr class="rule" />
+      <div class="results">
+        <section class="cards">
+          {#each sentences as sentence, i (i)}
+            <div class="card-slot" bind:this={cardEls[i]}>
+              <SentenceCard
+                {sentence}
+                {view}
+                {showFurigana}
+                {showConfidence}
+                {confidenceThreshold}
+                {chainColor}
+                {relationDisplay}
+                {arrowDirection}
+                active={sentences.length > 1 && activeSentence === i}
+                selected={selection?.sentence === i ? selection.bunsetsu : null}
+                onselect={(b) => select(i, b)}
+                onactivate={() => activate(i)}
+              />
+            </div>
+          {/each}
+        </section>
+        <Inspector sentence={activeVM} index={activeSentence} total={sentences.length} selected={selectedBunsetsu} {rate} {voiceURI} {showConfidence} {confidenceThreshold} {quietParts} {showFurigana} {shareUrl} />
+      </div>
+    {/if}
   </main>
   <footer>
     <p>
