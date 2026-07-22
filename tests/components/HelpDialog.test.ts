@@ -146,11 +146,13 @@ describe('HelpDialog', () => {
     expect(getDialog().textContent).toContain('draws a bracket along the whole clause')
   })
 
-  it('demo diagram shows relation badges', async () => {
+  it('demo diagram labels arrows and marks the predicates', async () => {
     const user = userEvent.setup()
     render(HelpDialog, { props: { chainColor: 'amber' } })
     await user.click(screen.getByRole('button', { name: 'help' }))
-    // spec pins the demo's showRelations on — HELP_SENTENCE has 4 bunsetsu
-    expect(document.querySelectorAll('dialog .relation-label').length).toBe(4)
+    // HELP_SENTENCE: relclause / object / linkedclause / predicate
+    expect(document.querySelectorAll('dialog .relation-label.on-edge').length).toBe(3)
+    const badges = [...document.querySelectorAll('dialog .relation-label:not(.on-edge)')]
+    expect(badges.map((b) => b.textContent)).toEqual(['predicate', 'predicate', 'main predicate'])
   })
 })

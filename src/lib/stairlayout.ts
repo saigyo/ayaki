@@ -57,6 +57,7 @@ export function layoutStairs(
   surfaces: string[],
   heads: (number | null)[],
   opts: StairOptions,
+  labelWidths?: number[],
 ): StairLayout {
   const widths = surfaces.map((s) => textWidth(s) + 2 * BOX_PAD)
   const maxBoxWidth = Math.max(0, ...widths)
@@ -73,8 +74,26 @@ export function layoutStairs(
   heads.forEach((head, dep) => {
     if (head !== null) pairs.push({ dep, head })
   })
+
+  // per-head rails: right of the head's stair column, widened so every
+  // dependent's horizontal segment fits its corner label, and monotone in
+  // head index so nested connectors keep nested rails
+  const railFor = new Map<number, number>()
+  let prevRail = 0
+  for (const h of [...new Set(pairs.map((p) => p.head))].sort((a, b) => a - b)) {
+    let rail = xRight(h) + RAIL_GAP
+    for (const p of pairs) {
+      if (p.head !== h) continue
+      const labelW = labelWidths?.[p.dep] ?? 0
+      if (labelW > 0) rail = Math.max(rail, xRight(p.dep) + labelW + 8)
+    }
+    rail = Math.max(rail, prevRail + 8)
+    railFor.set(h, rail)
+    prevRail = rail
+  }
+
   const connectors: StairConnector[] = pairs.map(({ dep, head }) => {
-    const railX = xRight(head) + RAIL_GAP
+    const railX = railFor.get(head)!
     return {
       dep,
       head,

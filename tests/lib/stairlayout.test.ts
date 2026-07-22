@@ -75,4 +75,17 @@ describe('layoutStairs', () => {
     const maxW = Math.max(...widths)
     for (const c of layout.connectors) expect(c.railX).toBe(maxW + c.head * 24 + 16)
   })
+  it('widens the rail so a corner label fits the dependent segment', () => {
+    const l = layoutStairs(surfaces, heads, opts, [90, 0, 0])
+    const c0 = l.connectors.find((x) => x.dep === 0)!
+    expect(c0.railX).toBeGreaterThanOrEqual(c0.x1 + 90 + 8)
+    // both dependents of the head still share the widened rail
+    expect(l.connectors.find((x) => x.dep === 1)!.railX).toBe(c0.railX)
+  })
+  it('keeps rails monotone when an early rail is widened past a later base', () => {
+    const l = layoutStairs(['新しい', '映画を', '見に'], [1, 2, null], opts, [200, 0, 0])
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    expect(byDep[0].railX).toBeGreaterThanOrEqual(byDep[0].x1 + 200 + 8)
+    expect(byDep[1].railX).toBeGreaterThan(byDep[0].railX)
+  })
 })

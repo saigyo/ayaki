@@ -1,5 +1,6 @@
 <script lang="ts">
   import { layoutStairs } from '../lib/stairlayout'
+  import { textWidth } from '../lib/arclayout'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
@@ -40,13 +41,30 @@
   const REL_H = 15
 
   const furiH = $derived(showFurigana ? FURI_H : 0)
-  const relH = $derived(relationDisplay === 'badges' ? REL_H : 0)
+  const relH = $derived(relationDisplay !== 'off' ? REL_H : 0)
   const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
+  // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
+  const relWidth = (b: BunsetsuVM) => {
+    const label = relText(b)
+    return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
+  }
+
+  const isClauseHead = (b: BunsetsuVM) => b.relation === 'relclause' || b.relation === 'linkedclause'
+  // arrows mode: a box badge only where it is true of the box itself — the
+  // root is the main predicate, a clause head is its own clause's predicate
+  const badgeText = (b: BunsetsuVM): string | null => {
+    if (relationDisplay === 'badges') return relText(b)
+    if (relationDisplay !== 'arrows') return null
+    if (b.head === null) return t('relPredicate')
+    return isClauseHead(b) ? t('relClausePredicate') : null
+  }
+
   const layout = $derived(
     layoutStairs(
       bunsetsu.map((b) => b.surface),
       bunsetsu.map((b) => b.head),
       { rowHeight: furiH + BOX_H + relH + ROW_GAP, boxCenterOffset: furiH + BOX_H / 2 },
+      relationDisplay === 'arrows' ? bunsetsu.map(relWidth) : undefined,
     ),
   )
 
@@ -102,6 +120,9 @@
             marker-end={chain.links.has(c.dep) ? `url(#arrowhead-chain-${uid})` : `url(#arrowhead-${uid})`}
           />
           <path class="hit" {d} />
+          {#if relationDisplay === 'arrows' && relText(bunsetsu[c.dep])}
+            <text class="relation-label on-edge" aria-hidden="true" x={c.railX - 4} y={c.y1 - 5} text-anchor="end">{relText(bunsetsu[c.dep])}</text>
+          {/if}
         </g>
       {/each}
       {#each bunsetsu as b, i (b.index)}
@@ -133,8 +154,8 @@
           {/if}
           <rect x={box.x} y={box.y + furiH} width={box.width} height={BOX_H} rx="6" />
           <text class="surface" x={box.x + box.width / 2} y={box.y + furiH + 22} text-anchor="middle">{b.surface}</text>
-          {#if relationDisplay === 'badges' && relText(b)}
-            <text class="relation-label" aria-hidden="true" x={box.x + box.width / 2} y={box.y + furiH + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
+          {#if badgeText(b)}
+            <text class="relation-label" aria-hidden="true" x={box.x + box.width / 2} y={box.y + furiH + BOX_H + 11} text-anchor="middle">{badgeText(b)}</text>
           {/if}
         </g>
       {/each}

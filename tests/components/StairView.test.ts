@@ -128,4 +128,13 @@ describe('StairView', () => {
     const c = l.connectors.find((x) => x.dep === 0)!
     expect(container.querySelector('.connector path.arc')!.getAttribute('d')).toBe(`M ${c.x1} ${c.y1} H ${c.railX} V ${c.y2} H ${c.x2}`)
   })
+  it('arrows mode: corner labels right-aligned at the rail, badges on predicates only', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(StairView, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+    const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+    expect(onEdge.map((l) => l.textContent)).toEqual(['relative clause', 'object', 'adverbial'])
+    expect(onEdge.every((l) => l.getAttribute('text-anchor') === 'end')).toBe(true)
+    const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+    expect(badges.map((l) => l.textContent)).toEqual(['predicate', 'main predicate'])
+  })
 })

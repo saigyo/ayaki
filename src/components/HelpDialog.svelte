@@ -80,7 +80,7 @@
         <StairView
           bunsetsu={HELP_SENTENCE}
           showConfidence={true}
-          relationDisplay="badges"
+          relationDisplay="arrows"
           selected={demoSelected}
           chainColor={demoChain}
           onselect={(i) => (demoSelected = demoSelected === i ? null : i)}
