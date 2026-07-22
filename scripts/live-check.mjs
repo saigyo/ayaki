@@ -59,8 +59,8 @@ try {
         const r = (s) => document.querySelector(s)?.getBoundingClientRect() ?? null
         const card = r('main .results .card')
         const insp = r('main .results .inspector')
-        const ta = r('.sentence-input textarea')
-        const btn = r('.sentence-input button')
+        const ta = r('main .entry .sentence-input textarea')
+        const btn = r('main .entry .sentence-input button')
         if (!card || !insp || !ta || !btn) return null
         const contentWidth = insp.right - card.left
         return {
