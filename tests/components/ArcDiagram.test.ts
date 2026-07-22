@@ -143,4 +143,21 @@ describe('ArcDiagram', () => {
     const arc0 = l.arcs.find((a) => a.dep === 0)!
     expect(container.querySelector('path.arc')!.getAttribute('d')!.startsWith(`M ${arc0.x1 + 4} `)).toBe(true)
   })
+  describe('arrows mode', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    it('labels ride the arcs; badges only for root and clause heads', () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+      expect(onEdge.map((l) => l.textContent)).toEqual(['relative clause', 'object', 'adverbial'])
+      const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+      expect(badges.map((l) => l.textContent)).toEqual(['predicate', 'main predicate'])
+      expect([...container.querySelectorAll('.relation-label')].every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
+    })
+    it('apex labels sit above the box row', () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const label = container.querySelector('text.relation-label.on-edge')!
+      const box = container.querySelector('g.bunsetsu rect')!
+      expect(Number(label.getAttribute('y'))).toBeLessThan(Number(box.getAttribute('y')))
+    })
+  })
 })

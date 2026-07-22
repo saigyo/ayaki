@@ -38,7 +38,7 @@
   const PAD_X = 4
   const REL_H = 15
 
-  const relH = $derived(relationDisplay === 'badges' ? REL_H : 0)
+  const relH = $derived(relationDisplay !== 'off' ? REL_H : 0)
   const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
   // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
   const relWidth = (b: BunsetsuVM) => {
@@ -46,12 +46,22 @@
     return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
   }
 
+  const isClauseHead = (b: BunsetsuVM) => b.relation === 'relclause' || b.relation === 'linkedclause'
+  // arrows mode: a box badge only where it is true of the box itself — the
+  // root is the main predicate, a clause head is its own clause's predicate
+  const badgeText = (b: BunsetsuVM): string | null => {
+    if (relationDisplay === 'badges') return relText(b)
+    if (relationDisplay !== 'arrows') return null
+    if (b.head === null) return t('relPredicate')
+    return isClauseHead(b) ? t('relClausePredicate') : null
+  }
+
   const layout = $derived(
     layoutArcs(
       bunsetsu.map((b) => b.surface),
       bunsetsu.map((b) => b.head),
       showFurigana ? 30 : 22,
-      relationDisplay === 'badges' ? bunsetsu.map(relWidth) : undefined,
+      relationDisplay !== 'off' ? bunsetsu.map(relWidth) : undefined,
     ),
   )
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
@@ -103,6 +113,9 @@
         {/if}
         <path class={arcClass(a.dep)} {d} marker-end={chain.links.has(a.dep) ? `url(#arrowhead-chain-${uid})` : `url(#arrowhead-${uid})`} />
         <path class="hit" {d} />
+        {#if relationDisplay === 'arrows' && relText(bunsetsu[a.dep])}
+          <text class="relation-label on-edge" aria-hidden="true" x={(a.x1 + a.x2) / 2 + PAD_X} y={boxTop - a.top * 0.75 - 4} text-anchor="middle">{relText(bunsetsu[a.dep])}</text>
+        {/if}
       </g>
     {/each}
     {#each bunsetsu as b, i (b.index)}
@@ -134,8 +147,8 @@
         {/if}
         <rect x={box.x + PAD_X} y={boxTop} width={box.width} height={BOX_H} rx="6" />
         <text class="surface" x={box.cx + PAD_X} y={boxTop + 22} text-anchor="middle">{b.surface}</text>
-        {#if relationDisplay === 'badges' && relText(b)}
-          <text class="relation-label" aria-hidden="true" x={box.cx + PAD_X} y={boxTop + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
+        {#if badgeText(b)}
+          <text class="relation-label" aria-hidden="true" x={box.cx + PAD_X} y={boxTop + BOX_H + 11} text-anchor="middle">{badgeText(b)}</text>
         {/if}
       </g>
     {/each}

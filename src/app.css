@@ -71,6 +71,8 @@ svg marker path { fill: var(--arc); }
 
 /* readings stay legible where connectors cross them (arcs view especially) */
 svg text.furigana { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+/* arrows mode: relation labels ride the connectors — same halo trick as furigana */
+svg text.relation-label.on-edge { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
 /* invisible fat twin of each connector: a forgiving hover target for the title */
 svg .connector .hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; }
 
