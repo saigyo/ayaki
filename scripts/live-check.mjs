@@ -119,13 +119,17 @@ try {
     }
 
     try {
-      const badges = await page.locator('main .relation-label').count()
-      const boxes = await page.locator('main .bunsetsu').count()
-      const badgeTexts = await page.locator('main .relation-label').allTextContents()
-      if (badges === 0 || badges !== boxes) throw new Error(`badges=${badges} boxes=${boxes}`)
-      if (!badgeTexts.includes('object') || !badgeTexts.includes('predicate'))
-        throw new Error(`unexpected badge texts: ${badgeTexts.join(',')}`)
-      ok(`relations: ${badges} badges matching ${boxes} bunsetsu (${badgeTexts.join('/')})`)
+      const labels = await page.locator('main .relation-label').allTextContents()
+      const onEdge = await page.locator('main .relation-label.on-edge').count()
+      // arrows default: 6 edge labels + 3 predicate badges (main + 2 clause heads)
+      if (labels.length !== 9 || onEdge !== 6) throw new Error(`labels=${labels.length} onEdge=${onEdge}`)
+      if (!labels.includes('object') || !labels.includes('main predicate'))
+        throw new Error(`unexpected label texts: ${labels.join(',')}`)
+      // selecting the linked-clause bunsetsu (見に) draws the extent bracket
+      await page.locator('main g.bunsetsu').nth(5).click()
+      await page.waitForSelector('main .extent-bracket', { timeout: 5_000 })
+      await page.keyboard.press('Escape')
+      ok('relations: 6 arrow labels + 3 predicate badges, extent bracket on 見に')
     } catch (e) {
       fail('relations', String(e))
     }
