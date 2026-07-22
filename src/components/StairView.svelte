@@ -78,8 +78,13 @@
 
   const extentFor = (i: number | null) =>
     i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
-  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
-  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
+  // single-bunsetsu clauses get no bracket: the box itself already shows the extent
+  const extent = $derived.by(() => {
+    const i = extentFor(hovered) ?? extentFor(selected)
+    if (i === null) return null
+    const span = subtreeSpan(bunsetsu.map((b) => b.head), i)
+    return span.from === span.to ? null : { ...span, label: relText(bunsetsu[i]) }
+  })
 
   function connectorClass(dep: number): string {
     const b = bunsetsu[dep]
@@ -127,7 +132,7 @@
           />
           <path class="hit" {d} />
           {#if relationDisplay === 'arrows' && relText(bunsetsu[c.dep])}
-            <text class="relation-label on-edge" aria-hidden="true" x={c.railX - 4} y={c.y1 - 5} text-anchor="end">{relText(bunsetsu[c.dep])}</text>
+            <text class="relation-label on-edge" aria-hidden="true" x={c.railX - 8} y={c.y1 - 5} text-anchor="end">{relText(bunsetsu[c.dep])}</text>
           {/if}
         </g>
       {/each}
@@ -165,8 +170,8 @@
           {/if}
         </g>
       {/each}
-      {#if extentSpan}
-        {@const rows = layout.boxes.slice(extentSpan.from, extentSpan.to + 1)}
+      {#if extent}
+        {@const rows = layout.boxes.slice(extent.from, extent.to + 1)}
         {@const bx = Math.max(-2, Math.min(...rows.map((r) => r.x)) - 8)}
         {@const top = rows[0].y + furiH}
         {@const bottom = rows[rows.length - 1].y + furiH + BOX_H + relH}

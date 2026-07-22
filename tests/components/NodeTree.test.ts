@@ -178,5 +178,38 @@ describe('NodeTree', () => {
       await fireEvent.mouseEnter(nonClause)
       expect(container.querySelector('.extent-bracket')).toBeNull()
     })
+    it('prefers the open right edge over a crowded left side', () => {
+      // root 4; children 0,1,3 (3 = linked-clause head with child 2): the
+      // clause band {2,3} is the rightmost column, foreign boxes only on the left
+      const rightmost = [
+        bunsetsuFixture(0, '昨日、', 4, 0.9, 'きのう、', [morphemeFixture()], 'adverbial'),
+        bunsetsuFixture(1, '私は', 4, 0.9, 'わたしは', [morphemeFixture()], 'topic'),
+        bunsetsuFixture(2, '映画を', 3, 0.9, 'えいがを', [morphemeFixture()], 'object'),
+        bunsetsuFixture(3, '見に', 4, 0.9, 'みに', [morphemeFixture()], 'linkedclause'),
+        bunsetsuFixture(4, '行きました。', null, null, 'いきました。', [morphemeFixture()], 'predicate'),
+      ]
+      const { container } = render(NodeTree, { props: { bunsetsu: rightmost, onselect: () => {}, selected: 3 } })
+      const widths = rightmost.map((b) => textWidth(b.surface) + 20)
+      const l = layoutTree(widths, rightmost.map((b) => b.head))
+      const nodesIn = l.nodes.filter((n) => n.index === 2 || n.index === 3)
+      const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
+      const m = container.querySelector('.extent-bracket')!.getAttribute('d')!.match(/H (-?[\d.]+) V/)!
+      expect(Number(m[1])).toBeGreaterThanOrEqual(maxX)
+    })
+  })
+  it('edges leave badge-less boxes flush at the bottom, badged boxes below the badge', () => {
+    const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {}, relationDisplay: 'arrows' } })
+    const edges = [...container.querySelectorAll('line.edge')]
+    const gs = [...container.querySelectorAll('g.bunsetsu')]
+    const boxBottom = (label: string) => {
+      const rect = gs.find((g) => g.getAttribute('aria-label') === label)!.querySelector('rect')!
+      return Number(rect.getAttribute('y')) + 34
+    }
+    // edge from badge-less 本を (head of 買った) starts at its box bottom
+    const fromHonwo = edges.find((e) => Number(e.getAttribute('y1')) === boxBottom('本を'))
+    expect(fromHonwo).toBeDefined()
+    // edge from badged 買った starts 15px lower (below the badge)
+    const fromKatta = edges.find((e) => Number(e.getAttribute('y1')) === boxBottom('買った') + 15)
+    expect(fromKatta).toBeDefined()
   })
 })

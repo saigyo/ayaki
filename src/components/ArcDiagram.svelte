@@ -61,17 +61,23 @@
     layoutArcs(
       bunsetsu.map((b) => b.surface),
       bunsetsu.map((b) => b.head),
-      showFurigana ? 30 : 22,
+      relationDisplay === 'arrows' ? (showFurigana ? 42 : 34) : showFurigana ? 30 : 22,
       relationDisplay !== 'off' ? bunsetsu.map(relWidth) : undefined,
+      relationDisplay === 'arrows' ? 22 : 14,
     ),
   )
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
-  const svgHeight = $derived(boxTop + BOX_H + 6 + relH + 8)
+  const svgHeight = $derived(boxTop + BOX_H + 6 + relH + 22)
 
   const extentFor = (i: number | null) =>
     i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
-  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
-  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
+  // single-bunsetsu clauses get no bracket: the box itself already shows the extent
+  const extent = $derived.by(() => {
+    const i = extentFor(hovered) ?? extentFor(selected)
+    if (i === null) return null
+    const span = subtreeSpan(bunsetsu.map((b) => b.head), i)
+    return span.from === span.to ? null : { ...span, label: relText(bunsetsu[i]) }
+  })
 
   const chain = $derived(
     selected !== null && chainColor !== 'none'
@@ -158,11 +164,12 @@
         {/if}
       </g>
     {/each}
-    {#if extentSpan}
-      {@const bx1 = layout.boxes[extentSpan.from].x + PAD_X}
-      {@const bx2 = layout.boxes[extentSpan.to].x + layout.boxes[extentSpan.to].width + PAD_X}
+    {#if extent}
+      {@const bx1 = layout.boxes[extent.from].x + PAD_X}
+      {@const bx2 = layout.boxes[extent.to].x + layout.boxes[extent.to].width + PAD_X}
       {@const by = boxTop + BOX_H + relH + 6}
       <path class="extent-bracket" aria-hidden="true" d="M {bx1} {by - 5} V {by} H {bx2} V {by - 5}" />
+      <text class="extent-label" aria-hidden="true" x={(bx1 + bx2) / 2} y={by + 12} text-anchor="middle">{extent.label}</text>
     {/if}
   </svg>
 </div>

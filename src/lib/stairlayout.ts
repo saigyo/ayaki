@@ -76,8 +76,11 @@ export function layoutStairs(
   })
 
   // per-head rails: right of the head's stair column, widened so every
-  // dependent's horizontal segment fits its corner label, and monotone in
-  // head index so nested connectors keep nested rails
+  // dependent's horizontal segment fits its corner label RIGHT of any earlier
+  // rail crossing that row (a label must never sit left of a branching line),
+  // and monotone in head index so nested connectors keep nested rails
+  const minDep = new Map<number, number>()
+  for (const p of pairs) minDep.set(p.head, Math.min(minDep.get(p.head) ?? p.dep, p.dep))
   const railFor = new Map<number, number>()
   let prevRail = 0
   for (const h of [...new Set(pairs.map((p) => p.head))].sort((a, b) => a - b)) {
@@ -85,7 +88,15 @@ export function layoutStairs(
     for (const p of pairs) {
       if (p.head !== h) continue
       const labelW = labelWidths?.[p.dep] ?? 0
-      if (labelW > 0) rail = Math.max(rail, xRight(p.dep) + labelW + 8)
+      if (labelW === 0) continue
+      rail = Math.max(rail, xRight(p.dep) + labelW + 12)
+      for (const [h2, r2] of railFor) {
+        // rail of h2 spans rows minDep(h2)..h2; it crosses this dependent's
+        // segment when it covers the dependent's row right of its box edge
+        if (minDep.get(h2)! <= p.dep && p.dep <= h2 && r2 > xRight(p.dep)) {
+          rail = Math.max(rail, r2 + labelW + 12)
+        }
+      }
     }
     rail = Math.max(rail, prevRail + 8)
     railFor.set(h, rail)

@@ -170,3 +170,4 @@ footer a { color: var(--accent); }
 
 /* clause-extent bracket: shown while a relative/linked-clause bunsetsu is hovered or selected */
 svg path.extent-bracket { fill: none; stroke: #b08d3e; stroke-width: 1.6; opacity: 0.8; }
+svg text.extent-label { font-size: 10px; fill: #b08d3e; }

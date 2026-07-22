@@ -88,4 +88,11 @@ describe('layoutStairs', () => {
     expect(byDep[0].railX).toBeGreaterThanOrEqual(byDep[0].x1 + 200 + 8)
     expect(byDep[1].railX).toBeGreaterThan(byDep[0].railX)
   })
+  it('pushes a rail right of an earlier rail crossing the labeled segment', () => {
+    // chain 0→1→2 (root 2): dep 1's segment to rail(2) is crossed by rail(1),
+    // whose span covers row 1 — the label of dep 1 must land right of rail(1)
+    const l = layoutStairs(['新しい', '映画を', '見に'], [1, 2, null], opts, [50, 60, 0])
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    expect(byDep[1].railX).toBeGreaterThanOrEqual(byDep[0].railX + 60 + 12)
+  })
 })

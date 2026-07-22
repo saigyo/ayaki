@@ -76,19 +76,26 @@
 
   const extentFor = (i: number | null) =>
     i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
-  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
-  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
+  // single-bunsetsu clauses get no bracket: the box itself already shows the extent
+  const extent = $derived.by(() => {
+    const i = extentFor(hovered) ?? extentFor(selected)
+    if (i === null) return null
+    const span = subtreeSpan(bunsetsu.map((b) => b.head), i)
+    return span.from === span.to ? null : { ...span, label: relText(bunsetsu[i]) }
+  })
 
   const bracket = $derived.by(() => {
-    if (!extentSpan) return null
-    const span = extentSpan
+    if (!extent) return null
+    const span = extent
     const inSpan = (i: number) => i >= span.from && i <= span.to
     const nodesIn = layout.nodes.filter((n) => inSpan(n.index))
     const minX = Math.min(...nodesIn.map((n) => n.x - widths[n.index] / 2))
     const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
     const rows = new Set(nodesIn.map((n) => n.y))
-    let leftGap = minX
-    let rightGap = layout.width - maxX
+    // a side with NO foreign box in the span's rows is fully open, regardless
+    // of distance to the diagram edge — the card has white space beyond
+    let leftGap = Infinity
+    let rightGap = Infinity
     for (const n of layout.nodes) {
       if (inSpan(n.index) || !rows.has(n.y)) continue
       const l = n.x - widths[n.index] / 2
@@ -97,7 +104,7 @@
       if (l >= maxX) rightGap = Math.min(rightGap, l - maxX)
     }
     const right = rightGap >= leftGap
-    const x = right ? Math.min(maxX + 8 + PAD_X, layout.width + 2 * PAD_X - 2) : Math.max(minX - 8 + PAD_X, 2)
+    const x = right ? Math.min(maxX + 8 + PAD_X, layout.width + 2 * PAD_X + 8) : Math.max(minX - 8 + PAD_X, 2)
     const tick = right ? -6 : 6
     const top = Math.min(...nodesIn.map((n) => n.y)) + topPad
     const bottom = Math.max(...nodesIn.map((n) => n.y)) + topPad + BOX_H + relH
@@ -107,7 +114,7 @@
 
 <div class="tree-scroll">
   <svg
-    width={layout.width + 2 * PAD_X}
+    width={layout.width + 2 * PAD_X + 12}
     height={layout.height + BOX_H + 6 + topPad + relH}
     class="nodetree"
     role="group"
@@ -119,7 +126,7 @@
       {@const to = pos.get(e.to)!}
       {@const label = confidenceLabel(bunsetsu[e.to])}
       {@const x1 = from.x + PAD_X}
-      {@const y1 = from.y + BOX_H + topPad + relH}
+      {@const y1 = from.y + BOX_H + topPad + (badgeText(bunsetsu[e.from]) ? REL_H : 0)}
       {@const x2 = to.x + PAD_X}
       {@const y2 = to.y + topPad}
       <g class="connector">

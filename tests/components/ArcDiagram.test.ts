@@ -166,6 +166,13 @@ describe('ArcDiagram', () => {
       const box = container.querySelector('g.bunsetsu rect')!
       expect(Number(label.getAttribute('y'))).toBeLessThan(Number(box.getAttribute('y')))
     })
+    it('arrows mode raises the arcs to make room for labels', () => {
+      const chainB = chainSentenceFixture().bunsetsu
+      const arrows = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const badges = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'badges' } })
+      const h = (r: typeof arrows) => Number(r.container.querySelector('svg')!.getAttribute('height'))
+      expect(h(arrows)).toBeGreaterThan(h(badges))
+    })
   })
   describe('extent bracket', () => {
     it('hovering the clause head draws the bracket over its span; leaving removes it', async () => {
@@ -175,6 +182,7 @@ describe('ArcDiagram', () => {
       const br = container.querySelector('.extent-bracket')!
       const l = layoutArcs(clauseB.map((b) => b.surface), clauseB.map((b) => b.head))
       expect(br.getAttribute('d')!.startsWith(`M ${l.boxes[0].x + 4} `)).toBe(true)
+      expect(container.querySelector('.extent-label')!.textContent).toBe('relative clause')
       await fireEvent.mouseLeave([...container.querySelectorAll('g.bunsetsu')][1])
       expect(container.querySelector('.extent-bracket')).toBeNull()
     })
@@ -184,6 +192,12 @@ describe('ArcDiagram', () => {
       expect(sel.container.querySelector('.extent-bracket')!.getAttribute('aria-hidden')).toBe('true')
       const non = render(ArcDiagram, { props: { bunsetsu: clauseB, selected: 0, onselect: () => {} } })
       expect(non.container.querySelector('.extent-bracket')).toBeNull()
+    })
+    it('single-bunsetsu clauses get no bracket', async () => {
+      const chainB = chainSentenceFixture().bunsetsu
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {} } })
+      await fireEvent.mouseEnter([...container.querySelectorAll('g.bunsetsu')][0])
+      expect(container.querySelector('.extent-bracket')).toBeNull()
     })
   })
 })
