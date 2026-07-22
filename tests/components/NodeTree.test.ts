@@ -196,6 +196,29 @@ describe('NodeTree', () => {
       const m = container.querySelector('.extent-bracket')!.getAttribute('d')!.match(/H (-?[\d.]+) V/)!
       expect(Number(m[1])).toBeGreaterThanOrEqual(maxX)
     })
+    it('keeps a full gap from the nodes on a leftmost clause (uses the left gutter)', () => {
+      // clause 持って、(3) is the leftmost column, foreign boxes (私は/家に/帰った)
+      // only on the right → the bracket goes left, into the gutter
+      const leftmost = [
+        bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture()], 'adverbial'),
+        bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture()], 'relclause'),
+        bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture()], 'object'),
+        bunsetsuFixture(3, '持って、', 6, 0.9, 'もって', [morphemeFixture()], 'linkedclause'),
+        bunsetsuFixture(4, '私は', 6, 0.9, 'わたしは', [morphemeFixture()], 'topic'),
+        bunsetsuFixture(5, '家に', 6, 0.9, 'いえに', [morphemeFixture()], 'adverbial'),
+        bunsetsuFixture(6, '帰った。', null, null, 'かえった', [morphemeFixture()], 'predicate'),
+      ]
+      const { container } = render(NodeTree, { props: { bunsetsu: leftmost, onselect: () => {}, selected: 3 } })
+      const widths = leftmost.map((b) => textWidth(b.surface) + 20)
+      const l = layoutTree(widths, leftmost.map((b) => b.head))
+      const nodesIn = l.nodes.filter((n) => n.index >= 0 && n.index <= 3)
+      const minLeftEdge = Math.min(...nodesIn.map((n) => n.x - widths[n.index] / 2)) + 4 // + PAD_X
+      const x = Number(container.querySelector('.extent-bracket')!.getAttribute('d')!.match(/H (-?[\d.]+) V/)![1])
+      // the 6px arm (x → x+6) points at the boxes; it must leave a clean 8px gap,
+      // and the vertical bar lives in the negative gutter
+      expect(minLeftEdge - (x + 6)).toBe(8)
+      expect(x).toBeLessThan(0)
+    })
   })
   it('edges leave badge-less boxes flush at the bottom, badged boxes below the badge', () => {
     const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {}, relationDisplay: 'arrows' } })

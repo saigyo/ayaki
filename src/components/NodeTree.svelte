@@ -34,6 +34,10 @@
   const BOX_H = 34
   const BOX_PAD = 10
   const PAD_X = 4
+  // left gutter: extends the canvas into negative x (via viewBox) so a left-side
+  // extent bracket keeps a full gap from the leftmost boxes instead of clamping
+  // against them when the clause is the flush-left column
+  const LGUT = 14
   const FURI_H = 16
   const REL_H = 15
 
@@ -104,7 +108,9 @@
       if (l >= maxX) rightGap = Math.min(rightGap, l - maxX)
     }
     const right = rightGap >= leftGap
-    const x = right ? Math.min(maxX + 8 + PAD_X, layout.width + 2 * PAD_X + 8) : Math.max(minX - 8 + PAD_X, 2)
+    // the 6px arm points back toward the nodes, so a left bracket seats 14px out
+    // (into the gutter) to leave a clean 8px arm-to-box gap; the floor keeps it on-canvas
+    const x = right ? Math.min(maxX + 8 + PAD_X, layout.width + 2 * PAD_X + 8) : Math.max(minX - 14 + PAD_X, 2 - LGUT)
     const tick = right ? -6 : 6
     const top = Math.min(...nodesIn.map((n) => n.y)) + topPad
     const bottom = Math.max(...nodesIn.map((n) => n.y)) + topPad + BOX_H + relH
@@ -114,8 +120,9 @@
 
 <div class="tree-scroll">
   <svg
-    width={layout.width + 2 * PAD_X + 12}
+    width={layout.width + 2 * PAD_X + 12 + LGUT}
     height={layout.height + BOX_H + 6 + topPad + relH}
+    viewBox="{-LGUT} 0 {layout.width + 2 * PAD_X + 12 + LGUT} {layout.height + BOX_H + 6 + topPad + relH}"
     class="nodetree"
     role="group"
     aria-label={t('treeGroupLabel')}
