@@ -51,7 +51,9 @@
   // arrows mode: a box badge only where it is true of the box itself — the
   // root is the main predicate, a clause head is its own clause's predicate
   const badgeText = (b: BunsetsuVM): string | null => {
-    if (relationDisplay === 'badges') return relText(b)
+    // a clause head reads "predicate" in both badge modes — its clause type is
+    // named by the (arc-only) extent bracket, so the box must not repeat it
+    if (relationDisplay === 'badges') return isClauseHead(b) ? t('relClausePredicate') : relText(b)
     if (relationDisplay !== 'arrows') return null
     if (b.head === null) return t('relPredicate')
     return isClauseHead(b) ? t('relClausePredicate') : null
