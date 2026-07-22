@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { googleTranslateUrl } from '../lib/links'
+  import { GOOGLE_TRANSLATE_ICON } from '../lib/gticon'
   import { speak, speechAvailable, stopSpeech } from '../lib/speech'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import { currentLocale, t } from '../lib/i18n.svelte'
@@ -195,7 +196,10 @@
           {#if speaking}<span class="emoji" aria-hidden="true">⏹</span> {t('stopButton')}
           {:else}<span class="emoji" aria-hidden="true">🗣️</span> {t('speakButton')}{/if}
         </button>
-        <a href={googleTranslateUrl(sentence.text, currentLocale())} target="_blank" rel="noopener">Google Translate ↗</a>
+        <a href={googleTranslateUrl(sentence.text, currentLocale())} target="_blank" rel="noopener">
+          <img class="gt-icon" src={GOOGLE_TRANSLATE_ICON} alt="" width="16" height="16" />
+          {t('translateButton')} ↗
+        </a>
         {@render shareButton()}
       </div>
       {#if showConfidence && uncertainCount > 0}

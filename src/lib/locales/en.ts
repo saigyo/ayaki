@@ -45,6 +45,7 @@ export const en = {
   sentenceHeadingN: 'Sentence {index} / {total}',
   sentenceHint: 'Parse a sentence, then click a part of it to inspect readings and parts of speech.',
   speakButton: 'Speak',
+  translateButton: 'Translate',
   stopButton: 'Stop',
   uncertaintyNote: '{uncertain} of {total} attachments uncertain',
   attachment: 'attachment: {label}',
