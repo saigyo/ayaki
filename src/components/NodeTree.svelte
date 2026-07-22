@@ -1,6 +1,7 @@
 <script lang="ts">
   import { textWidth } from '../lib/arclayout'
   import { layoutTree } from '../lib/treelayout'
+  import { subtreeSpan } from '../lib/extent'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
@@ -72,6 +73,36 @@
       : { links: new Set<number>(), boxes: new Set<number>() },
   )
   const palette = $derived(selected !== null && chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
+
+  const extentFor = (i: number | null) =>
+    i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
+  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
+  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
+
+  const bracket = $derived.by(() => {
+    if (!extentSpan) return null
+    const span = extentSpan
+    const inSpan = (i: number) => i >= span.from && i <= span.to
+    const nodesIn = layout.nodes.filter((n) => inSpan(n.index))
+    const minX = Math.min(...nodesIn.map((n) => n.x - widths[n.index] / 2))
+    const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
+    const rows = new Set(nodesIn.map((n) => n.y))
+    let leftGap = minX
+    let rightGap = layout.width - maxX
+    for (const n of layout.nodes) {
+      if (inSpan(n.index) || !rows.has(n.y)) continue
+      const l = n.x - widths[n.index] / 2
+      const r = n.x + widths[n.index] / 2
+      if (r <= minX) leftGap = Math.min(leftGap, minX - r)
+      if (l >= maxX) rightGap = Math.min(rightGap, l - maxX)
+    }
+    const right = rightGap >= leftGap
+    const x = (right ? Math.min(maxX + 8, layout.width + PAD_X) : Math.max(minX - 8, -2)) + PAD_X
+    const tick = right ? -6 : 6
+    const top = Math.min(...nodesIn.map((n) => n.y)) + topPad
+    const bottom = Math.max(...nodesIn.map((n) => n.y)) + topPad + BOX_H + relH
+    return `M ${x + tick} ${top} H ${x} V ${bottom} H ${x + tick}`
+  })
 </script>
 
 <div class="tree-scroll">
@@ -146,5 +177,8 @@
         {/if}
       </g>
     {/each}
+    {#if bracket}
+      <path class="extent-bracket" aria-hidden="true" d={bracket} />
+    {/if}
   </svg>
 </div>

@@ -2,10 +2,17 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import StairView from '../../src/components/StairView.svelte'
-import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import { layoutStairs } from '../../src/lib/stairlayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('StairView', () => {
   it('renders one box per bunsetsu and one connector per non-root', () => {
@@ -136,5 +143,12 @@ describe('StairView', () => {
     expect(onEdge.every((l) => l.getAttribute('text-anchor') === 'end')).toBe(true)
     const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
     expect(badges.map((l) => l.textContent)).toEqual(['predicate', 'main predicate'])
+  })
+  it('draws the extent bracket left of the covered rows on selection', () => {
+    const { container } = render(StairView, { props: { bunsetsu: clauseB, selected: 1, onselect: () => {} } })
+    const br = container.querySelector('.extent-bracket')!
+    const l = layoutStairs(clauseB.map((b) => b.surface), clauseB.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const bx = Math.max(-2, Math.min(l.boxes[0].x, l.boxes[1].x) - 8)
+    expect(br.getAttribute('d')).toBe(`M ${bx + 6} ${l.boxes[0].y} H ${bx} V ${l.boxes[1].y + 34} H ${bx + 6}`)
   })
 })

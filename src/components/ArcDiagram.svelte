@@ -1,5 +1,6 @@
 <script lang="ts">
   import { layoutArcs, textWidth } from '../lib/arclayout'
+  import { subtreeSpan } from '../lib/extent'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
@@ -65,7 +66,12 @@
     ),
   )
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
-  const svgHeight = $derived(boxTop + BOX_H + 6 + relH)
+  const svgHeight = $derived(boxTop + BOX_H + 6 + relH + 8)
+
+  const extentFor = (i: number | null) =>
+    i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
+  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
+  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
 
   const chain = $derived(
     selected !== null && chainColor !== 'none'
@@ -152,5 +158,11 @@
         {/if}
       </g>
     {/each}
+    {#if extentSpan}
+      {@const bx1 = layout.boxes[extentSpan.from].x + PAD_X}
+      {@const bx2 = layout.boxes[extentSpan.to].x + layout.boxes[extentSpan.to].width + PAD_X}
+      {@const by = boxTop + BOX_H + relH + 6}
+      <path class="extent-bracket" aria-hidden="true" d="M {bx1} {by - 5} V {by} H {bx2} V {by - 5}" />
+    {/if}
   </svg>
 </div>

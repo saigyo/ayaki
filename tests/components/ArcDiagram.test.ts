@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
-import { render } from '@testing-library/svelte'
+import { render, fireEvent } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import ArcDiagram from '../../src/components/ArcDiagram.svelte'
-import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
 import { layoutArcs } from '../../src/lib/arclayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('ArcDiagram', () => {
   it('renders one box per bunsetsu and one arc per non-root', () => {
@@ -158,6 +165,25 @@ describe('ArcDiagram', () => {
       const label = container.querySelector('text.relation-label.on-edge')!
       const box = container.querySelector('g.bunsetsu rect')!
       expect(Number(label.getAttribute('y'))).toBeLessThan(Number(box.getAttribute('y')))
+    })
+  })
+  describe('extent bracket', () => {
+    it('hovering the clause head draws the bracket over its span; leaving removes it', async () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: clauseB, onselect: () => {} } })
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+      await fireEvent.mouseEnter([...container.querySelectorAll('g.bunsetsu')][1])
+      const br = container.querySelector('.extent-bracket')!
+      const l = layoutArcs(clauseB.map((b) => b.surface), clauseB.map((b) => b.head))
+      expect(br.getAttribute('d')!.startsWith(`M ${l.boxes[0].x + 4} `)).toBe(true)
+      await fireEvent.mouseLeave([...container.querySelectorAll('g.bunsetsu')][1])
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+    })
+    it('selection draws it too; non-clause bunsetsu never do', () => {
+      const sel = render(ArcDiagram, { props: { bunsetsu: clauseB, selected: 1, onselect: () => {} } })
+      expect(sel.container.querySelector('.extent-bracket')).not.toBeNull()
+      expect(sel.container.querySelector('.extent-bracket')!.getAttribute('aria-hidden')).toBe('true')
+      const non = render(ArcDiagram, { props: { bunsetsu: clauseB, selected: 0, onselect: () => {} } })
+      expect(non.container.querySelector('.extent-bracket')).toBeNull()
     })
   })
 })

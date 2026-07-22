@@ -167,3 +167,6 @@ footer a { color: var(--accent); }
 .legend-chain { background: var(--sw-soft); border: 2px solid var(--sw); }
 .legend-line { flex: none; width: 18px; border-top: 2px dotted var(--uncertain-line); }
 .help-note { color: #57606a; font-size: 0.8rem; font-style: italic; }
+
+/* clause-extent bracket: shown while a relative/linked-clause bunsetsu is hovered or selected */
+svg path.extent-bracket { fill: none; stroke: #b08d3e; stroke-width: 1.6; opacity: 0.8; }

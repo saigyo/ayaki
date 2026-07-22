@@ -1,6 +1,7 @@
 <script lang="ts">
   import { layoutStairs } from '../lib/stairlayout'
   import { textWidth } from '../lib/arclayout'
+  import { subtreeSpan } from '../lib/extent'
   import { confidenceLabel, isUncertain, LOW_CONFIDENCE } from '../lib/viewmodel'
   import type { BunsetsuVM } from '../lib/types'
   import { t } from '../lib/i18n.svelte'
@@ -74,6 +75,11 @@
       : { links: new Set<number>(), boxes: new Set<number>() },
   )
   const palette = $derived(selected !== null && chainColor !== 'none' ? CHAIN_PALETTE[chainColor] : null)
+
+  const extentFor = (i: number | null) =>
+    i !== null && (bunsetsu[i]?.relation === 'relclause' || bunsetsu[i]?.relation === 'linkedclause') ? i : null
+  const extentIdx = $derived(extentFor(hovered) ?? extentFor(selected))
+  const extentSpan = $derived(extentIdx !== null ? subtreeSpan(bunsetsu.map((b) => b.head), extentIdx) : null)
 
   function connectorClass(dep: number): string {
     const b = bunsetsu[dep]
@@ -159,6 +165,13 @@
           {/if}
         </g>
       {/each}
+      {#if extentSpan}
+        {@const rows = layout.boxes.slice(extentSpan.from, extentSpan.to + 1)}
+        {@const bx = Math.max(-2, Math.min(...rows.map((r) => r.x)) - 8)}
+        {@const top = rows[0].y + furiH}
+        {@const bottom = rows[rows.length - 1].y + furiH + BOX_H + relH}
+        <path class="extent-bracket" aria-hidden="true" d="M {bx + 6} {top} H {bx} V {bottom} H {bx + 6}" />
+      {/if}
     </g>
   </svg>
 </div>

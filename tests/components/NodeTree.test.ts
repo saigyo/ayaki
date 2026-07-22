@@ -1,10 +1,19 @@
 // @vitest-environment jsdom
-import { render } from '@testing-library/svelte'
+import { render, fireEvent } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import NodeTree from '../../src/components/NodeTree.svelte'
-import { chainSentenceFixture, sentenceFixture, forcedSentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, sentenceFixture, forcedSentenceFixture, morphemeFixture } from '../fixtures'
+import { layoutTree } from '../../src/lib/treelayout'
+import { textWidth } from '../../src/lib/arclayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('NodeTree', () => {
   it('renders all bunsetsu as boxes with head→dependent edges', () => {
@@ -144,5 +153,30 @@ describe('NodeTree', () => {
     const boxY = Number(g.querySelector('rect')!.getAttribute('y'))
     expect(labelY).toBeLessThan(furiY)
     expect(furiY).toBeLessThan(boxY + 34)
+  })
+  describe('extent bracket side', () => {
+    it('ties resolve to the right side (chain subtree, equal gaps)', () => {
+      // clauseB is a pure chain → the subtree band of 買った is centered, so
+      // left and right clearance are equal and the tie-break picks right
+      const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {}, selected: 1 } })
+      const br = container.querySelector('.extent-bracket')!
+      const widths = clauseB.map((b) => textWidth(b.surface) + 20)
+      const l = layoutTree(widths, clauseB.map((b) => b.head))
+      const nodesIn = l.nodes.filter((n) => n.index <= 1) // span of 買った = {0, 1}
+      const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
+      const m = br.getAttribute('d')!.match(/H (-?[\d.]+) V/)!
+      expect(Number(m[1])).toBeGreaterThanOrEqual(maxX)
+    })
+    it('hover works like selection and only for clause labels', async () => {
+      const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {} } })
+      const clauseG = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '買った')!
+      await fireEvent.mouseEnter(clauseG)
+      expect(container.querySelector('.extent-bracket')).not.toBeNull()
+      await fireEvent.mouseLeave(clauseG)
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+      const nonClause = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '本屋で')!
+      await fireEvent.mouseEnter(nonClause)
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+    })
   })
 })
