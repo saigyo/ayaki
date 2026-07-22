@@ -136,6 +136,13 @@ describe('ArcDiagram', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
   })
+  it('badges mode labels a clause head "predicate", not its clause type', () => {
+    // 買った heads the relative clause: it shows "predicate" like arrows mode so it
+    // does not duplicate the clause type, which the extent bracket names on its own
+    const { container } = render(ArcDiagram, { props: { bunsetsu: clauseB, onselect: () => {}, relationDisplay: 'badges' } })
+    const labels = [...container.querySelectorAll('.relation-label')].map((l) => l.textContent)
+    expect(labels).toEqual(['adverbial', 'predicate', 'object', 'main predicate'])
+  })
   // attachment points sit 6px inside each box center, on the half facing the
   // other end (dep cx + 6, head cx − 6), so incoming and outgoing arcs separate
   it('points arrows head → dependent by default (ud)', () => {
