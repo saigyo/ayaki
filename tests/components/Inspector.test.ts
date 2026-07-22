@@ -106,7 +106,7 @@ describe('relation line', () => {
     // select the root bunsetsu
     render(Inspector, { props: { sentence, index: 0, total: 1, selected: sentence.bunsetsu[2], rate: 1, voiceURI: null } })
     const line = document.querySelector('.inspector .relation-line')!
-    expect(line.textContent).toContain('predicate')
+    expect(line.textContent).toContain('main predicate')
     expect(line.textContent).not.toContain('→')
     expect(line.querySelector('a')!.getAttribute('href')).toBe('https://universaldependencies.org/u/dep/root.html')
   })

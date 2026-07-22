@@ -127,6 +127,7 @@
           <li><strong>{t(RELATION_TERM_KEYS[r])}</strong> — {t(RELATION_EXPLAIN_KEYS[r])}</li>
         {/each}
       </ul>
+      <p class="help-note">{t('helpRelationsExtent')}</p>
     </section>
     <section>
       <h3>{t('helpTipsTitle')}</h3>

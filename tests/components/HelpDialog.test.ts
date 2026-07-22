@@ -136,7 +136,14 @@ describe('HelpDialog', () => {
     const items = [...dialog.querySelectorAll('.relations-legend li')]
     expect(items.length).toBe(9)
     expect(items[0].textContent).toContain('subject')
-    expect(items[8].textContent).toContain('predicate')
+    expect(items[8].textContent).toContain('main predicate')
+  })
+
+  it('explains the clause-extent bracket', async () => {
+    const user = userEvent.setup()
+    render(HelpDialog, { props: { chainColor: 'amber' } })
+    await user.click(screen.getByRole('button', { name: 'help' }))
+    expect(getDialog().textContent).toContain('draws a bracket along the whole clause')
   })
 
   it('demo diagram shows relation badges', async () => {
