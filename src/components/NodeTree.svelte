@@ -97,7 +97,7 @@
       if (l >= maxX) rightGap = Math.min(rightGap, l - maxX)
     }
     const right = rightGap >= leftGap
-    const x = (right ? Math.min(maxX + 8, layout.width + PAD_X) : Math.max(minX - 8, -2)) + PAD_X
+    const x = right ? Math.min(maxX + 8 + PAD_X, layout.width + 2 * PAD_X - 2) : Math.max(minX - 8 + PAD_X, 2)
     const tick = right ? -6 : 6
     const top = Math.min(...nodesIn.map((n) => n.y)) + topPad
     const bottom = Math.max(...nodesIn.map((n) => n.y)) + topPad + BOX_H + relH
