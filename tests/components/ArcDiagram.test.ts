@@ -136,19 +136,29 @@ describe('ArcDiagram', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
   })
+  // attachment points sit 6px inside each box center, on the half facing the
+  // other end (dep cx + 6, head cx − 6), so incoming and outgoing arcs separate
   it('points arrows head → dependent by default (ud)', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
     const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
     const arc0 = l.arcs.find((a) => a.dep === 0)!
     const d = container.querySelector('path.arc')!.getAttribute('d')!
-    expect(d.startsWith(`M ${arc0.x2 + 4} `)).toBe(true)
-    expect(d.endsWith(` ${arc0.x1 + 4} ${l.arcAreaHeight}`)).toBe(true)
+    expect(d.startsWith(`M ${arc0.x2 - 6 + 4} `)).toBe(true)
+    expect(d.endsWith(` ${arc0.x1 + 6 + 4} ${l.arcAreaHeight}`)).toBe(true)
   })
   it('kakariuke direction restores dependent → head', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, arrowDirection: 'kakariuke' } })
     const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
     const arc0 = l.arcs.find((a) => a.dep === 0)!
-    expect(container.querySelector('path.arc')!.getAttribute('d')!.startsWith(`M ${arc0.x1 + 4} `)).toBe(true)
+    expect(container.querySelector('path.arc')!.getAttribute('d')!.startsWith(`M ${arc0.x1 + 6 + 4} `)).toBe(true)
+  })
+  it('end tangents are slanted so auto-oriented arrowheads follow the arc angle', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    // cubic: M xF y C cx1 y', cx2 y', xT y — a slanted end tangent means cx2 ≠ xT
+    const d = container.querySelector('path.arc')!.getAttribute('d')!
+    const nums = d.match(/-?[\d.]+/g)!.map(Number)
+    const [cx2, xT] = [nums[4], nums[6]]
+    expect(cx2).not.toBe(xT)
   })
   describe('arrows mode', () => {
     const chainB = chainSentenceFixture().bunsetsu

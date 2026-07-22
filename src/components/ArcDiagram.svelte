@@ -117,8 +117,16 @@
     </defs>
     {#each layout.arcs as a (a.dep)}
       {@const label = confidenceLabel(bunsetsu[a.dep])}
-      {@const [xFrom, xTo] = arrowDirection === 'ud' ? [a.x2, a.x1] : [a.x1, a.x2]}
-      {@const d = `M ${xFrom + PAD_X} ${boxTop} C ${xFrom + PAD_X} ${boxTop - a.top}, ${xTo + PAD_X} ${boxTop - a.top}, ${xTo + PAD_X} ${boxTop}`}
+      <!-- x1 is the dependent (left), x2 the head (right): attach on the box half
+           facing the other end so incoming and outgoing arcs separate visually -->
+      {@const xDep = a.x1 + 6}
+      {@const xHead = a.x2 - 6}
+      {@const [xFrom, xTo] = arrowDirection === 'ud' ? [xHead, xDep] : [xDep, xHead]}
+      <!-- pulling the control points inward slants the end tangents, so the
+           auto-oriented arrowheads follow the arc's apparent angle instead of
+           pointing straight down -->
+      {@const pull = 0.15 * (xTo - xFrom)}
+      {@const d = `M ${xFrom + PAD_X} ${boxTop} C ${xFrom + pull + PAD_X} ${boxTop - a.top}, ${xTo - pull + PAD_X} ${boxTop - a.top}, ${xTo + PAD_X} ${boxTop}`}
       <g class="connector">
         {#if label}
           <title>{label}</title>
