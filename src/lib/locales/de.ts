@@ -120,7 +120,7 @@ export const de: Record<keyof typeof en, string> = {
     'Bei einem ausgewählten Bunsetsu wird die Oberfläche in ihre Teile zerlegt angezeigt, nach Rolle eingefärbt — beim Überfahren eines Teils wird der zugehörige Eintrag darunter hervorgehoben. Eine dezentere Darstellung lässt sich in den Einstellungen wählen.',
   helpRelationsTitle: 'Was die Teile tun — Relationsbeschriftungen',
   helpRelationsIntro:
-    'Jede Abhängigkeit ist mit ihrer grammatischen Relation beschriftet — standardmäßig an den Pfeilen, wobei die Pfeile vom Kopf zum abhängigen Element zeigen (lies: 行きました。 „hat ein" Thema 私は). Die Labels werden regelbasiert aus Partikeln und Wortarten abgeleitet und stimmen in etwa 9 von 10 Fällen — der Inspektor verlinkt zu jedem Label die passende Universal-Dependencies-Relation. Position und Pfeilrichtung sind in den Einstellungen wählbar.',
+    'Jede Abhängigkeit ist mit ihrer grammatischen Relation beschriftet — standardmäßig an den Pfeilen, wobei die Pfeile vom Kopf zum abhängigen Element zeigen (lies: 行きました。 „hat ein“ Thema 私は). Die Labels werden regelbasiert aus Partikeln und Wortarten abgeleitet und stimmen in etwa 9 von 10 Fällen — der Inspektor verlinkt zu jedem Label die passende Universal-Dependencies-Relation. Position und Pfeilrichtung sind in den Einstellungen wählbar.',
   helpRelationsExtent:
     'Bei Satz-Labels (Relativsatz, Nebensatz) zeichnet Überfahren oder Auswählen des beschrifteten Bunsetsu eine Klammer entlang des ganzen Teilsatzes — das Label beschreibt diesen gesamten Abschnitt, dessen Prädikat das beschriftete Bunsetsu ist.',
   helpTipsTitle: 'Tipps',

@@ -18,7 +18,7 @@ accuracy. (Measured 2026-07-21 against UD_Japanese-GSD.)
 | relative clause | acl | clause before noun, …という |
 | linked clause | advcl, ccomp | …て/ので/…, quoting と, 連用中止, 形容動詞語幹+に |
 | connector | cc, discourse | 接続詞 bunsetsu |
-| predicate | root | the sentence root |
+| predicate ("main predicate") | root | the sentence root |
 
 **topic is a deliberate UD deviation.** UD has no topic relation and
 forces は-marked phrases into nsubj, obl, or dislocated — a genuinely
