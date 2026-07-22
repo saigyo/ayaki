@@ -36,19 +36,17 @@ describe('layoutStairs', () => {
     expect(byDep[1].railX).toBe(expectedRailX)
     expect(l.width).toBe(expectedRailX)
   })
-  it('draws each connector from the dependent box edge via the shared rail into the head box edge', () => {
+  it('exposes each connector as dependent-edge and head-edge coordinates via the shared rail', () => {
     const l = layoutStairs(surfaces, heads, opts)
     const c = l.connectors.find((x) => x.dep === 1)!
     const dep = l.boxes[1]
     const head = l.boxes[2]
-    expect(c.d).toBe(
-      `M ${dep.x + dep.width} ${dep.y + 17} H ${c.railX} V ${head.y + 17} H ${head.x + head.width}`,
-    )
+    expect(c).toEqual({ dep: 1, head: 2, railX: c.railX, x1: dep.x + dep.width, y1: dep.y + 17, x2: head.x + head.width, y2: head.y + 17 })
   })
   it('reflects the row height option (furigana headroom)', () => {
     const tall = layoutStairs(surfaces, heads, { rowHeight: 62, boxCenterOffset: 33 })
     expect(tall.boxes[2].y).toBe(124)
-    expect(tall.connectors[0].d).toContain(` ${124 + 33} `)
+    expect(tall.connectors[0].y2).toBe(124 + 33)
   })
   it('handles a single bunsetsu without connectors', () => {
     const l = layoutStairs(['猫。'], [null], opts)

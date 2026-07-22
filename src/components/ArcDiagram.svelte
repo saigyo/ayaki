@@ -5,6 +5,7 @@
   import { t } from '../lib/i18n.svelte'
   import { RELATION_TERM_KEYS } from '../lib/relations'
   import { CHAIN_PALETTE, chainFrom, type ChainColor } from '../lib/chainpalette'
+  import type { ArrowDirection, RelationDisplay } from '../lib/settings'
 
   let {
     bunsetsu,
@@ -13,7 +14,8 @@
     confidenceThreshold = LOW_CONFIDENCE,
     selected = null,
     chainColor = 'none',
-    showRelations = false,
+    relationDisplay = 'off',
+    arrowDirection = 'ud',
     onselect,
   }: {
     bunsetsu: BunsetsuVM[]
@@ -22,7 +24,8 @@
     confidenceThreshold?: number
     selected?: number | null
     chainColor?: ChainColor
-    showRelations?: boolean
+    relationDisplay?: RelationDisplay
+    arrowDirection?: ArrowDirection
     onselect: (index: number) => void
   } = $props()
 
@@ -35,7 +38,7 @@
   const PAD_X = 4
   const REL_H = 15
 
-  const relH = $derived(showRelations ? REL_H : 0)
+  const relH = $derived(relationDisplay === 'badges' ? REL_H : 0)
   const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
   // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
   const relWidth = (b: BunsetsuVM) => {
@@ -48,7 +51,7 @@
       bunsetsu.map((b) => b.surface),
       bunsetsu.map((b) => b.head),
       showFurigana ? 30 : 22,
-      showRelations ? bunsetsu.map(relWidth) : undefined,
+      relationDisplay === 'badges' ? bunsetsu.map(relWidth) : undefined,
     ),
   )
   const boxTop = $derived(layout.arcAreaHeight + (showFurigana ? FURI_H : 0))
@@ -92,7 +95,8 @@
     </defs>
     {#each layout.arcs as a (a.dep)}
       {@const label = confidenceLabel(bunsetsu[a.dep])}
-      {@const d = `M ${a.x1 + PAD_X} ${boxTop} C ${a.x1 + PAD_X} ${boxTop - a.top}, ${a.x2 + PAD_X} ${boxTop - a.top}, ${a.x2 + PAD_X} ${boxTop}`}
+      {@const [xFrom, xTo] = arrowDirection === 'ud' ? [a.x2, a.x1] : [a.x1, a.x2]}
+      {@const d = `M ${xFrom + PAD_X} ${boxTop} C ${xFrom + PAD_X} ${boxTop - a.top}, ${xTo + PAD_X} ${boxTop - a.top}, ${xTo + PAD_X} ${boxTop}`}
       <g class="connector">
         {#if label}
           <title>{label}</title>
@@ -130,7 +134,7 @@
         {/if}
         <rect x={box.x + PAD_X} y={boxTop} width={box.width} height={BOX_H} rx="6" />
         <text class="surface" x={box.cx + PAD_X} y={boxTop + 22} text-anchor="middle">{b.surface}</text>
-        {#if showRelations && relText(b)}
+        {#if relationDisplay === 'badges' && relText(b)}
           <text class="relation-label" aria-hidden="true" x={box.cx + PAD_X} y={boxTop + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
         {/if}
       </g>

@@ -117,7 +117,7 @@ describe('NodeTree', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)

@@ -17,7 +17,6 @@ export const en = {
   confidenceToggle: 'show attachment confidence',
   confidenceThresholdLabel: 'uncertainty cutoff',
   quietPartsToggle: 'quiet part colors',
-  relationsToggle: 'relation labels',
   relationDisplayLabel: 'relation labels',
   relationDisplayOff: 'hidden',
   relationDisplayBadges: 'under bunsetsu',

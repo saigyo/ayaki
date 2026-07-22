@@ -2,13 +2,19 @@ import { SUPPORTED_LOCALES, type Locale } from './i18n.svelte'
 import { CHAIN_COLORS, type ChainColor } from './chainpalette'
 
 export type ViewKind = 'arcs' | 'tree' | 'cabocha'
+export type RelationDisplay = 'off' | 'badges' | 'arrows'
+export type ArrowDirection = 'ud' | 'kakariuke'
+
+const RELATION_DISPLAYS: readonly RelationDisplay[] = ['off', 'badges', 'arrows']
+const ARROW_DIRECTIONS: readonly ArrowDirection[] = ['ud', 'kakariuke']
 
 export interface Settings {
   showFurigana: boolean
   showConfidence: boolean
   confidenceThreshold: number
   quietParts: boolean
-  showRelations: boolean
+  relationDisplay: RelationDisplay
+  arrowDirection: ArrowDirection
   view: ViewKind
   rate: number
   voiceURI: string | null
@@ -16,7 +22,7 @@ export interface Settings {
   chainColor: ChainColor
 }
 
-export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, confidenceThreshold: 0.7, quietParts: false, showRelations: true, view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
+export const DEFAULTS: Settings = { showFurigana: false, showConfidence: false, confidenceThreshold: 0.7, quietParts: false, relationDisplay: 'arrows', arrowDirection: 'ud', view: 'arcs', rate: 1, voiceURI: null, locale: null, chainColor: 'amber' }
 
 const KEY = 'ayaki-settings'
 const RATE_MIN = 0.5
@@ -34,7 +40,8 @@ const validators: { [K in keyof Settings]: (v: unknown) => Settings[K] | undefin
       ? Math.min(CONFIDENCE_MAX, Math.max(CONFIDENCE_MIN, v))
       : undefined,
   quietParts: (v) => (typeof v === 'boolean' ? v : undefined),
-  showRelations: (v) => (typeof v === 'boolean' ? v : undefined),
+  relationDisplay: (v) => (RELATION_DISPLAYS.includes(v as RelationDisplay) ? (v as RelationDisplay) : undefined),
+  arrowDirection: (v) => (ARROW_DIRECTIONS.includes(v as ArrowDirection) ? (v as ArrowDirection) : undefined),
   chainColor: (v) => (CHAIN_COLORS.includes(v as ChainColor) ? (v as ChainColor) : undefined),
   view: (v) => (v === 'arcs' || v === 'tree' || v === 'cabocha' ? v : undefined),
   rate: (v) =>
@@ -63,6 +70,10 @@ export function loadSettings(): Settings {
     const obj = parsed as Record<string, unknown>
     for (const key of Object.keys(validators) as (keyof Settings)[]) {
       applyField(settings, key, obj[key])
+    }
+    // pre-arrows migration: the boolean showRelations became relationDisplay
+    if (obj.relationDisplay === undefined && typeof obj.showRelations === 'boolean') {
+      settings.relationDisplay = obj.showRelations ? 'arrows' : 'off'
     }
     return settings
   } catch {

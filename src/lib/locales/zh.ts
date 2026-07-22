@@ -18,7 +18,6 @@ export const zh: Record<keyof typeof en, string> = {
   confidenceToggle: '显示依存置信度',
   confidenceThresholdLabel: '不确定阈值',
   quietPartsToggle: '低调的组成部分配色',
-  relationsToggle: '关系标签',
   relationDisplayLabel: '关系标签',
   relationDisplayOff: '隐藏',
   relationDisplayBadges: '文节下方',

@@ -91,15 +91,19 @@ describe('SettingsMenu', () => {
     expect(screen.getByRole('checkbox', { name: 'quiet part colors' })).not.toBeChecked()
   })
 
-  it('binds the relation-labels checkbox', async () => {
+  it('binds the relation-display and arrow-direction selects', async () => {
     vi.stubGlobal('speechSynthesis', fakeSynth([kyoko]))
     const user = userEvent.setup()
     render(SettingsMenu, { props: { ...base } })
     await user.click(screen.getByRole('button', { name: 'settings' }))
-    const box = screen.getByLabelText('relation labels')
-    expect(box).toBeChecked()
-    await fireEvent.click(box)
-    expect(box).not.toBeChecked()
+    const rel = screen.getByRole('combobox', { name: 'relation labels' }) as HTMLSelectElement
+    expect(rel.value).toBe('arrows')
+    await user.selectOptions(rel, 'badges')
+    expect(rel.value).toBe('badges')
+    const dir = screen.getByRole('combobox', { name: 'arrow direction' }) as HTMLSelectElement
+    expect(dir.value).toBe('ud')
+    await user.selectOptions(dir, 'kakariuke')
+    expect(dir.value).toBe('kakariuke')
   })
 
   it('enables the controls live when voiceschanged delivers voices', async () => {

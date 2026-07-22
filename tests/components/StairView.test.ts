@@ -3,6 +3,7 @@ import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import StairView from '../../src/components/StairView.svelte'
 import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { layoutStairs } from '../../src/lib/stairlayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
 
@@ -106,7 +107,7 @@ describe('StairView', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
@@ -114,5 +115,17 @@ describe('StairView', () => {
   it('shows no badges by default', () => {
     const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
+  it('ud direction draws head edge → rail → dependent edge', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
+    const l = layoutStairs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const c = l.connectors.find((x) => x.dep === 0)!
+    expect(container.querySelector('.connector path.arc')!.getAttribute('d')).toBe(`M ${c.x2} ${c.y2} H ${c.railX} V ${c.y1} H ${c.x1}`)
+  })
+  it('kakariuke direction draws dependent edge → rail → head edge', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, arrowDirection: 'kakariuke' } })
+    const l = layoutStairs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const c = l.connectors.find((x) => x.dep === 0)!
+    expect(container.querySelector('.connector path.arc')!.getAttribute('d')).toBe(`M ${c.x1} ${c.y1} H ${c.railX} V ${c.y2} H ${c.x2}`)
   })
 })

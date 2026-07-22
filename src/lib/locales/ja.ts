@@ -18,7 +18,6 @@ export const ja: Record<keyof typeof en, string> = {
   confidenceToggle: '係り受けの信頼度を表示',
   confidenceThresholdLabel: '不確実とみなすしきい値',
   quietPartsToggle: '部分の色を控えめに',
-  relationsToggle: '関係ラベル',
   relationDisplayLabel: '関係ラベル',
   relationDisplayOff: '非表示',
   relationDisplayBadges: '文節の下',

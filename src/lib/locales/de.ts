@@ -18,7 +18,6 @@ export const de: Record<keyof typeof en, string> = {
   confidenceToggle: 'Zeige Anbindungskonfidenz',
   confidenceThresholdLabel: 'Unsicherheitsschwelle',
   quietPartsToggle: 'Dezente Teilfarben',
-  relationsToggle: 'Relationsbeschriftungen',
   relationDisplayLabel: 'Relationsbeschriftung',
   relationDisplayOff: 'ausgeblendet',
   relationDisplayBadges: 'unter den Bunsetsu',

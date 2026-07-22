@@ -3,7 +3,7 @@
   import { listJaVoices } from '../lib/speech'
   import { t } from '../lib/i18n.svelte'
   import { CHAIN_COLORS, CHAIN_PALETTE, type ChainColor } from '../lib/chainpalette'
-  import { CONFIDENCE_MAX, CONFIDENCE_MIN } from '../lib/settings'
+  import { CONFIDENCE_MAX, CONFIDENCE_MIN, type ArrowDirection, type RelationDisplay } from '../lib/settings'
 
   let {
     rate = $bindable(),
@@ -11,7 +11,8 @@
     showConfidence = $bindable(false),
     confidenceThreshold = $bindable(0.7),
     quietParts = $bindable(false),
-    showRelations = $bindable(true),
+    relationDisplay = $bindable('arrows'),
+    arrowDirection = $bindable('ud'),
     chainColor = $bindable('amber'),
   }: {
     rate: number
@@ -19,7 +20,8 @@
     showConfidence?: boolean
     confidenceThreshold?: number
     quietParts?: boolean
-    showRelations?: boolean
+    relationDisplay?: RelationDisplay
+    arrowDirection?: ArrowDirection
     chainColor?: ChainColor
   } = $props()
 
@@ -171,9 +173,20 @@
         <label class="row-label" for="quiet-{uid}">{t('quietPartsToggle')}</label>
         <input id="quiet-{uid}" type="checkbox" bind:checked={quietParts} />
       </div>
-      <div class="row check-row">
-        <label class="row-label" for="rel-{uid}">{t('relationsToggle')}</label>
-        <input id="rel-{uid}" type="checkbox" bind:checked={showRelations} />
+      <div class="row">
+        <label class="row-label" for="reldisp-{uid}">{t('relationDisplayLabel')}</label>
+        <select id="reldisp-{uid}" bind:value={relationDisplay}>
+          <option value="off">{t('relationDisplayOff')}</option>
+          <option value="badges">{t('relationDisplayBadges')}</option>
+          <option value="arrows">{t('relationDisplayArrows')}</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="row-label" for="arrowdir-{uid}">{t('arrowDirectionLabel')}</label>
+        <select id="arrowdir-{uid}" bind:value={arrowDirection}>
+          <option value="ud">{t('arrowDirectionUd')}</option>
+          <option value="kakariuke">{t('arrowDirectionKakariuke')}</option>
+        </select>
       </div>
       {#if noVoices}
         <p class="no-voice-note" id="novoice-{uid}">{t('noVoice')}</p>

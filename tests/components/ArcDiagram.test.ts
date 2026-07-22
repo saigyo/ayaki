@@ -3,6 +3,7 @@ import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import ArcDiagram from '../../src/components/ArcDiagram.svelte'
 import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { layoutArcs } from '../../src/lib/arclayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
 
@@ -117,7 +118,7 @@ describe('ArcDiagram', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container, getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container, getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
@@ -127,5 +128,19 @@ describe('ArcDiagram', () => {
   it('shows no badges by default', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
+  it('points arrows head → dependent by default (ud)', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
+    const arc0 = l.arcs.find((a) => a.dep === 0)!
+    const d = container.querySelector('path.arc')!.getAttribute('d')!
+    expect(d.startsWith(`M ${arc0.x2 + 4} `)).toBe(true)
+    expect(d.endsWith(` ${arc0.x1 + 4} ${l.arcAreaHeight}`)).toBe(true)
+  })
+  it('kakariuke direction restores dependent → head', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, arrowDirection: 'kakariuke' } })
+    const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
+    const arc0 = l.arcs.find((a) => a.dep === 0)!
+    expect(container.querySelector('path.arc')!.getAttribute('d')!.startsWith(`M ${arc0.x1 + 4} `)).toBe(true)
   })
 })

@@ -14,7 +14,12 @@ export interface StairConnector {
   dep: number
   head: number
   railX: number
-  d: string
+  /** dependent box right edge / vertical center */
+  x1: number
+  y1: number
+  /** head box right edge / vertical center */
+  x2: number
+  y2: number
 }
 
 export interface StairLayout {
@@ -70,13 +75,14 @@ export function layoutStairs(
   })
   const connectors: StairConnector[] = pairs.map(({ dep, head }) => {
     const railX = xRight(head) + RAIL_GAP
-    const y1 = boxes[dep].y + opts.boxCenterOffset
-    const y2 = boxes[head].y + opts.boxCenterOffset
     return {
       dep,
       head,
       railX,
-      d: `M ${boxes[dep].x + boxes[dep].width} ${y1} H ${railX} V ${y2} H ${boxes[head].x + boxes[head].width}`,
+      x1: boxes[dep].x + boxes[dep].width,
+      y1: boxes[dep].y + opts.boxCenterOffset,
+      x2: boxes[head].x + boxes[head].width,
+      y2: boxes[head].y + opts.boxCenterOffset,
     }
   })
   const width = connectors.length ? Math.max(...connectors.map((c) => c.railX)) : maxBoxWidth

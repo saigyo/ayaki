@@ -31,7 +31,8 @@
   let showConfidence = $state(initialSettings.showConfidence)
   let confidenceThreshold = $state(initialSettings.confidenceThreshold)
   let quietParts = $state(initialSettings.quietParts)
-  let showRelations = $state(initialSettings.showRelations)
+  let relationDisplay = $state(initialSettings.relationDisplay)
+  let arrowDirection = $state(initialSettings.arrowDirection)
   let view = $state<ViewKind>(initialSettings.view)
   let rate = $state(initialSettings.rate)
   let voiceURI = $state(initialSettings.voiceURI)
@@ -53,7 +54,7 @@
   }
 
   $effect(() => {
-    saveSettings({ showFurigana, showConfidence, confidenceThreshold, quietParts, showRelations, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
+    saveSettings({ showFurigana, showConfidence, confidenceThreshold, quietParts, relationDisplay, arrowDirection, view: viewFromLink ? storedView : view, rate, voiceURI, locale, chainColor })
   })
 
   $effect(() => {
@@ -139,7 +140,7 @@
     </div>
     <Toolbar bind:showFurigana bind:view onviewclick={() => (viewFromLink = false)} />
     <HelpDialog {chainColor} />
-    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:quietParts bind:showRelations bind:chainColor />
+    <SettingsMenu bind:rate bind:voiceURI bind:showConfidence bind:confidenceThreshold bind:quietParts bind:relationDisplay bind:arrowDirection bind:chainColor />
   </header>
   <main>
     <section class="content">
@@ -168,7 +169,8 @@
               {showConfidence}
               {confidenceThreshold}
               {chainColor}
-              {showRelations}
+              {relationDisplay}
+              {arrowDirection}
               active={sentences.length > 1 && activeSentence === i}
               selected={selection?.sentence === i ? selection.bunsetsu : null}
               onselect={(b) => select(i, b)}
