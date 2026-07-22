@@ -126,4 +126,23 @@ describe('NodeTree', () => {
     const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
   })
+  it('arrows mode: labels cap each dependent, badges on predicates only', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(NodeTree, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+    // DOM order follows layout.nodes = root-first DFS: 行きました。→ 見に → 映画を → 新しい
+    const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+    expect(onEdge.map((l) => l.textContent)).toEqual(['adverbial', 'object', 'relative clause'])
+    const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+    expect(badges.map((l) => l.textContent)).toEqual(['main predicate', 'predicate'])
+  })
+  it('arrows mode stacks the label above the furigana above the box', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(NodeTree, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows', showFurigana: true } })
+    const g = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '新しい')!
+    const labelY = Number(g.querySelector('text.relation-label.on-edge')!.getAttribute('y'))
+    const furiY = Number(g.querySelector('text.furigana')!.getAttribute('y'))
+    const boxY = Number(g.querySelector('rect')!.getAttribute('y'))
+    expect(labelY).toBeLessThan(furiY)
+    expect(furiY).toBeLessThan(boxY + 34)
+  })
 })

@@ -16,7 +16,7 @@ export interface TreeLayout {
 }
 
 /** Simple tidy tree: each subtree gets max(own width, sum of child subtrees). */
-export function layoutTree(widths: number[], heads: (number | null)[], gap = 20): TreeLayout {
+export function layoutTree(widths: number[], heads: (number | null)[], gap = 20, levelH = LEVEL_H): TreeLayout {
   const n = widths.length
   if (n === 0) return { nodes: [], edges: [], width: 0, height: 0 }
 
@@ -40,7 +40,7 @@ export function layoutTree(widths: number[], heads: (number | null)[], gap = 20)
   let maxDepth = 0
   const place = (i: number, left: number, depth: number) => {
     maxDepth = Math.max(maxDepth, depth)
-    nodes.push({ index: i, x: left + subW[i] / 2, y: depth * LEVEL_H })
+    nodes.push({ index: i, x: left + subW[i] / 2, y: depth * levelH })
     const kids = children[i]
     const kidsW = kids.reduce((acc, k) => acc + subW[k], 0) + gap * Math.max(0, kids.length - 1)
     let cursor = left + (subW[i] - kidsW) / 2
@@ -52,5 +52,5 @@ export function layoutTree(widths: number[], heads: (number | null)[], gap = 20)
   place(root, 0, 0)
 
   const edges = heads.flatMap((h, i) => (h === null ? [] : [{ from: h, to: i }]))
-  return { nodes, edges, width: subW[root], height: maxDepth * LEVEL_H }
+  return { nodes, edges, width: subW[root], height: maxDepth * levelH }
 }

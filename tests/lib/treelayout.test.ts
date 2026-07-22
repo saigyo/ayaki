@@ -41,4 +41,11 @@ describe('layoutTree', () => {
     expect(single.nodes).toEqual([{ index: 0, x: 40, y: 0 }])
     expect(layoutTree([], []).nodes).toEqual([])
   })
+  it('honors a custom level height', () => {
+    const tall = layoutTree([50, 60], [1, null], 20, 88)
+    const pos = new Map(tall.nodes.map((n) => [n.index, n]))
+    expect(pos.get(1)!.y).toBe(0)
+    expect(pos.get(0)!.y).toBe(88)
+    expect(tall.height).toBe(88)
+  })
 })

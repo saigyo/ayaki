@@ -36,16 +36,33 @@
   const FURI_H = 16
   const REL_H = 15
 
-  const relH = $derived(relationDisplay === 'badges' ? REL_H : 0)
+  const relH = $derived(relationDisplay !== 'off' ? REL_H : 0)
   const relText = (b: BunsetsuVM) => (b.relation ? t(RELATION_TERM_KEYS[b.relation]) : null)
   // latin badge at 10px is ~0.6× the 17px-font estimate textWidth gives
-  const relWidth = (b: BunsetsuVM) => {
-    const label = relText(b)
+  const relWidth = (label: string | null) => {
     return label ? Math.ceil(textWidth(label) * 0.6) + 8 : 0
   }
 
-  const widths = $derived(bunsetsu.map((b) => Math.max(textWidth(b.surface) + 2 * BOX_PAD, relationDisplay === 'badges' ? relWidth(b) : 0)))
-  const layout = $derived(layoutTree(widths, bunsetsu.map((b) => b.head)))
+  const isClauseHead = (b: BunsetsuVM) => b.relation === 'relclause' || b.relation === 'linkedclause'
+  // arrows mode: a box badge only where it is true of the box itself — the
+  // root is the main predicate, a clause head is its own clause's predicate
+  const badgeText = (b: BunsetsuVM): string | null => {
+    if (relationDisplay === 'badges') return relText(b)
+    if (relationDisplay !== 'arrows') return null
+    if (b.head === null) return t('relPredicate')
+    return isClauseHead(b) ? t('relClausePredicate') : null
+  }
+
+  const widths = $derived(
+    bunsetsu.map((b) =>
+      Math.max(
+        textWidth(b.surface) + 2 * BOX_PAD,
+        relationDisplay === 'badges' ? relWidth(relText(b)) : 0,
+        relationDisplay === 'arrows' ? Math.max(relWidth(badgeText(b)), b.head !== null ? relWidth(relText(b)) : 0) : 0,
+      ),
+    ),
+  )
+  const layout = $derived(layoutTree(widths, bunsetsu.map((b) => b.head), 20, relationDisplay === 'arrows' ? 88 : 70))
   const pos = $derived(new Map(layout.nodes.map((n) => [n.index, n])))
   const topPad = $derived(showFurigana ? FURI_H : 0)
 
@@ -116,13 +133,16 @@
           }
         }}
       >
+        {#if relationDisplay === 'arrows' && b.head !== null && relText(b)}
+          <text class="relation-label on-edge" aria-hidden="true" x={n.x + PAD_X} y={n.y + topPad - (showFurigana ? FURI_H : 0) - 4} text-anchor="middle">{relText(b)}</text>
+        {/if}
         {#if showFurigana && b.reading}
           <text class="furigana" x={n.x + PAD_X} y={n.y + topPad - 4} text-anchor="middle">{b.reading}</text>
         {/if}
         <rect x={n.x - widths[n.index] / 2 + PAD_X} y={n.y + topPad} width={widths[n.index]} height={BOX_H} rx="6" />
         <text class="surface" x={n.x + PAD_X} y={n.y + 22 + topPad} text-anchor="middle">{b.surface}</text>
-        {#if relationDisplay === 'badges' && relText(b)}
-          <text class="relation-label" aria-hidden="true" x={n.x + PAD_X} y={n.y + topPad + BOX_H + 11} text-anchor="middle">{relText(b)}</text>
+        {#if badgeText(b)}
+          <text class="relation-label" aria-hidden="true" x={n.x + PAD_X} y={n.y + topPad + BOX_H + 11} text-anchor="middle">{badgeText(b)}</text>
         {/if}
       </g>
     {/each}
