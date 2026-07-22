@@ -77,6 +77,9 @@ describe('loadSettings', () => {
     // an explicit relationDisplay wins over the legacy flag
     localStorage.setItem(KEY, JSON.stringify({ showRelations: false, relationDisplay: 'badges' }))
     expect(loadSettings().relationDisplay).toBe('badges')
+    // …but an invalid one counts as missing, so the legacy flag still applies
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: false, relationDisplay: 'sometimes' }))
+    expect(loadSettings().relationDisplay).toBe('off')
   })
   it('ignores unknown keys', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree', theme: 'dark' }))

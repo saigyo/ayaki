@@ -71,8 +71,9 @@ export function loadSettings(): Settings {
     for (const key of Object.keys(validators) as (keyof Settings)[]) {
       applyField(settings, key, obj[key])
     }
-    // pre-arrows migration: the boolean showRelations became relationDisplay
-    if (obj.relationDisplay === undefined && typeof obj.showRelations === 'boolean') {
+    // pre-arrows migration: the boolean showRelations became relationDisplay;
+    // an invalid stored relationDisplay counts as missing so the legacy flag still applies
+    if (validators.relationDisplay(obj.relationDisplay) === undefined && typeof obj.showRelations === 'boolean') {
       settings.relationDisplay = obj.showRelations ? 'arrows' : 'off'
     }
     return settings
