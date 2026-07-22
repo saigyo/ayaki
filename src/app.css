@@ -13,6 +13,7 @@
 }
 body { margin: 0; }
 .app { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.rule { border: 0; border-top: 1px solid var(--box-stroke); margin: 1rem 0; }
 
 header { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; padding: 0.75rem 0; }
 header h1 { font-size: 1.4rem; margin: 0; }
@@ -33,10 +34,10 @@ header h1 { font-size: 1.4rem; margin: 0; }
 }
 .locale-switcher select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; }
 
-main { display: grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items: start; }
-@media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+.results { display: grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items: start; }
+@media (max-width: 800px) { .results { grid-template-columns: 1fr; } }
 
-.sentence-input { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 1rem; }
+.sentence-input { display: flex; gap: 0.5rem; align-items: flex-start; }
 .sentence-input textarea { flex: 1; font-size: 1.1rem; padding: 0.5rem; border: 1px solid var(--box-stroke); border-radius: 8px; resize: vertical; }
 .sentence-input button { padding: 0.5rem 1rem; font-size: 1rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 .sentence-input button:disabled { opacity: 0.5; cursor: default; }
