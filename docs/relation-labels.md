@@ -18,7 +18,7 @@ accuracy. (Measured 2026-07-21 against UD_Japanese-GSD.)
 | relative clause | acl | clause before noun, …という |
 | linked clause | advcl, ccomp | …て/ので/…, quoting と, 連用中止, 形容動詞語幹+に |
 | connector | cc, discourse | 接続詞 bunsetsu |
-| predicate | root | the sentence root |
+| predicate ("main predicate") | root | the sentence root |
 
 **topic is a deliberate UD deviation.** UD has no topic relation and
 forces は-marked phrases into nsubj, obl, or dislocated — a genuinely
@@ -90,3 +90,16 @@ because topic widens acceptance).
 
 The script imports the shipped labeler, so it measures exactly what the
 app displays; run it after any rule change.
+
+## Display update (2026-07-22): labels on arrows
+
+Since the relation-arrows feature, labels render **on the dependency arrows
+by default** (setting "relation labels": hidden / under bunsetsu / on
+arrows), with arrows pointing head → dependent (UD convention; a
+kakari-uke setting restores dependent → head — the tree view stays
+arrowless either way). The root's learner term is now **"main predicate"**;
+in arrows mode the head of a relative/linked clause carries a plain
+**"predicate"** badge while its relation stays on the arrow. Hovering or
+selecting a clause-labeled bunsetsu draws a bracket along the clause's full
+subtree span. None of this changes the labeler or the measurements above —
+`scripts/relation-eval.ts` is unaffected.

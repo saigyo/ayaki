@@ -19,7 +19,7 @@ describe('loadSettings', () => {
     expect(loadSettings()).toEqual(DEFAULTS)
   })
   it('round-trips saved settings', () => {
-    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const, confidenceThreshold: 0.85, quietParts: true, showRelations: false }
+    const s = { showFurigana: true, showConfidence: true, view: 'tree' as const, rate: 1.3, voiceURI: 'kyoko', locale: 'de' as const, chainColor: 'violet' as const, confidenceThreshold: 0.85, quietParts: true, relationDisplay: 'badges' as const, arrowDirection: 'kakariuke' as const }
     saveSettings(s)
     expect(loadSettings()).toEqual(s)
   })
@@ -63,9 +63,23 @@ describe('loadSettings', () => {
     localStorage.setItem(KEY, JSON.stringify({ quietParts: 'yes' }))
     expect(loadSettings().quietParts).toBe(false)
   })
-  it('rejects non-boolean showRelations values', () => {
-    localStorage.setItem(KEY, JSON.stringify({ showRelations: 'yes' }))
-    expect(loadSettings().showRelations).toBe(true)
+  it('rejects invalid relationDisplay and arrowDirection values', () => {
+    localStorage.setItem(KEY, JSON.stringify({ relationDisplay: 'sometimes', arrowDirection: 'up' }))
+    expect(loadSettings().relationDisplay).toBe('arrows')
+    expect(loadSettings().arrowDirection).toBe('ud')
+  })
+
+  it('migrates the legacy showRelations boolean', () => {
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: false }))
+    expect(loadSettings().relationDisplay).toBe('off')
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: true }))
+    expect(loadSettings().relationDisplay).toBe('arrows')
+    // an explicit relationDisplay wins over the legacy flag
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: false, relationDisplay: 'badges' }))
+    expect(loadSettings().relationDisplay).toBe('badges')
+    // …but an invalid one counts as missing, so the legacy flag still applies
+    localStorage.setItem(KEY, JSON.stringify({ showRelations: false, relationDisplay: 'sometimes' }))
+    expect(loadSettings().relationDisplay).toBe('off')
   })
   it('ignores unknown keys', () => {
     localStorage.setItem(KEY, JSON.stringify({ view: 'tree', theme: 'dark' }))

@@ -1,10 +1,19 @@
 // @vitest-environment jsdom
-import { render } from '@testing-library/svelte'
+import { render, fireEvent } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import NodeTree from '../../src/components/NodeTree.svelte'
-import { chainSentenceFixture, sentenceFixture, forcedSentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, sentenceFixture, forcedSentenceFixture, morphemeFixture } from '../fixtures'
+import { layoutTree } from '../../src/lib/treelayout'
+import { textWidth } from '../../src/lib/arclayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('NodeTree', () => {
   it('renders all bunsetsu as boxes with head→dependent edges', () => {
@@ -117,7 +126,7 @@ describe('NodeTree', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
@@ -125,5 +134,82 @@ describe('NodeTree', () => {
   it('shows no badges by default', () => {
     const { container } = render(NodeTree, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
+  it('arrows mode: labels cap each dependent, badges on predicates only', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(NodeTree, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+    // DOM order follows layout.nodes = root-first DFS: 行きました。→ 見に → 映画を → 新しい
+    const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+    expect(onEdge.map((l) => l.textContent)).toEqual(['adverbial', 'object', 'relative clause'])
+    const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+    expect(badges.map((l) => l.textContent)).toEqual(['main predicate', 'predicate'])
+  })
+  it('arrows mode stacks the label above the furigana above the box', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(NodeTree, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows', showFurigana: true } })
+    const g = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '新しい')!
+    const labelY = Number(g.querySelector('text.relation-label.on-edge')!.getAttribute('y'))
+    const furiY = Number(g.querySelector('text.furigana')!.getAttribute('y'))
+    const boxY = Number(g.querySelector('rect')!.getAttribute('y'))
+    expect(labelY).toBeLessThan(furiY)
+    expect(furiY).toBeLessThan(boxY + 34)
+  })
+  describe('extent bracket side', () => {
+    it('ties resolve to the right side (chain subtree, equal gaps)', () => {
+      // clauseB is a pure chain → the subtree band of 買った is centered, so
+      // left and right clearance are equal and the tie-break picks right
+      const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {}, selected: 1 } })
+      const br = container.querySelector('.extent-bracket')!
+      const widths = clauseB.map((b) => textWidth(b.surface) + 20)
+      const l = layoutTree(widths, clauseB.map((b) => b.head))
+      const nodesIn = l.nodes.filter((n) => n.index <= 1) // span of 買った = {0, 1}
+      const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
+      const m = br.getAttribute('d')!.match(/H (-?[\d.]+) V/)!
+      expect(Number(m[1])).toBeGreaterThanOrEqual(maxX)
+    })
+    it('hover works like selection and only for clause labels', async () => {
+      const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {} } })
+      const clauseG = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '買った')!
+      await fireEvent.mouseEnter(clauseG)
+      expect(container.querySelector('.extent-bracket')).not.toBeNull()
+      await fireEvent.mouseLeave(clauseG)
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+      const nonClause = [...container.querySelectorAll('g.bunsetsu')].find((el) => el.getAttribute('aria-label') === '本屋で')!
+      await fireEvent.mouseEnter(nonClause)
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+    })
+    it('prefers the open right edge over a crowded left side', () => {
+      // root 4; children 0,1,3 (3 = linked-clause head with child 2): the
+      // clause band {2,3} is the rightmost column, foreign boxes only on the left
+      const rightmost = [
+        bunsetsuFixture(0, '昨日、', 4, 0.9, 'きのう、', [morphemeFixture()], 'adverbial'),
+        bunsetsuFixture(1, '私は', 4, 0.9, 'わたしは', [morphemeFixture()], 'topic'),
+        bunsetsuFixture(2, '映画を', 3, 0.9, 'えいがを', [morphemeFixture()], 'object'),
+        bunsetsuFixture(3, '見に', 4, 0.9, 'みに', [morphemeFixture()], 'linkedclause'),
+        bunsetsuFixture(4, '行きました。', null, null, 'いきました。', [morphemeFixture()], 'predicate'),
+      ]
+      const { container } = render(NodeTree, { props: { bunsetsu: rightmost, onselect: () => {}, selected: 3 } })
+      const widths = rightmost.map((b) => textWidth(b.surface) + 20)
+      const l = layoutTree(widths, rightmost.map((b) => b.head))
+      const nodesIn = l.nodes.filter((n) => n.index === 2 || n.index === 3)
+      const maxX = Math.max(...nodesIn.map((n) => n.x + widths[n.index] / 2))
+      const m = container.querySelector('.extent-bracket')!.getAttribute('d')!.match(/H (-?[\d.]+) V/)!
+      expect(Number(m[1])).toBeGreaterThanOrEqual(maxX)
+    })
+  })
+  it('edges leave badge-less boxes flush at the bottom, badged boxes below the badge', () => {
+    const { container } = render(NodeTree, { props: { bunsetsu: clauseB, onselect: () => {}, relationDisplay: 'arrows' } })
+    const edges = [...container.querySelectorAll('line.edge')]
+    const gs = [...container.querySelectorAll('g.bunsetsu')]
+    const boxBottom = (label: string) => {
+      const rect = gs.find((g) => g.getAttribute('aria-label') === label)!.querySelector('rect')!
+      return Number(rect.getAttribute('y')) + 34
+    }
+    // edge from badge-less 本を (head of 買った) starts at its box bottom
+    const fromHonwo = edges.find((e) => Number(e.getAttribute('y1')) === boxBottom('本を'))
+    expect(fromHonwo).toBeDefined()
+    // edge from badged 買った starts 15px lower (below the badge)
+    const fromKatta = edges.find((e) => Number(e.getAttribute('y1')) === boxBottom('買った') + 15)
+    expect(fromKatta).toBeDefined()
   })
 })

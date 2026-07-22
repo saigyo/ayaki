@@ -2,9 +2,17 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import StairView from '../../src/components/StairView.svelte'
-import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
+import { layoutStairs } from '../../src/lib/stairlayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('StairView', () => {
   it('renders one box per bunsetsu and one connector per non-root', () => {
@@ -106,7 +114,7 @@ describe('StairView', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
@@ -114,5 +122,33 @@ describe('StairView', () => {
   it('shows no badges by default', () => {
     const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
+  it('ud direction draws head edge → rail → dependent edge', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {} } })
+    const l = layoutStairs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const c = l.connectors.find((x) => x.dep === 0)!
+    expect(container.querySelector('.connector path.arc')!.getAttribute('d')).toBe(`M ${c.x2} ${c.y2} H ${c.railX} V ${c.y1} H ${c.x1}`)
+  })
+  it('kakariuke direction draws dependent edge → rail → head edge', () => {
+    const { container } = render(StairView, { props: { bunsetsu, onselect: () => {}, arrowDirection: 'kakariuke' } })
+    const l = layoutStairs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const c = l.connectors.find((x) => x.dep === 0)!
+    expect(container.querySelector('.connector path.arc')!.getAttribute('d')).toBe(`M ${c.x1} ${c.y1} H ${c.railX} V ${c.y2} H ${c.x2}`)
+  })
+  it('arrows mode: corner labels right-aligned at the rail, badges on predicates only', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    const { container } = render(StairView, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+    const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+    expect(onEdge.map((l) => l.textContent)).toEqual(['relative clause', 'object', 'adverbial'])
+    expect(onEdge.every((l) => l.getAttribute('text-anchor') === 'end')).toBe(true)
+    const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+    expect(badges.map((l) => l.textContent)).toEqual(['predicate', 'main predicate'])
+  })
+  it('draws the extent bracket left of the covered rows on selection', () => {
+    const { container } = render(StairView, { props: { bunsetsu: clauseB, selected: 1, onselect: () => {} } })
+    const br = container.querySelector('.extent-bracket')!
+    const l = layoutStairs(clauseB.map((b) => b.surface), clauseB.map((b) => b.head), { rowHeight: 46, boxCenterOffset: 17 })
+    const bx = Math.max(-2, Math.min(l.boxes[0].x, l.boxes[1].x) - 8)
+    expect(br.getAttribute('d')).toBe(`M ${bx + 6} ${l.boxes[0].y} H ${bx} V ${l.boxes[1].y + 34} H ${bx + 6}`)
   })
 })

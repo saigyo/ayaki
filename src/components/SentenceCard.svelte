@@ -3,7 +3,7 @@
   import NodeTree from './NodeTree.svelte'
   import StairView from './StairView.svelte'
   import { t } from '../lib/i18n.svelte'
-  import { type ViewKind } from '../lib/settings'
+  import { type ArrowDirection, type RelationDisplay, type ViewKind } from '../lib/settings'
   import type { ParsedSentence } from '../lib/types'
   import type { ChainColor } from '../lib/chainpalette'
   import { LOW_CONFIDENCE } from '../lib/viewmodel'
@@ -19,7 +19,8 @@
     showConfidence = false,
     confidenceThreshold = LOW_CONFIDENCE,
     chainColor = 'none',
-    showRelations = false,
+    relationDisplay = 'off',
+    arrowDirection = 'ud',
   }: {
     sentence: ParsedSentence
     view: ViewKind
@@ -31,7 +32,8 @@
     showConfidence?: boolean
     confidenceThreshold?: number
     chainColor?: ChainColor
-    showRelations?: boolean
+    relationDisplay?: RelationDisplay
+    arrowDirection?: ArrowDirection
   } = $props()
 </script>
 
@@ -44,10 +46,10 @@
   {#if sentence.error}
     <p class="sentence-error"><span lang="ja">{sentence.text}</span> — {t('sentenceError', { message: sentence.error })}</p>
   {:else if view === 'arcs'}
-    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
+    <ArcDiagram bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {relationDisplay} {arrowDirection} />
   {:else if view === 'tree'}
-    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
+    <NodeTree bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {relationDisplay} />
   {:else}
-    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {showRelations} />
+    <StairView bunsetsu={sentence.bunsetsu} {showFurigana} {selected} {onselect} {showConfidence} {confidenceThreshold} {chainColor} {relationDisplay} {arrowDirection} />
   {/if}
 </div>

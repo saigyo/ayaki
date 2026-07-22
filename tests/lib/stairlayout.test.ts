@@ -36,19 +36,17 @@ describe('layoutStairs', () => {
     expect(byDep[1].railX).toBe(expectedRailX)
     expect(l.width).toBe(expectedRailX)
   })
-  it('draws each connector from the dependent box edge via the shared rail into the head box edge', () => {
+  it('exposes each connector as dependent-edge and head-edge coordinates via the shared rail', () => {
     const l = layoutStairs(surfaces, heads, opts)
     const c = l.connectors.find((x) => x.dep === 1)!
     const dep = l.boxes[1]
     const head = l.boxes[2]
-    expect(c.d).toBe(
-      `M ${dep.x + dep.width} ${dep.y + 17} H ${c.railX} V ${head.y + 17} H ${head.x + head.width}`,
-    )
+    expect(c).toEqual({ dep: 1, head: 2, railX: c.railX, x1: dep.x + dep.width, y1: dep.y + 17, x2: head.x + head.width, y2: head.y + 17 })
   })
   it('reflects the row height option (furigana headroom)', () => {
     const tall = layoutStairs(surfaces, heads, { rowHeight: 62, boxCenterOffset: 33 })
     expect(tall.boxes[2].y).toBe(124)
-    expect(tall.connectors[0].d).toContain(` ${124 + 33} `)
+    expect(tall.connectors[0].y2).toBe(124 + 33)
   })
   it('handles a single bunsetsu without connectors', () => {
     const l = layoutStairs(['猫。'], [null], opts)
@@ -76,5 +74,25 @@ describe('layoutStairs', () => {
     const widths = ['新しい', '映画を', '見に'].map((s) => textWidth(s) + 20)
     const maxW = Math.max(...widths)
     for (const c of layout.connectors) expect(c.railX).toBe(maxW + c.head * 24 + 16)
+  })
+  it('widens the rail so a corner label fits the dependent segment', () => {
+    const l = layoutStairs(surfaces, heads, opts, [90, 0, 0])
+    const c0 = l.connectors.find((x) => x.dep === 0)!
+    expect(c0.railX).toBeGreaterThanOrEqual(c0.x1 + 90 + 8)
+    // both dependents of the head still share the widened rail
+    expect(l.connectors.find((x) => x.dep === 1)!.railX).toBe(c0.railX)
+  })
+  it('keeps rails monotone when an early rail is widened past a later base', () => {
+    const l = layoutStairs(['新しい', '映画を', '見に'], [1, 2, null], opts, [200, 0, 0])
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    expect(byDep[0].railX).toBeGreaterThanOrEqual(byDep[0].x1 + 200 + 8)
+    expect(byDep[1].railX).toBeGreaterThan(byDep[0].railX)
+  })
+  it('pushes a rail right of an earlier rail crossing the labeled segment', () => {
+    // chain 0→1→2 (root 2): dep 1's segment to rail(2) is crossed by rail(1),
+    // whose span covers row 1 — the label of dep 1 must land right of rail(1)
+    const l = layoutStairs(['新しい', '映画を', '見に'], [1, 2, null], opts, [50, 60, 0])
+    const byDep = Object.fromEntries(l.connectors.map((c) => [c.dep, c]))
+    expect(byDep[1].railX).toBeGreaterThanOrEqual(byDep[0].railX + 60 + 12)
   })
 })

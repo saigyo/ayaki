@@ -80,7 +80,7 @@
         <StairView
           bunsetsu={HELP_SENTENCE}
           showConfidence={true}
-          showRelations={true}
+          relationDisplay="arrows"
           selected={demoSelected}
           chainColor={demoChain}
           onselect={(i) => (demoSelected = demoSelected === i ? null : i)}
@@ -127,6 +127,7 @@
           <li><strong>{t(RELATION_TERM_KEYS[r])}</strong> — {t(RELATION_EXPLAIN_KEYS[r])}</li>
         {/each}
       </ul>
+      <p class="help-note">{t('helpRelationsExtent')}</p>
     </section>
     <section>
       <h3>{t('helpTipsTitle')}</h3>

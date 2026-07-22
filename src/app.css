@@ -71,6 +71,8 @@ svg marker path { fill: var(--arc); }
 
 /* readings stay legible where connectors cross them (arcs view especially) */
 svg text.furigana { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+/* arrows mode: relation labels ride the connectors — same halo trick as furigana */
+svg text.relation-label.on-edge { paint-order: stroke; stroke: #fff; stroke-width: 3px; }
 /* invisible fat twin of each connector: a forgiving hover target for the title */
 svg .connector .hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; }
 
@@ -165,3 +167,7 @@ footer a { color: var(--accent); }
 .legend-chain { background: var(--sw-soft); border: 2px solid var(--sw); }
 .legend-line { flex: none; width: 18px; border-top: 2px dotted var(--uncertain-line); }
 .help-note { color: #57606a; font-size: 0.8rem; font-style: italic; }
+
+/* clause-extent bracket: shown while a relative/linked-clause bunsetsu is hovered or selected */
+svg path.extent-bracket { fill: none; stroke: #b08d3e; stroke-width: 1.6; opacity: 0.8; }
+svg text.extent-label { font-size: 10px; fill: #b08d3e; }

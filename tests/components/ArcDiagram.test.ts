@@ -1,10 +1,18 @@
 // @vitest-environment jsdom
-import { render } from '@testing-library/svelte'
+import { render, fireEvent } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import ArcDiagram from '../../src/components/ArcDiagram.svelte'
-import { chainSentenceFixture, forcedSentenceFixture, sentenceFixture } from '../fixtures'
+import { bunsetsuFixture, chainSentenceFixture, forcedSentenceFixture, morphemeFixture, sentenceFixture } from '../fixtures'
+import { layoutArcs } from '../../src/lib/arclayout'
 
 const bunsetsu = sentenceFixture().bunsetsu
+
+const clauseB = [
+  bunsetsuFixture(0, '本屋で', 1, 0.9, 'ほんやで', [morphemeFixture({ surface: '本屋' })], 'adverbial'),
+  bunsetsuFixture(1, '買った', 2, 0.9, 'かった', [morphemeFixture({ surface: '買った', posJa: '動詞・自立' })], 'relclause'),
+  bunsetsuFixture(2, '本を', 3, 0.9, 'ほんを', [morphemeFixture({ surface: '本' })], 'object'),
+  bunsetsuFixture(3, '読んだ。', null, null, 'よんだ。', [morphemeFixture({ surface: '読んだ' })], 'predicate'),
+]
 
 describe('ArcDiagram', () => {
   it('renders one box per bunsetsu and one arc per non-root', () => {
@@ -117,7 +125,7 @@ describe('ArcDiagram', () => {
     expect(unselected.container.querySelectorAll('.chain')).toHaveLength(0)
   })
   it('shows relation badges when showRelations is on', () => {
-    const { container, getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, showRelations: true } })
+    const { container, getByRole } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, relationDisplay: 'badges' } })
     const labels = [...container.querySelectorAll('.relation-label')]
     expect(labels.length).toBe(bunsetsu.length)
     expect(labels.every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
@@ -127,5 +135,79 @@ describe('ArcDiagram', () => {
   it('shows no badges by default', () => {
     const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
     expect(container.querySelectorAll('.relation-label')).toHaveLength(0)
+  })
+  // attachment points sit 6px inside each box center, on the half facing the
+  // other end (dep cx + 6, head cx − 6), so incoming and outgoing arcs separate
+  it('points arrows head → dependent by default (ud)', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
+    const arc0 = l.arcs.find((a) => a.dep === 0)!
+    const d = container.querySelector('path.arc')!.getAttribute('d')!
+    expect(d.startsWith(`M ${arc0.x2 - 6 + 4} `)).toBe(true)
+    expect(d.endsWith(` ${arc0.x1 + 6 + 4} ${l.arcAreaHeight}`)).toBe(true)
+  })
+  it('kakariuke direction restores dependent → head', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {}, arrowDirection: 'kakariuke' } })
+    const l = layoutArcs(bunsetsu.map((b) => b.surface), bunsetsu.map((b) => b.head))
+    const arc0 = l.arcs.find((a) => a.dep === 0)!
+    expect(container.querySelector('path.arc')!.getAttribute('d')!.startsWith(`M ${arc0.x1 + 6 + 4} `)).toBe(true)
+  })
+  it('end tangents are slanted so auto-oriented arrowheads follow the arc angle', () => {
+    const { container } = render(ArcDiagram, { props: { bunsetsu, onselect: () => {} } })
+    // cubic: M xF y C cx1 y', cx2 y', xT y — a slanted end tangent means cx2 ≠ xT
+    const d = container.querySelector('path.arc')!.getAttribute('d')!
+    const nums = d.match(/-?[\d.]+/g)!.map(Number)
+    const [cx2, xT] = [nums[4], nums[6]]
+    expect(cx2).not.toBe(xT)
+  })
+  describe('arrows mode', () => {
+    const chainB = chainSentenceFixture().bunsetsu
+    it('labels ride the arcs; badges only for root and clause heads', () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const onEdge = [...container.querySelectorAll('text.relation-label.on-edge')]
+      expect(onEdge.map((l) => l.textContent)).toEqual(['relative clause', 'object', 'adverbial'])
+      const badges = [...container.querySelectorAll('text.relation-label:not(.on-edge)')]
+      expect(badges.map((l) => l.textContent)).toEqual(['predicate', 'main predicate'])
+      expect([...container.querySelectorAll('.relation-label')].every((l) => l.getAttribute('aria-hidden') === 'true')).toBe(true)
+    })
+    it('apex labels sit above the box row', () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const label = container.querySelector('text.relation-label.on-edge')!
+      const box = container.querySelector('g.bunsetsu rect')!
+      expect(Number(label.getAttribute('y'))).toBeLessThan(Number(box.getAttribute('y')))
+    })
+    it('arrows mode raises the arcs to make room for labels', () => {
+      const chainB = chainSentenceFixture().bunsetsu
+      const arrows = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'arrows' } })
+      const badges = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {}, relationDisplay: 'badges' } })
+      const h = (r: typeof arrows) => Number(r.container.querySelector('svg')!.getAttribute('height'))
+      expect(h(arrows)).toBeGreaterThan(h(badges))
+    })
+  })
+  describe('extent bracket', () => {
+    it('hovering the clause head draws the bracket over its span; leaving removes it', async () => {
+      const { container } = render(ArcDiagram, { props: { bunsetsu: clauseB, onselect: () => {} } })
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+      await fireEvent.mouseEnter([...container.querySelectorAll('g.bunsetsu')][1])
+      const br = container.querySelector('.extent-bracket')!
+      const l = layoutArcs(clauseB.map((b) => b.surface), clauseB.map((b) => b.head))
+      expect(br.getAttribute('d')!.startsWith(`M ${l.boxes[0].x + 4} `)).toBe(true)
+      expect(container.querySelector('.extent-label')!.textContent).toBe('relative clause')
+      await fireEvent.mouseLeave([...container.querySelectorAll('g.bunsetsu')][1])
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+    })
+    it('selection draws it too; non-clause bunsetsu never do', () => {
+      const sel = render(ArcDiagram, { props: { bunsetsu: clauseB, selected: 1, onselect: () => {} } })
+      expect(sel.container.querySelector('.extent-bracket')).not.toBeNull()
+      expect(sel.container.querySelector('.extent-bracket')!.getAttribute('aria-hidden')).toBe('true')
+      const non = render(ArcDiagram, { props: { bunsetsu: clauseB, selected: 0, onselect: () => {} } })
+      expect(non.container.querySelector('.extent-bracket')).toBeNull()
+    })
+    it('single-bunsetsu clauses get no bracket', async () => {
+      const chainB = chainSentenceFixture().bunsetsu
+      const { container } = render(ArcDiagram, { props: { bunsetsu: chainB, onselect: () => {} } })
+      await fireEvent.mouseEnter([...container.querySelectorAll('g.bunsetsu')][0])
+      expect(container.querySelector('.extent-bracket')).toBeNull()
+    })
   })
 })
